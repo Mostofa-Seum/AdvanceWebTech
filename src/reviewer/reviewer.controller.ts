@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Patch, Delete, Body, Param, ParseIntPipe, Query} from '@nestjs/common';
+import { Controller, Get, Post, Put, Patch, Delete, Body, Param, ParseIntPipe, Query, ValidationPipe, UsePipes} from '@nestjs/common';
 import { ReviewerService } from './reviewer.service';
 import { CreateReviewerDto, LoginDto, UpdateProfileDto, VerifyWorkDto } from './reviewer.dto';
 
@@ -10,6 +10,7 @@ export class ReviewerController {
     return this.reviewerService.getHello();
   }
   @Post('signup') //localhost:3000/reviewer/signup
+  @UsePipes(new ValidationPipe())
   signup(@Body() reviewerDto:CreateReviewerDto):object {
     return this.reviewerService.signup(reviewerDto);
   }

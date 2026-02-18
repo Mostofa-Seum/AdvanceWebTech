@@ -1,6 +1,10 @@
+import { isEmail, IsEmail, IsNotEmpty, IsString } from 'class-validator';
 export class CreateReviewerDto {
     name: string;
+
+    @IsEmail()
     email: string;
+
     password: string;
 } 
 export class LoginDto {
