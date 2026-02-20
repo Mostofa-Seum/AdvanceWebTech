@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { CompanySignupDTO } from './company.dto';
 
 @Injectable()
 export class CompanyService {
@@ -14,10 +15,17 @@ export class CompanyService {
     return { message: "company login", myobj };
   }
 
-  signupCompany(myobj: object): object {
-    console.log(myobj);
-    return { message: "company signup", myobj };
-  }
+  
+  signupCompany(myobj: CompanySignupDTO, file?: Express.Multer.File): object {
+  console.log(myobj);
+  console.log(file);
+
+  return {
+    message: 'company signup',
+    data: myobj,
+    nidImg: file ? file.filename : null,
+  };
+}
 
   postJob(myobj: object): object {
     console.log(myobj);

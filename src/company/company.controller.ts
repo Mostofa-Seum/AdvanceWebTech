@@ -1,4 +1,5 @@
-import { Controller, Get, Post, Put, Delete, Param, Query, Body } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Param, Query, Body, ParseIntPipe, UseInterceptors , 
+  UploadedFile, UsePipes, ValidationPipe, } from '@nestjs/common';
 import { CompanyService } from './company.service';
 import { CompanySignupDTO } from './company.dto';
 import { CompanyLoginDTO } from './company.dto';
@@ -7,6 +8,10 @@ import { EditJobDTO } from './company.dto';
 import { ReviewEmployeeDTO } from './company.dto';
 import { MakePaymentDTO } from './company.dto';
 import { EditProfileDTO } from './company.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { MulterError , diskStorage } from 'multer'
+
+
 @Controller('company')
 export class CompanyController {
 
@@ -27,10 +32,36 @@ export class CompanyController {
 
   
   @Post('signup')
-  signupCompany(@Body() myobj: CompanySignupDTO): object {
-    console.log(myobj.companyName);
-    return this.companyService.signupCompany(myobj);
-  }
+  @UsePipes(new ValidationPipe())
+  @UseInterceptors(
+  FileInterceptor('nidImg', {
+    fileFilter: (req, file, cb) => {
+      if (file.originalname.match(/^.*\.(jpg|webp|png|jpeg)$/i)) {
+        cb(null, true);
+      } else {
+        cb(new MulterError('LIMIT_UNEXPECTED_FILE', 'image'), false);
+      }
+    },
+    limits: { fileSize: 2 * 1024 * 1024 },
+    storage: diskStorage({
+      destination: './uploads',
+      filename: (req, file, cb) => {
+        cb(null, Date.now() + '_' + file.originalname);
+      },
+    }),
+  }),
+)
+signupCompany(
+  @Body() myobj: CompanySignupDTO,
+  @UploadedFile() file: Express.Multer.File,
+): object {
+  console.log(myobj.companyName);
+  console.log(myobj.email);
+  console.log(myobj.nid);
+  console.log(file?.filename);
+
+  return this.companyService.signupCompany(myobj, file);
+}
 
   
   @Post('job')
@@ -42,7 +73,7 @@ export class CompanyController {
   
   @Delete('job/remove/:jobId')
   removeJob(
-    @Param('jobId') jobId: number,
+    @Param('jobId', ParseIntPipe) jobId: number,
     @Query('companyName') companyName: string
   ): object {
     console.log(jobId);
@@ -52,7 +83,7 @@ export class CompanyController {
   
   @Put('job/edit/:jobId')
   editJob(
-    @Param('jobId') jobId: number,
+    @Param('jobId', ParseIntPipe) jobId: number,
     @Query('companyName') companyName: string,
     @Query('email') email: string,
     @Body() myobj: EditJobDTO
