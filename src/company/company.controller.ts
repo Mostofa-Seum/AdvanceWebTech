@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Put, Delete, Param, Query, Body, ParseIntPipe, UseInterceptors , 
-  UploadedFile, UsePipes, ValidationPipe, } from '@nestjs/common';
+  UploadedFile, UsePipes, ValidationPipe, Res} from '@nestjs/common';
 import { CompanyService } from './company.service';
 import { CompanySignupDTO } from './company.dto';
 import { CompanyLoginDTO } from './company.dto';
@@ -51,6 +51,9 @@ export class CompanyController {
     }),
   }),
 )
+
+
+
 signupCompany(
   @Body() myobj: CompanySignupDTO,
   @UploadedFile() file: Express.Multer.File,
@@ -63,7 +66,12 @@ signupCompany(
   return this.companyService.signupCompany(myobj, file);
 }
 
-  
+  @Get('getimage/:name')
+  getImages(@Param('name') name: string, @Res() res) {
+    res.sendFile(name, { root: './uploads' })
+}
+// http://localhost:3000/company/getimage/1771574554581_NID.png
+
   @Post('job')
   postJob(@Body() myobj: PostJobDTO): object {
     console.log(myobj.companyName);
@@ -121,5 +129,6 @@ signupCompany(
   ): object {
     return this.companyService.getJob(companyName, email);
   }
+
 
 }
