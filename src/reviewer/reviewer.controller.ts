@@ -1,6 +1,8 @@
-import { Controller, Get, Post, Put, Patch, Delete, Body, Param, ParseIntPipe, Query, ValidationPipe, UsePipes} from '@nestjs/common';
+import { Controller, Get, Post, Put, Patch, Delete, Body, Param, ParseIntPipe, Query, ValidationPipe, UsePipes, UseInterceptors, UploadedFile, } from '@nestjs/common';
 import { ReviewerService } from './reviewer.service';
 import { CreateReviewerDto, LoginDto, UpdateProfileDto, VerifyWorkDto } from './reviewer.dto';
+import { FileInterceptor } from '@nestjs/platform-express/multer/interceptors/file.interceptor';
+import { diskStorage, MulterError } from 'multer';
 
 @Controller('reviewer')
 export class ReviewerController {
@@ -8,6 +10,30 @@ export class ReviewerController {
   @Get()
   getHello(): string {
     return this.reviewerService.getHello();
+  }
+  @Post('upload')
+  @UseInterceptors(FileInterceptor('file',
+    { 
+      fileFilter: (req, file, cb) => {
+        if (file.originalname.match(/^.*\.(pdf)$/)) {
+          cb(null, true);
+        } else {
+          cb(new MulterError('LIMIT_UNEXPECTED_FILE', 'pdf'), false);
+        }
+      },
+
+      limits: { fileSize: 5242880 }, 
+      storage: diskStorage({
+        destination: './uploads',
+        filename: function (req, file, cb) {
+          cb(null, Date.now() + '-' + file.originalname)
+        },
+      })
+    }
+  ))
+  uploadFile(@UploadedFile() file: Express.Multer.File) {
+    console.log(file);
+    return { message: "PDF Uploaded Successfully",};
   }
   @Post('signup') //localhost:3000/reviewer/signup
   @UsePipes(new ValidationPipe())
