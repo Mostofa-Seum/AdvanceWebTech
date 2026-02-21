@@ -5,6 +5,8 @@ import {
   UpdateCompanyDto,
   CreateEmployeeDto,
   UpdateReviewerDto,
+  ProcessReportDto,
+  OptionalFileUploadDto, // Imported the new DTO here as well
 } from './admin.dto';
 
 @Injectable()
@@ -14,14 +16,14 @@ export class AdminService {
   }
 
   login(adminLoginDto: AdminLoginDto) {
-  return {
-    message: 'Admin logged in successfully',
-    admin: {
-      email: adminLoginDto.email,
-    },
-  };
-}
-
+    return {
+      message: 'Admin logged in successfully',
+      admin: {
+        email: adminLoginDto.email,
+        password: adminLoginDto.password, // Included so you can verify it in Postman
+      },
+    };
+  }
 
   createCompany(createCompanyDto: CreateCompanyDto): object {
     return {
@@ -68,11 +70,25 @@ export class AdminService {
     };
   }
 
-  processReport(reportId: number): object {
+  processReport(reportId: number, processReportDto: ProcessReportDto): object {
     return {
       message: 'Report processed successfully',
       reportId: reportId,
-      action: 'closed/removed',
+      action: processReportDto.action,
+      reason: processReportDto.reason,
+    };
+  }
+
+  // In admin.service.ts
+  uploadDocument(file: Express.Multer.File): object {
+    return {
+      message: 'PDF successfully uploaded and saved to folder',
+      fileDetails: {
+        originalName: file.originalname,
+        savedAs: file.filename,
+        path: file.path,
+        size: `${(file.size / 1024).toFixed(2)} KB`, 
+      },
     };
   }
 }

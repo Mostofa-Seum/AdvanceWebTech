@@ -1,78 +1,46 @@
 import {
-  Controller,
-  Get,
-  Post,
-  Put,
-  Patch,
-  Delete,
-  Body,
-  Param,
-  ParseIntPipe,
-  Query,
+  Controller, Get, Post, Put, Patch, Body, Param, ParseIntPipe, Query, UsePipes, ValidationPipe,
+  UseInterceptors, UploadedFile, ParseFilePipe, FileTypeValidator // <-- Ensure these are imported
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage, MulterError } from 'multer'; // <-- NEW IMPORT
+import { extname } from 'path';       // <-- NEW IMPORT
 
 import { AdminService } from './admin.service';
 import {
-  AdminLoginDto,
-  CreateCompanyDto,
-  UpdateCompanyDto,
-  CreateEmployeeDto,
-  UpdateEmployeeDto,
-  UpdateReviewerDto,
-  ProcessReportDto,
+  AdminLoginDto, CreateCompanyDto, UpdateCompanyDto, CreateEmployeeDto, UpdateReviewerDto, ProcessReportDto, OptionalFileUploadDto
 } from './admin.dto';
 
 @Controller('admin')
+@UsePipes(new ValidationPipe())
 export class AdminController {
   constructor(private readonly adminService: AdminService) {}
 
-  @Get() // localhost:3000/admin
-  getHello(): string {
-    return this.adminService.getHello();
-  }
+  // ... (Keep all your other routes exactly the same: login, createCompany, etc.)
 
-  @Post('login') // localhost:3000/admin/login
-login(@Body() adminLoginDto: AdminLoginDto): object {
-  return this.adminService.login(adminLoginDto);
-}
+  // REPLACED: Physical file upload with disk storage
+  @Post('upload-document')
+  @UseInterceptors(FileInterceptor('file',
+    { 
+      fileFilter: (req, file, cb) => {
+        if (file.originalname.match(/^.*\.(pdf)$/)) {
+          cb(null, true);
+        } else {
+          cb(new MulterError('LIMIT_UNEXPECTED_FILE', 'pdf'), false);
+        }
+      },
 
-
-  @Post('companies') // localhost:3000/admin/companies
-  createCompany(@Body() createCompanyDto: CreateCompanyDto): object {
-    return this.adminService.createCompany(createCompanyDto);
-  }
-
-  @Put('companies/:id') // localhost:3000/admin/companies/1
-  updateCompany(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() updateCompanyDto: UpdateCompanyDto,
-  ): object {
-    return this.adminService.updateCompany(id, updateCompanyDto);
-  }
-
-  @Post('employees') // localhost:3000/admin/employees
-  createEmployee(@Body() createEmployeeDto: CreateEmployeeDto): object {
-    return this.adminService.createEmployee(createEmployeeDto);
-  }
-
-  @Patch('employees/:id/status') // localhost:3000/admin/employees/2/status?status=active
-  updateEmployeeStatus(
-    @Param('id', ParseIntPipe) id: number,
-    @Query('status') status: string,
-  ): object {
-    return this.adminService.updateEmployeeStatus(id, status);
-  }
-
-  @Patch('reviewers/:id') // localhost:3000/admin/reviewers/3
-  manageReviewer(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() updateReviewerDto: UpdateReviewerDto,
-  ): object {
-    return this.adminService.manageReviewer(id, updateReviewerDto);
-  }
-
-  @Delete('reports/:id') // localhost:3000/admin/reports/10
-  processReport(@Param('id', ParseIntPipe) id: number): object {
-    return this.adminService.processReport(id);
+      limits: { fileSize: 5242880 }, 
+      storage: diskStorage({
+        destination: './uploads',
+        filename: function (req, file, cb) {
+          cb(null, Date.now() + '-' + file.originalname)
+        },
+      })
+    }
+  ))
+  uploadFile(@UploadedFile() file: Express.Multer.File) {
+    console.log(file);
+    return { message: "PDF Uploaded Successfully", fileDetails: file };
   }
 }
