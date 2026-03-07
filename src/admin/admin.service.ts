@@ -1,4 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository, Like } from 'typeorm';
+import { UserCategory3Entity } from './admin.entity';
 import {
   AdminLoginDto,
   CreateCompanyDto,
@@ -6,11 +9,17 @@ import {
   CreateEmployeeDto,
   UpdateReviewerDto,
   ProcessReportDto,
-  OptionalFileUploadDto, // Imported the new DTO here as well
+  OptionalFileUploadDto, 
+  CreateUserCategory3Dto,
 } from './admin.dto';
 
 @Injectable()
 export class AdminService {
+  constructor(
+    @InjectRepository(UserCategory3Entity)
+    private readonly userRepository: Repository<UserCategory3Entity>,
+  ) {}
+
   getHello(): string {
     return 'Admin Module is Working!';
   }
@@ -20,7 +29,7 @@ export class AdminService {
       message: 'Admin logged in successfully',
       admin: {
         email: adminLoginDto.email,
-        password: adminLoginDto.password, // Included so you can verify it in Postman
+        password: adminLoginDto.password, 
       },
     };
   }
@@ -79,7 +88,6 @@ export class AdminService {
     };
   }
 
-  // In admin.service.ts
   uploadDocument(file: Express.Multer.File): object {
     return {
       message: 'PDF successfully uploaded and saved to folder',
@@ -90,5 +98,34 @@ export class AdminService {
         size: `${(file.size / 1024).toFixed(2)} KB`, 
       },
     };
+  }
+
+  // --- USER CATEGORY 3 OPERATIONS ---
+
+  async createUser3(createUserDto: CreateUserCategory3Dto): Promise<UserCategory3Entity> {
+    const newUser = this.userRepository.create(createUserDto);
+    return await this.userRepository.save(newUser);
+  }
+
+  async findUsersByFullName(substring: string): Promise<UserCategory3Entity[]> {
+    return await this.userRepository.find({
+      where: {
+        fullName: Like(`%${substring}%`),
+      },
+    });
+  }
+
+  async findUserByUsername(username: string): Promise<UserCategory3Entity> {
+    const user = await this.userRepository.findOne({ where: { username } });
+    if (!user) {
+      throw new NotFoundException(`User with username ${username} not found`);
+    }
+    return user;
+  }
+
+  async removeUserByUsername(username: string): Promise<object> {
+    const user = await this.findUserByUsername(username); 
+    await this.userRepository.remove(user);
+    return { message: `User ${username} successfully deleted` };
   }
 }

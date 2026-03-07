@@ -4,6 +4,7 @@ import {
   IsOptional, 
   Matches, 
   MinLength, 
+  MaxLength,
   IsNumber, 
   IsIn, 
   IsNotEmpty 
@@ -103,9 +104,23 @@ export class ProcessReportDto {
   @IsNotEmpty()
   reason: string;
 }
+
 export class OptionalFileUploadDto {
   @IsOptional()
   @IsString()
   @Matches(/\.pdf$/i, { message: 'Uploaded file must be in PDF format' })
   fileName?: string;
+}
+
+// --- NEW USER CATEGORY 3 DTO ---
+export class CreateUserCategory3Dto {
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(100, { message: 'Username cannot exceed 100 characters' })
+  username: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(150, { message: 'Full name cannot exceed 150 characters' })
+  fullName: string;
 }
