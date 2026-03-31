@@ -1,15 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { CreateReviewerDto, LoginDto, UpdateProfileDto, VerifyWorkDto } from './reviewer.dto';
+import { ReviewerEntity } from './reviewer.entity';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 @Injectable()
 export class ReviewerService {
+  constructor(@InjectRepository(ReviewerEntity) private reviewerRepository: Repository<ReviewerEntity>) {}
   getHello(): string {
     return 'Hello World!';
   }
-  signup(reviewerDto: CreateReviewerDto) {
-    console.log(reviewerDto.name);
-    return {
-      message: 'Reviewer registered successfully',
-    };
+  async signup(reviewerDto: CreateReviewerDto) : Promise<ReviewerEntity> {
+    const reviewer = this.reviewerRepository.create(reviewerDto);
+    return this.reviewerRepository.save(reviewer);
   }
 
   login(loginDto: LoginDto) {
@@ -19,12 +21,9 @@ export class ReviewerService {
     };
   }
 
-  getProfile(id: number) {
-    return {
-      id: id,
-      name: 'Seum',
-      role: 'Reviewer',
-    };
+  async getProfile(id: number): Promise<ReviewerEntity> {{
+    return this.reviewerRepository.findOne({ where: { id } });
+  }
   }
   updateProfile(id: number, updateProfileDto: UpdateProfileDto) {
     return {

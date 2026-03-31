@@ -2,7 +2,7 @@ import {Column, Entity, PrimaryGeneratedColumn} from 'typeorm';
 
 
 @Entity()
-export class Reviewer {
+export class ReviewerEntity {
     @PrimaryGeneratedColumn()
   id: number
   @Column()
