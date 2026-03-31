@@ -1,8 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { CreateReviewerDto, LoginDto, UpdateProfileDto, VerifyWorkDto } from './reviewer.dto';
 import { ReviewerEntity } from './reviewer.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import * as bcrypt from 'bcrypt';
+
 @Injectable()
 export class ReviewerService {
   constructor(@InjectRepository(ReviewerEntity) private reviewerRepository: Repository<ReviewerEntity>) {}
@@ -10,15 +12,34 @@ export class ReviewerService {
     return 'Hello World!';
   }
   async signup(reviewerDto: CreateReviewerDto) : Promise<ReviewerEntity> {
-    const reviewer = this.reviewerRepository.create(reviewerDto);
-    return this.reviewerRepository.save(reviewer);
+    const salt = await bcrypt.genSalt();
+    const hashedPassword = await bcrypt.hash(reviewerDto.password, salt);
+    const newReviewerData = {
+    ...reviewerDto,
+    password: hashedPassword,
+  };
+  const reviewer = this.reviewerRepository.create(newReviewerData);
+  return this.reviewerRepository.save(reviewer);
   }
 
-  login(loginDto: LoginDto) {
-    return {
-      message: 'Reviewer logged in successfully',
-      user: { email: loginDto.email }
-    };
+  async login(loginDto: LoginDto) {
+    const user = await this.reviewerRepository.findOne({ 
+    where: { email: loginDto.email } 
+  });
+
+  if (!user) {
+    throw new UnauthorizedException('Invalid email or password');
+  }
+    const isPasswordMatch = await bcrypt.compare(loginDto.password, user.password);
+  if(!isPasswordMatch){
+    throw new UnauthorizedException('Invalid email or password');
+  }
+  const { password, ...result } = user;
+  
+  return {
+    message: 'Login successful',
+    user: result,
+  };
   }
 
   async getProfile(id: number): Promise<ReviewerEntity> {{
