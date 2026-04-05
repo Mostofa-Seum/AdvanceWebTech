@@ -11,6 +11,7 @@ export class ReviewerService {
   getHello(): string {
     return 'Hello World!';
   }
+  //Create new reviewer account
   async signup(reviewerDto: CreateReviewerDto) : Promise<ReviewerEntity> {
     const salt = await bcrypt.genSalt();
     const hashedPassword = await bcrypt.hash(reviewerDto.password, salt);
@@ -22,6 +23,7 @@ export class ReviewerService {
   return this.reviewerRepository.save(reviewer);
   }
 
+  //Login for reviewer
   async login(loginDto: LoginDto) {
     const user = await this.reviewerRepository.findOne({ 
     where: { email: loginDto.email } 
@@ -42,10 +44,12 @@ export class ReviewerService {
   };
   }
 
-  async getProfile(id: number): Promise<ReviewerEntity> {{
-    return this.reviewerRepository.findOne({ where: { id } });
+  //Get reviewer profile
+  async getProfile(id: number): Promise<ReviewerEntity> {
+    return this.reviewerRepository.findOneBy({ id:  id });
   }
-  }
+
+  
   updateProfile(id: number, updateProfileDto: UpdateProfileDto) {
     return {
       message: 'Profile updated successfully',
