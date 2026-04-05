@@ -49,14 +49,13 @@ export class ReviewerService {
     return this.reviewerRepository.findOneBy({ id:  id });
   }
 
-  
-  updateProfile(id: number, updateProfileDto: UpdateProfileDto) {
-    return {
-      message: 'Profile updated successfully',
-      userId: id,
-      updatedData: updateProfileDto
-    };
+  //Update reviewer profile
+  async updateProfile(id: number, updateProfileDto: UpdateProfileDto): Promise<ReviewerEntity> {
+      await this.reviewerRepository.update(id, updateProfileDto);
+      return this.reviewerRepository.findOneBy({ id: id });
   }
+
+  
   getUsersToVerify(userType: string) {
     return {
       message: `Verifications for type: ${userType}`,
