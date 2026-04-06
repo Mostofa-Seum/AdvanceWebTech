@@ -5,7 +5,7 @@ import { ReviewerEntity } from './reviewer.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([ReviewerEntity])], // Add your entities here
+  imports: [TypeOrmModule.forFeature([ReviewerEntity])],
   controllers: [ReviewerController],
   providers: [ReviewerService],
 })

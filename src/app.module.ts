@@ -9,7 +9,7 @@ host: 'localhost',
 port: 5432,
 username: 'postgres',
 password: 'root',
-database: 'secc',  //Change to your database name
+database: 'secc',  
 autoLoadEntities: true,
 synchronize: true,
 } ),
