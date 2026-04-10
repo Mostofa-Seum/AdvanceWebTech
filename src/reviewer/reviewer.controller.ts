@@ -46,13 +46,13 @@ login(@Body() loginDto:LoginDto):object {
   }
 
   @Get('profile/:id')  //localhost:3000/reviewer/profile/1
-  getProfile(@Param('id') id:number):object {
+  getProfile(@Param('id') id: string):object {
     return this.reviewerService.getProfile(id);
   }
 
   @Put('profile/:id')  //localhost:3000/reviewer/profile/1
   updateProfile(
-    @Param('id', ParseIntPipe) id: number, 
+    @Param('id') id: string, 
     @Body() updateProfileDto: UpdateProfileDto
   ) {
     return this.reviewerService.updateProfile(id, updateProfileDto);

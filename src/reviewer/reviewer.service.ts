@@ -1,6 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { CreateReviewerDto, LoginDto, UpdateProfileDto, VerifyWorkDto } from './reviewer.dto';
 import { ReviewerEntity } from './reviewer.entity';
+import { UserRole } from './user.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
@@ -16,43 +17,65 @@ export class ReviewerService {
     const salt = await bcrypt.genSalt();
     const hashedPassword = await bcrypt.hash(reviewerDto.password, salt);
     const newReviewerData = {
-    ...reviewerDto,
-    password: hashedPassword,
-  };
-  const reviewer = this.reviewerRepository.create(newReviewerData);
-  return this.reviewerRepository.save(reviewer);
+      user: {
+        fullName: reviewerDto.name,
+        email: reviewerDto.email,
+        password: hashedPassword,
+        role: UserRole.REVIEWER,
+      }
+    };
+    const reviewer = this.reviewerRepository.create(newReviewerData);
+    return this.reviewerRepository.save(reviewer);
   }
 
   //Login for reviewer
   async login(loginDto: LoginDto) {
-    const user = await this.reviewerRepository.findOne({ 
-    where: { email: loginDto.email } 
-  });
+    const reviewer = await this.reviewerRepository.findOne({ 
+      where: { user: { email: loginDto.email } },
+      relations: ['user']
+    });
 
-  if (!user) {
-    throw new UnauthorizedException('Invalid email or password');
-  }
-    const isPasswordMatch = await bcrypt.compare(loginDto.password, user.password);
-  if(!isPasswordMatch){
-    throw new UnauthorizedException('Invalid email or password');
-  }
-  const { password, ...result } = user;
-  
-  return {
-    message: 'Login successful',
-    user: result,
-  };
+    if (!reviewer || !reviewer.user) {
+      throw new UnauthorizedException('Invalid email or password');
+    }
+    const isPasswordMatch = await bcrypt.compare(loginDto.password, reviewer.user.password);
+    if(!isPasswordMatch){
+      throw new UnauthorizedException('Invalid email or password');
+    }
+    const { password, ...result } = reviewer.user;
+    
+    return {
+      message: 'Login successful',
+      user: result,
+      reviewerId: reviewer.reviewerId,
+    };
   }
 
   //Get reviewer profile
-  async getProfile(id: number): Promise<ReviewerEntity> {
-    return this.reviewerRepository.findOneBy({ id:  id });
+  async getProfile(id: string): Promise<ReviewerEntity> {
+    return this.reviewerRepository.findOne({
+      where: { reviewerId: id },
+      relations: ['user']
+    });
   }
 
   //Update reviewer profile
-  async updateProfile(id: number, updateProfileDto: UpdateProfileDto): Promise<ReviewerEntity> {
-      await this.reviewerRepository.update(id, updateProfileDto);
-      return this.reviewerRepository.findOneBy({ id: id });
+  async updateProfile(id: string, updateProfileDto: UpdateProfileDto): Promise<ReviewerEntity> {
+      const reviewer = await this.reviewerRepository.findOne({
+        where: { reviewerId: id },
+        relations: ['user']
+      });
+
+      if (reviewer && reviewer.user) {
+        if (updateProfileDto.name) reviewer.user.fullName = updateProfileDto.name;
+        if (updateProfileDto.phone) reviewer.user.phone = updateProfileDto.phone.toString();
+        await this.reviewerRepository.save(reviewer);
+      }
+
+      return this.reviewerRepository.findOne({
+        where: { reviewerId: id },
+        relations: ['user']
+      });
   }
 
   
