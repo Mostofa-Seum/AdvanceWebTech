@@ -17,13 +17,25 @@ import { ReviewerEntity } from './reviewer.entity';
 import { SubmissionEntity } from './submission.entity';
 import { UserEntity } from './user.entity';
 import { WorkVerificationEntity } from './work_verification.entity';
-
+import { MailerModule } from "@nestjs-modules/mailer"
 @Module({
   imports: [
     TypeOrmModule.forFeature([AccountVerificationEntity,ApplicationEntity,AssignedJobEntity,
       CompanyEntity,EmployeeEntity,JobCategoryEntity,JobEntity,NotificationEntity,PaymentEntity,
       RatingReviewEntity,ReportEntity,ReviewerEntity,SubmissionEntity,UserEntity,
       WorkVerificationEntity]),
+    MailerModule.forRoot({
+      transport: {
+        host: 'smtp.gmail.com',
+        port: 465,
+        ignoreTLS: true,
+        secure: true,
+        auth: {
+          user: 'mostofaseum8@gmail.com',
+          pass: 'hhow wgvf crxa sajp'
+        },
+      }
+    })
   ],
   controllers: [ReviewerController],
   providers: [ReviewerService],

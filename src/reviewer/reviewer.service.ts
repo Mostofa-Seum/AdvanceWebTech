@@ -1,6 +1,7 @@
-import { Injectable, UnauthorizedException, NotFoundException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, NotFoundException, ConflictException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { MailerService } from '@nestjs-modules/mailer';
 import * as bcrypt from 'bcrypt';
 import { UserEntity, UserRole, UserStatus } from './user.entity';
 import { ReviewerEntity } from './reviewer.entity';
@@ -22,10 +23,22 @@ export class ReviewerService {
     private readonly userRepository: Repository<UserEntity>,
     @InjectRepository(ReviewerEntity)
     private readonly reviewerRepository: Repository<ReviewerEntity>,
+    private readonly mailerService: MailerService,
   ) {}
 
   //Signup
   async signup(userDto: CreateUserDto) {
+    const existingUser = await this.userRepository.findOne({
+      where: [
+        { email: userDto.email },
+        { phone: userDto.phone }
+      ]
+    });
+
+    if (existingUser) {
+      throw new ConflictException('A user with this email or phone number already exists.');
+    }
+
     const salt = await bcrypt.genSalt();
     const hashedPassword = await bcrypt.hash(userDto.password, salt);
 
@@ -49,6 +62,15 @@ export class ReviewerService {
     });
 
     await this.reviewerRepository.save(newReviewer);
+
+    // Send a welcome email
+    await this.mailerService.sendMail({
+      to: savedUser.email,
+      from: '"Support Team" <support@abc.com>',
+      subject: 'Welcome to our Platform!',
+      text: 'Thanks for signing up! Your account is pending verification.',
+      html: '<b>Thanks for signing up!</b> <p>Your account is pending verification.</p>',
+    });
 
     // Removed password for security
     const { password, ...result } = savedUser;
