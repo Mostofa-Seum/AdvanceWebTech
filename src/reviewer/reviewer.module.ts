@@ -31,8 +31,8 @@ import { MailerModule } from "@nestjs-modules/mailer"
         ignoreTLS: true,
         secure: true,
         auth: {
-          user: 'mostofaseum8@gmail.com',
-          pass: 'hhow wgvf crxa sajp'
+          user: process.env.MAIL_USER,
+          pass: process.env.MAIL_PASS
         },
       }
     })
