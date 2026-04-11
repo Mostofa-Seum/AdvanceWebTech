@@ -23,7 +23,7 @@ export class AuthService {
     const { password, ...result } = user;
 const payload = { sub: user.userId, username: user.email };
     return {
-      access_token: await this.jwtService.signAsync(payload),
+      access_token: await this.jwtService.signAsync(payload), // encryption hocche
     };
   }
 } 

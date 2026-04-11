@@ -4,6 +4,8 @@ import { diskStorage, MulterError } from 'multer';
 import { ReviewerService } from './reviewer.service';
 import { LoginDto, UpdateProfileDto, VerifyWorkDto } from './reviewer.dto';
 import { CreateUserDto } from './user.dto'; 
+import { AuthGuard } from 'src/auth/auth.guard';
+import { UseGuards } from '@nestjs/common';
 
 @Controller('reviewer')
 export class ReviewerController {
@@ -38,6 +40,7 @@ export class ReviewerController {
     return this.reviewerService.signup(userDto);
   }
 
+  @UseGuards(AuthGuard)
   @Post('login')
   async login(@Body() loginDto: LoginDto) {
     return this.reviewerService.login(loginDto);
