@@ -64,10 +64,6 @@ export class ReviewerController {
     return this.reviewerService.getUsersToVerify(type);
   }
 
-  @Patch('verify-users/:id')
-  verifyUser(@Param('id', ParseIntPipe) id: number) {
-    return this.reviewerService.verifyUser(id);
-  }
 
   @Post('work/:workId/review')
   reviewWork(

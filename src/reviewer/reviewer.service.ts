@@ -86,7 +86,7 @@ export class ReviewerService {
     });
 
     if (!reviewer) {
-      throw new NotFoundException('Reviewer profile not found');
+      throw new NotFoundException();
     }
 
     // Strip password before returning
@@ -112,7 +112,7 @@ export class ReviewerService {
     if (updateProfileDto.email) reviewer.user.email = updateProfileDto.email;
 
     
-    // Update therReviewe
+    // Update the Reviewer properties
     if (updateProfileDto.expertise) reviewer.expertise = updateProfileDto.expertise;
     if (updateProfileDto.serviceFee) reviewer.serviceFee = updateProfileDto.serviceFee;
     if (updateProfileDto.trustScore) reviewer.trustScore = updateProfileDto.trustScore;
@@ -124,9 +124,9 @@ export class ReviewerService {
     return { message: 'Profile updated successfully' };
   }
 
+
   //Get Users To Verify
   getUsersToVerify(type: string) {
-    // Mock response. Later, query AccountVerificationEntity.
     return {
       message: `Fetching unverified users of type: ${type}`,
       users: [
@@ -135,15 +135,7 @@ export class ReviewerService {
     };
   }
 
-  //Verify User
-  verifyUser(id: number) {
-    // Mock response. Later, update AccountVerificationEntity status.
-    return {
-      message: 'User identity verified successfully',
-      userId: id,
-    };
-  }
-
+  
   //Review Work
   reviewWork(workId: number, verifyWorkDto: VerifyWorkDto) {
      // Mock response. Later, create a new WorkVerificationEntity.
