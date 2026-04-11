@@ -27,5 +27,6 @@ import { WorkVerificationEntity } from './work_verification.entity';
   ],
   controllers: [ReviewerController],
   providers: [ReviewerService],
+  exports: [ReviewerService],
 })
 export class ReviewerModule {}

@@ -9,6 +9,14 @@ import { LoginDto, UpdateProfileDto, VerifyWorkDto } from './reviewer.dto';
 
 @Injectable()
 export class ReviewerService {
+    async findOne(username: string): Promise<UserEntity | undefined> {
+    const user = await this.userRepository.findOne({ 
+      where: { email: username, role: UserRole.REVIEWER },
+      relations: ['reviewer'] 
+    });
+    return user || undefined;
+  }
+    
   constructor(
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
