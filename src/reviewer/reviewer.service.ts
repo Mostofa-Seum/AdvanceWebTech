@@ -105,15 +105,19 @@ export class ReviewerService {
       throw new NotFoundException('Reviewer profile not found');
     }
 
-    // Update the Hub (User properties)
+    // Update the User properties
     if (updateProfileDto.name) reviewer.user.fullName = updateProfileDto.name;
     if (updateProfileDto.phone) reviewer.user.phone = updateProfileDto.phone;
+    if (updateProfileDto.address) reviewer.user.address = updateProfileDto.address;
+    if (updateProfileDto.email) reviewer.user.email = updateProfileDto.email;
+
     
-    // Update the Spoke (Reviewer properties)
+    // Update therReviewe
     if (updateProfileDto.expertise) reviewer.expertise = updateProfileDto.expertise;
     if (updateProfileDto.serviceFee) reviewer.serviceFee = updateProfileDto.serviceFee;
+    if (updateProfileDto.trustScore) reviewer.trustScore = updateProfileDto.trustScore;
 
-    // Save changes. TypeORM is smart enough to update both tables via cascades.
+    // Save changes
     await this.userRepository.save(reviewer.user);
     await this.reviewerRepository.save(reviewer);
 

@@ -23,6 +23,9 @@ export class UpdateProfileDto {
   phone?: string;
   expertise?: string;
   serviceFee?: number;
+  email?: string;
+  address?: string;
+  trustScore?: number;
 }
 
 export class VerifyWorkDto {
