@@ -70,10 +70,7 @@ export class UserEntity {
   createdAt: Date;
 
   @Column({
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP',
-    onUpdate: 'CURRENT_TIMESTAMP',
-  })
+    type: 'timestamp',default: () => 'CURRENT_TIMESTAMP',onUpdate: 'CURRENT_TIMESTAMP',})
   updatedAt: Date;
 
   @OneToOne(() => EmployeeEntity, (employee) => employee.user)

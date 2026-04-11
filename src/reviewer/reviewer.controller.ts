@@ -1,72 +1,75 @@
-import { Controller, Get, Post, Put, Patch, Delete, Body, Param, ParseIntPipe, Query, ValidationPipe, UsePipes, UseInterceptors, UploadedFile, } from '@nestjs/common';
-import { ReviewerService } from './reviewer.service';
-import { CreateReviewerDto, LoginDto, UpdateProfileDto, VerifyWorkDto } from './reviewer.dto';
-import { FileInterceptor } from '@nestjs/platform-express/multer/interceptors/file.interceptor';
+import { Controller, Get, Post, Put, Patch, Delete, Body, Param, Query, ParseUUIDPipe, ParseIntPipe, UsePipes, ValidationPipe, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage, MulterError } from 'multer';
+import { ReviewerService } from './reviewer.service';
+import { LoginDto, UpdateProfileDto, VerifyWorkDto } from './reviewer.dto';
+import { CreateUserDto } from './user.dto'; 
 
 @Controller('reviewer')
 export class ReviewerController {
   constructor(private readonly reviewerService: ReviewerService) {}
-  @Get()
-  getHello(): string {
-    return this.reviewerService.getHello();
-  }
-  @Post('upload')
-  @UseInterceptors(FileInterceptor('file',
-    { 
-      fileFilter: (req, file, cb) => {
-        if (file.originalname.match(/^.*\.(pdf)$/)) {
-          cb(null, true);
-        } else {
-          cb(new MulterError('LIMIT_UNEXPECTED_FILE', 'pdf'), false);
-        }
-      },
-
-      limits: { fileSize: 5242880 }, 
-      storage: diskStorage({
-        destination: './uploads',
-        filename: function (req, file, cb) {
-          cb(null, Date.now() + '-' + file.originalname)
-        },
-      })
-    }
-  ))
-  uploadFile(@UploadedFile() file: Express.Multer.File) {
-    console.log(file);
-    return { message: "PDF Uploaded Successfully",};
-  }
-  @Post('signup') //localhost:3000/reviewer/signup
+  @Post('signup')
   @UsePipes(new ValidationPipe())
-  signup(@Body() reviewerDto:CreateReviewerDto):object {
-    return this.reviewerService.signup(reviewerDto);
+  @UseInterceptors(FileInterceptor('file', { 
+    fileFilter: (req, file, cb) => {
+      // Allowing only PDF uploads for reviewer documents/CVs
+      if (file.originalname.match(/^.*\.(pdf)$/)) {
+        cb(null, true);
+      } else {
+        cb(new MulterError('LIMIT_UNEXPECTED_FILE', 'pdf'), false);
+      }
+    },
+    limits: { fileSize: 5242880 }, // 5MB limit
+    storage: diskStorage({
+      destination: './uploads',
+      filename: function (req, file, cb) {
+        cb(null, Date.now() + '-' + file.originalname)
+      },
+    })
+  }))
+  async signup(
+    @Body() userDto: CreateUserDto,
+    @UploadedFile() file: Express.Multer.File
+  ) {
+
+    if (file) {
+      userDto.filename = file.filename; 
+    }
+    return this.reviewerService.signup(userDto);
   }
-@Post('login')  //localhost:3000/reviewer/login
-login(@Body() loginDto:LoginDto):object {
+
+  @Post('login')
+  async login(@Body() loginDto: LoginDto) {
     return this.reviewerService.login(loginDto);
   }
 
-  @Get('profile/:id')  //localhost:3000/reviewer/profile/1
-  getProfile(@Param('id') id: string):object {
+
+
+  @Get('profile/:id')
+  async getProfile(@Param('id', ParseUUIDPipe) id: string) {
     return this.reviewerService.getProfile(id);
   }
 
-  @Put('profile/:id')  //localhost:3000/reviewer/profile/1
-  updateProfile(
-    @Param('id') id: string, 
+  @Put('profile/:id')
+  async updateProfile(
+    @Param('id', ParseUUIDPipe) id: string, 
     @Body() updateProfileDto: UpdateProfileDto
   ) {
     return this.reviewerService.updateProfile(id, updateProfileDto);
   }
-  @Get('verify-users')    //localhost:3000/reviewer/verify-users?type=student
+
+
+  @Get('verify-users')
   getUsersToVerify(@Query('type') type: string) {
     return this.reviewerService.getUsersToVerify(type);
   }
-  @Patch('verify-users/:id')  //localhost:3000/reviewer/verify-users/1
+
+  @Patch('verify-users/:id')
   verifyUser(@Param('id', ParseIntPipe) id: number) {
     return this.reviewerService.verifyUser(id);
   }
 
-  @Post('/work/:workId/review')  //localhost:3000/reviewer/work/1/review
+  @Post('work/:workId/review')
   reviewWork(
     @Param('workId', ParseIntPipe) workId: number,
     @Body() verifyWorkDto: VerifyWorkDto
@@ -74,8 +77,8 @@ login(@Body() loginDto:LoginDto):object {
     return this.reviewerService.reviewWork(workId, verifyWorkDto);
   }
 
-@Delete('/reports/:reportId')   //localhost:3000/reviewer/reports/1
-  resolveReport(@Param('reportId', ParseIntPipe) reportId: number) {
-    return this.reviewerService.resolveReport(reportId);
+  @Delete(':id')
+  async deleteReviewer(@Param('id', ParseUUIDPipe) id: string) {
+    return this.reviewerService.deleteReviewer(id);
   }
 }

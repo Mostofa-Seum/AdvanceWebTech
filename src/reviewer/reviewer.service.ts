@@ -1,113 +1,175 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { CreateReviewerDto, LoginDto, UpdateProfileDto, VerifyWorkDto } from './reviewer.dto';
-import { ReviewerEntity } from './reviewer.entity';
-import { UserRole } from './user.entity';
-import { Repository } from 'typeorm';
+import { Injectable, UnauthorizedException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
+import { UserEntity, UserRole, UserStatus } from './user.entity';
+import { ReviewerEntity } from './reviewer.entity';
+import { CreateUserDto } from './user.dto';
+import { LoginDto, UpdateProfileDto, VerifyWorkDto } from './reviewer.dto';
 
 @Injectable()
 export class ReviewerService {
-  constructor(@InjectRepository(ReviewerEntity) private reviewerRepository: Repository<ReviewerEntity>) {}
-  getHello(): string {
-    return 'Hello World!';
-  }
-  //Create new reviewer account
-  async signup(reviewerDto: CreateReviewerDto) : Promise<ReviewerEntity> {
-    const salt = await bcrypt.genSalt();
-    const hashedPassword = await bcrypt.hash(reviewerDto.password, salt);
-    const newReviewerData = {
-      user: {
-        fullName: reviewerDto.name,
-        email: reviewerDto.email,
-        password: hashedPassword,
-        role: UserRole.REVIEWER,
-      }
-    };
-    const reviewer = this.reviewerRepository.create(newReviewerData);
-    return this.reviewerRepository.save(reviewer);
-  }
+  constructor(
+    @InjectRepository(UserEntity)
+    private readonly userRepository: Repository<UserEntity>,
+    @InjectRepository(ReviewerEntity)
+    private readonly reviewerRepository: Repository<ReviewerEntity>,
+  ) {}
 
-  //Login for reviewer
-  async login(loginDto: LoginDto) {
-    const reviewer = await this.reviewerRepository.findOne({ 
-      where: { user: { email: loginDto.email } },
-      relations: ['user']
+  //Signup
+  async signup(userDto: CreateUserDto) {
+    const salt = await bcrypt.genSalt();
+    const hashedPassword = await bcrypt.hash(userDto.password, salt);
+
+    const newUser = this.userRepository.create({
+      email: userDto.email,
+      password: hashedPassword,
+      fullName: userDto.fullName,
+      phone: userDto.phone,
+      address: userDto.address,
+      filename: userDto.filename, 
+      role: UserRole.REVIEWER,    
+      status: UserStatus.PENDING,
     });
 
-    if (!reviewer || !reviewer.user) {
+    const savedUser = await this.userRepository.save(newUser);
+
+    const newReviewer = this.reviewerRepository.create({
+      user: savedUser, 
+      trustScore: 0,
+      serviceFee: 0,
+    });
+
+    await this.reviewerRepository.save(newReviewer);
+
+    // Removed password for security
+    const { password, ...result } = savedUser;
+    
+    return {
+      message: 'Reviewer account created successfully',
+      user: result,
+    };
+  }
+
+  //Login
+  async login(loginDto: LoginDto) {
+    const user = await this.userRepository.findOne({ 
+      where: { email: loginDto.email, role: UserRole.REVIEWER },
+      relations: ['reviewer'] 
+    });
+
+    if (!user) {
       throw new UnauthorizedException('Invalid email or password');
     }
-    const isPasswordMatch = await bcrypt.compare(loginDto.password, reviewer.user.password);
-    if(!isPasswordMatch){
+
+    const isPasswordMatch = await bcrypt.compare(loginDto.password, user.password);
+    if (!isPasswordMatch) {
       throw new UnauthorizedException('Invalid email or password');
     }
-    const { password, ...result } = reviewer.user;
+
+    // Strip password from output
+    const { password, ...result } = user;
     
     return {
       message: 'Login successful',
       user: result,
-      reviewerId: reviewer.reviewerId,
+      reviewerId: user.reviewer.reviewerId, // Handing back the specific reviewer ID
     };
   }
 
-  //Get reviewer profile
-  async getProfile(id: string): Promise<ReviewerEntity> {
-    return this.reviewerRepository.findOne({
-      where: { reviewerId: id },
+
+//Get Profile
+  async getProfile(reviewerId: string) {
+    const reviewer = await this.reviewerRepository.findOne({
+      where: { reviewerId: reviewerId },
+      relations: ['user'] // Pulls the connected UserEntity data
+    });
+
+    if (!reviewer) {
+      throw new NotFoundException('Reviewer profile not found');
+    }
+
+    // Strip password before returning
+    delete reviewer.user.password;
+    return reviewer;
+  }
+
+  //Update Profile
+  async updateProfile(reviewerId: string, updateProfileDto: UpdateProfileDto) {
+    const reviewer = await this.reviewerRepository.findOne({
+      where: { reviewerId: reviewerId },
       relations: ['user']
     });
+
+    if (!reviewer) {
+      throw new NotFoundException('Reviewer profile not found');
+    }
+
+    // Update the Hub (User properties)
+    if (updateProfileDto.name) reviewer.user.fullName = updateProfileDto.name;
+    if (updateProfileDto.phone) reviewer.user.phone = updateProfileDto.phone;
+    
+    // Update the Spoke (Reviewer properties)
+    if (updateProfileDto.expertise) reviewer.expertise = updateProfileDto.expertise;
+    if (updateProfileDto.serviceFee) reviewer.serviceFee = updateProfileDto.serviceFee;
+
+    // Save changes. TypeORM is smart enough to update both tables via cascades.
+    await this.userRepository.save(reviewer.user);
+    await this.reviewerRepository.save(reviewer);
+
+    return { message: 'Profile updated successfully' };
   }
 
-  //Update reviewer profile
-  async updateProfile(id: string, updateProfileDto: UpdateProfileDto): Promise<ReviewerEntity> {
-      const reviewer = await this.reviewerRepository.findOne({
-        where: { reviewerId: id },
-        relations: ['user']
-      });
-
-      if (reviewer && reviewer.user) {
-        if (updateProfileDto.name) reviewer.user.fullName = updateProfileDto.name;
-        if (updateProfileDto.phone) reviewer.user.phone = updateProfileDto.phone.toString();
-        await this.reviewerRepository.save(reviewer);
-      }
-
-      return this.reviewerRepository.findOne({
-        where: { reviewerId: id },
-        relations: ['user']
-      });
-  }
-
-  
-  getUsersToVerify(userType: string) {
+  //Get Users To Verify
+  getUsersToVerify(type: string) {
+    // Mock response. Later, query AccountVerificationEntity.
     return {
-      message: `Verifications for type: ${userType}`,
+      message: `Fetching unverified users of type: ${type}`,
       users: [
-        { id: 101, name: 'Student A', type: userType, status: 'pending' },
-        { id: 102, name: 'Student B', type: userType, status: 'pending' }
+        { id: 101, name: 'Student A', type: type, status: 'pending' },
       ]
     };
   }
+
+  //Verify User
   verifyUser(id: number) {
+    // Mock response. Later, update AccountVerificationEntity status.
     return {
-      message: 'User status updated to Verified',
+      message: 'User identity verified successfully',
       userId: id,
-      verified: true
     };
   }
+
+  //Review Work
   reviewWork(workId: number, verifyWorkDto: VerifyWorkDto) {
+     // Mock response. Later, create a new WorkVerificationEntity.
     return {
       message: 'Work submission reviewed',
       workId: workId,
       verdict: verifyWorkDto.status,
-      score: verifyWorkDto.score
     };
   }
 
-resolveReport(reportId: number) {
-    return {
-      message: 'Report resolved successfully',
-      reportId: reportId
-    };
+
+  //Delete Reviewer
+  async deleteReviewer(reviewerId: string) {
+    const reviewer = await this.reviewerRepository.findOne({
+      where: { reviewerId: reviewerId },
+      relations: ['user']
+    });
+
+    if (!reviewer) {
+      throw new NotFoundException('Reviewer profile not found');
+    }
+
+    // Remove the Reviewer profile first
+    await this.reviewerRepository.remove(reviewer);
+    
+    // Then remove the core User profile
+    if (reviewer.user) {
+      await this.userRepository.remove(reviewer.user);
+    }
+
+    return { message: 'Reviewer account deleted successfully' };
   }
 }

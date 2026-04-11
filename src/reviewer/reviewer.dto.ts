@@ -19,8 +19,10 @@ export class LoginDto {
 }
 
 export class UpdateProfileDto {
-  name: string;
-  phone: number;
+  name?: string;
+  phone?: string;
+  expertise?: string;
+  serviceFee?: number;
 }
 
 export class VerifyWorkDto {

@@ -2,8 +2,6 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ReviewerController } from './reviewer.controller';
 import { ReviewerService } from './reviewer.service';
-
-// Import all 15 entities from the current directory
 import { AccountVerificationEntity } from './account_verification.entity';
 import { ApplicationEntity } from './application.entity';
 import { AssignedJobEntity } from './assigned_job.entity';
@@ -22,24 +20,10 @@ import { WorkVerificationEntity } from './work_verification.entity';
 
 @Module({
   imports: [
-    // Register all the entities with TypeORM in this module
-    TypeOrmModule.forFeature([
-      AccountVerificationEntity,
-      ApplicationEntity,
-      AssignedJobEntity,
-      CompanyEntity,
-      EmployeeEntity,
-      JobCategoryEntity,
-      JobEntity,
-      NotificationEntity,
-      PaymentEntity,
-      RatingReviewEntity,
-      ReportEntity,
-      ReviewerEntity,
-      SubmissionEntity,
-      UserEntity,
-      WorkVerificationEntity,
-    ]),
+    TypeOrmModule.forFeature([AccountVerificationEntity,ApplicationEntity,AssignedJobEntity,
+      CompanyEntity,EmployeeEntity,JobCategoryEntity,JobEntity,NotificationEntity,PaymentEntity,
+      RatingReviewEntity,ReportEntity,ReviewerEntity,SubmissionEntity,UserEntity,
+      WorkVerificationEntity]),
   ],
   controllers: [ReviewerController],
   providers: [ReviewerService],
