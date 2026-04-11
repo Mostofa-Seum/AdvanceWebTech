@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ReviewerModule } from './reviewer/reviewer.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [ReviewerModule, TypeOrmModule.forRoot(
@@ -12,7 +13,7 @@ password: 'root',
 database: 'secc',  
 autoLoadEntities: true,
 synchronize: true,
-} ),
+} ), AuthModule,
 ],controllers: [],
   providers: [],
 })
