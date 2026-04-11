@@ -125,20 +125,16 @@ export class ReviewerService {
   }
 
 
-  //Get Users To Verify
-  getUsersToVerify(type: string) {
+  //Verify User
+verifyUser(id: number) {
     return {
-      message: `Fetching unverified users of type: ${type}`,
-      users: [
-        { id: 101, name: 'Student A', type: type, status: 'pending' },
-      ]
+      message: 'User identity verified successfully',
+      userId: id,
     };
   }
-
   
   //Review Work
   reviewWork(workId: number, verifyWorkDto: VerifyWorkDto) {
-     // Mock response. Later, create a new WorkVerificationEntity.
     return {
       message: 'Work submission reviewed',
       workId: workId,

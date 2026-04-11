@@ -1,5 +1,0 @@
-$kind: http-request
-name: Get Profile Verify
-url: ""
-method: GET
-order: 4407989973000719

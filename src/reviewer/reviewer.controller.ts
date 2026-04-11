@@ -58,12 +58,10 @@ export class ReviewerController {
     return this.reviewerService.updateProfile(id, updateProfileDto);
   }
 
-
-  @Get('verify-users')
-  getUsersToVerify(@Query('type') type: string) {
-    return this.reviewerService.getUsersToVerify(type);
+  @Patch('verify/:id')
+  verifyUser(@Param('id', ParseIntPipe) id: number) {
+    return this.reviewerService.verifyUser(id);
   }
-
 
   @Post('work/:workId/review')
   reviewWork(
