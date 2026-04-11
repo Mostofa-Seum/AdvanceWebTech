@@ -24,17 +24,19 @@ import { MailerModule } from "@nestjs-modules/mailer"
       CompanyEntity,EmployeeEntity,JobCategoryEntity,JobEntity,NotificationEntity,PaymentEntity,
       RatingReviewEntity,ReportEntity,ReviewerEntity,SubmissionEntity,UserEntity,
       WorkVerificationEntity]),
-    MailerModule.forRoot({
-      transport: {
-        host: 'smtp.gmail.com',
-        port: 465,
-        ignoreTLS: true,
-        secure: true,
-        auth: {
-          user: process.env.MAIL_USER,
-          pass: process.env.MAIL_PASS
-        },
-      }
+    MailerModule.forRootAsync({
+      useFactory: () => ({
+        transport: {
+          host: 'smtp.gmail.com',
+          port: 465,
+          ignoreTLS: true,
+          secure: true,
+          auth: {
+            user: process.env.MAIL_USER,
+            pass: process.env.MAIL_PASS
+          },
+        }
+      }),
     })
   ],
   controllers: [ReviewerController],
