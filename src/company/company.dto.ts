@@ -1,67 +1,162 @@
-import { IsEmail, IsNotEmpty, IsString, Matches } from 'class-validator';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  Matches,
+  IsNumber,
+  IsPositive,
+} from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class CompanySignupDTO {
   @IsString()
   @IsNotEmpty()
-  @Matches(/^[A-Za-z\s]+$/, {
-    message: 'companyName should contain only alphabets',
+  @Matches(/^[A-Za-z0-9\s.&-]+$/, {
+    message: 'companyName contains invalid characters',
   })
-  companyName: string;
+  companyName!: string;
 
-  @IsNotEmpty()
-  // @Matches(/^[a-zA-Z0-9._%+-]+@aiub\.org$/, {
-  //   message: 'Email must be a valid @aiub.org email'
-  //   })
   @IsEmail({}, { message: 'Email must be a valid email address' })
-  email: string;
+  @IsNotEmpty()
+  email!: string;
 
   @IsString()
   @IsNotEmpty()
-  password: string;
-
-  @IsNotEmpty()
-  @Matches(/^\d{10}$/, { message: 'Nid no. must be exactly 10 digits' })
-  nid: string;
+  password!: string;
 }
 
-export class CompanyLoginDTO {
-  email: string;
-  password: string;
+export class VerifyCompanyDTO {
+  @IsString()
+  @IsNotEmpty()
+  companyName!: string;
+
+  @IsEmail({}, { message: 'Email must be a valid email address' })
+  email!: string;
+
+  @IsOptional()
+  @IsString()
+  documentUrl?: string;
 }
 
 export class PostJobDTO {
-  companyName: string;
-  email: string;
-  title: string;
-  description: string;
-  budget: number;
-  deadline: string;
+  @IsString()
+  @IsNotEmpty()
+  companyName!: string;
+
+  @IsEmail({}, { message: 'Email must be a valid email address' })
+  email!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  title!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  description!: string;
+
+  @Type(() => Number)
+  @IsNumber()
+  @IsPositive()
+  budget!: number;
+
+  @IsString()
+  @IsNotEmpty()
+  deadline!: string;
 }
 
 export class EditJobDTO {
+  @IsOptional()
+  @IsString()
   title?: string;
+
+  @IsOptional()
+  @IsString()
   description?: string;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  @IsPositive()
   budget?: number;
+
+  @IsOptional()
+  @IsString()
   deadline?: string;
 }
 
-export class ReviewEmployeeDTO {
-  employeeId: string;
-  jobId: string;
-  rating: number;
-  comment: string;
+export class EditProfileDTO {
+  @IsOptional()
+  @IsString()
+  companyName?: string;
+
+  @IsOptional()
+  @IsString()
+  website?: string;
+
+  @IsOptional()
+  @IsString()
+  description?: string;
 }
 
 export class MakePaymentDTO {
-  jobId: string;
-  amount: number;
-  method: string;
+  @IsString()
+  @IsNotEmpty()
+  jobId!: string;
+
+  @Type(() => Number)
+  @IsNumber()
+  @IsPositive()
+  amount!: number;
+
+  @IsString()
+  @IsNotEmpty()
+  method!: string;
+
+  @IsOptional()
+  @IsString()
   transactionRef?: string;
 }
 
-export class EditProfileDTO {
-  companyName?: string;
-  website?: string;
-  industry?: string;
-  description?: string;
+export class ReviewEmployeeDTO {
+  @IsString()
+  @IsNotEmpty()
+  employeeId!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  jobId!: string;
+
+  @Type(() => Number)
+  @IsNumber()
+  rating!: number;
+
+  @IsString()
+  @IsNotEmpty()
+  comment!: string;
+}
+
+export class ReportEmployeeDTO {
+  @IsString()
+  @IsNotEmpty()
+  employeeId!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  companyName!: string;
+
+  @IsEmail({}, { message: 'Email must be a valid email address' })
+  email!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  reason!: string;
+
+  @IsOptional()
+  @IsString()
+  details?: string;
+
+  @IsOptional()
+  @IsString()
+  jobId?: string;
 }
