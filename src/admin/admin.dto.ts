@@ -1,126 +1,63 @@
-import { 
-  IsString, 
-  IsEmail, 
-  IsOptional, 
-  Matches, 
-  MinLength, 
-  MaxLength,
-  IsNumber, 
-  IsIn, 
-  IsNotEmpty 
-} from 'class-validator';
+import { IsString, IsEmail, MinLength, MaxLength, IsNotEmpty, IsOptional } from 'class-validator';
 
-export class AdminLoginDto {
+export class RegisterAdminDto {
   @IsEmail({}, { message: 'Must be a valid email address' })
   email: string;
 
   @IsString()
   @MinLength(6, { message: 'Password must be at least 6 characters long' })
-  @Matches(/(?=.*[a-z])/, { message: 'Password must contain at least one lowercase character' })
   password: string;
+
+  @IsString()
+  @IsNotEmpty({ message: 'Full name is required' })
+  @MaxLength(150)
+  fullName: string;
 }
 
-export class CreateCompanyDto {
-  @IsString()
-  @IsNotEmpty()
-  @Matches(/^[a-zA-Z0-9 ]+$/, { message: 'Name must not contain any special characters' })
-  name: string;
-
-  @IsString()
-  @IsNotEmpty()
-  address: string;
-
-  @IsString()
-  @IsNotEmpty()
-  @Matches(/^01/, { message: 'Phone Number field must start with 01' })
-  phone: string;
-}
-
-export class UpdateCompanyDto {
-  @IsOptional()
-  @IsString()
-  @Matches(/^[a-zA-Z0-9 ]+$/, { message: 'Name must not contain any special characters' })
-  name?: string;
-
-  @IsOptional()
-  @IsString()
-  address?: string;
-
-  @IsOptional()
-  @IsString()
-  @Matches(/^01/, { message: 'Phone Number field must start with 01' })
-  phone?: string;
-}
-
-export class CreateEmployeeDto {
-  @IsString()
-  @IsNotEmpty()
-  @Matches(/^[a-zA-Z0-9 ]+$/, { message: 'Name must not contain any special characters' })
-  name: string;
-
+export class LoginAdminDto {
   @IsEmail({}, { message: 'Must be a valid email address' })
   email: string;
 
-  @IsNumber()
-  @IsNotEmpty()
-  companyId: number;
-
   @IsString()
-  @IsNotEmpty()
-  position: string;
+  @IsNotEmpty({ message: 'Password is required' })
+  password: string;
 }
 
-export class UpdateEmployeeDto {
-  @IsOptional()
+export class CreateEmployeeProfileDto {
   @IsString()
-  @Matches(/^[a-zA-Z0-9 ]+$/, { message: 'Name must not contain any special characters' })
-  name?: string;
+  @IsNotEmpty({ message: 'Skills are required' })
+  skills: string;
 
-  @IsOptional()
-  @IsEmail({}, { message: 'Must be a valid email address' })
-  email?: string;
+  @IsString()
+  @IsNotEmpty({ message: 'Experience details are required' })
+  experience: string;
 
   @IsOptional()
   @IsString()
-  position?: string;
+  portfolio?: string;
 }
 
-export class UpdateReviewerDto {
-  @IsString()
-  @IsIn(['approved', 'suspended', 'pending'], { message: 'Invalid status' })
-  status: 'approved' | 'suspended' | 'pending';
-
-  @IsString()
-  @IsOptional()
-  notes: string;
-}
-
-export class ProcessReportDto {
-  @IsString()
-  @IsIn(['close', 'delete', 'warn'], { message: 'Invalid action' })
-  action: 'close' | 'delete' | 'warn';
-
-  @IsString()
-  @IsNotEmpty()
-  reason: string;
-}
-
-export class OptionalFileUploadDto {
+export class UpdateEmployeeProfileDto {
   @IsOptional()
   @IsString()
-  @Matches(/\.pdf$/i, { message: 'Uploaded file must be in PDF format' })
-  fileName?: string;
+  skills?: string;
+
+  @IsOptional()
+  @IsString()
+  experience?: string;
+
+  @IsOptional()
+  @IsString()
+  portfolio?: string;
 }
 
-// --- NEW USER CATEGORY 3 DTO ---
-export class CreateUserCategory3Dto {
+export class CreateNotificationDto {
   @IsString()
-  @IsNotEmpty()
-  @MaxLength(100, { message: 'Username cannot exceed 100 characters' })
-  username: string;
+  @IsNotEmpty({ message: 'Title is required' })
+  @MaxLength(200)
+  title: string;
 
   @IsString()
-  @IsNotEmpty()
-  @MaxLength(150, { message: 'Full name cannot exceed 150 characters' })
-  fullName: string;
-}
+  @IsNotEmpty({ message: 'Message cannot be empty' })
+  message: string;
+}

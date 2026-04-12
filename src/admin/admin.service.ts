@@ -1,131 +1,77 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Like } from 'typeorm';
-import { UserCategory3Entity } from './admin.entity';
+import { Repository } from 'typeorm';
+
+import { UserEntity } from './user.entity';
+import { EmployeeEntity } from './employee.entity';
+import { NotificationEntity } from './notification.entity';
 import {
-  AdminLoginDto,
-  CreateCompanyDto,
-  UpdateCompanyDto,
-  CreateEmployeeDto,
-  UpdateReviewerDto,
-  ProcessReportDto,
-  OptionalFileUploadDto, 
-  CreateUserCategory3Dto,
+  CreateEmployeeProfileDto,
+  UpdateEmployeeProfileDto,
+  CreateNotificationDto,
 } from './admin.dto';
 
 @Injectable()
 export class AdminService {
   constructor(
-    @InjectRepository(UserCategory3Entity)
-    private readonly userRepository: Repository<UserCategory3Entity>,
+    @InjectRepository(UserEntity)
+    private readonly userRepository: Repository<UserEntity>,
+    @InjectRepository(EmployeeEntity)
+    private readonly employeeRepository: Repository<EmployeeEntity>,
+    @InjectRepository(NotificationEntity)
+    private readonly notificationRepository: Repository<NotificationEntity>,
   ) {}
 
-  getHello(): string {
-    return 'Admin Module is Working!';
-  }
-
-  login(adminLoginDto: AdminLoginDto) {
-    return {
-      message: 'Admin logged in successfully',
-      admin: {
-        email: adminLoginDto.email,
-        password: adminLoginDto.password, 
-      },
-    };
-  }
-
-  createCompany(createCompanyDto: CreateCompanyDto): object {
-    return {
-      message: 'Company created successfully',
-      company: {
-        id: 1,
-        ...createCompanyDto,
-      },
-    };
-  }
-
-  updateCompany(id: number, updateCompanyDto: UpdateCompanyDto): object {
-    return {
-      message: 'Company updated successfully',
-      companyId: id,
-      updatedData: updateCompanyDto,
-    };
-  }
-
-  createEmployee(createEmployeeDto: CreateEmployeeDto): object {
-    return {
-      message: 'Employee created successfully',
-      employee: {
-        id: 101,
-        ...createEmployeeDto,
-        status: 'active',
-      },
-    };
-  }
-
-  updateEmployeeStatus(id: number, status: string): object {
-    return {
-      message: 'Employee status updated successfully',
-      employeeId: id,
-      newStatus: status,
-    };
-  }
-
-  manageReviewer(id: number, updateReviewerDto: UpdateReviewerDto): object {
-    return {
-      message: 'Reviewer updated successfully',
-      reviewerId: id,
-      updatedData: updateReviewerDto,
-    };
-  }
-
-  processReport(reportId: number, processReportDto: ProcessReportDto): object {
-    return {
-      message: 'Report processed successfully',
-      reportId: reportId,
-      action: processReportDto.action,
-      reason: processReportDto.reason,
-    };
-  }
-
-  uploadDocument(file: Express.Multer.File): object {
-    return {
-      message: 'PDF successfully uploaded and saved to folder',
-      fileDetails: {
-        originalName: file.originalname,
-        savedAs: file.filename,
-        path: file.path,
-        size: `${(file.size / 1024).toFixed(2)} KB`, 
-      },
-    };
-  }
-
-  // --- USER CATEGORY 3 OPERATIONS ---
-
-  async createUser3(createUserDto: CreateUserCategory3Dto): Promise<UserCategory3Entity> {
-    const newUser = this.userRepository.create(createUserDto);
-    return await this.userRepository.save(newUser);
-  }
-
-  async findUsersByFullName(substring: string): Promise<UserCategory3Entity[]> {
+  // 3. Basic CRUD Read (GET)
+  async getAllUsers() {
     return await this.userRepository.find({
-      where: {
-        fullName: Like(`%${substring}%`),
-      },
+      relations: ['employee', 'notifications'],
     });
   }
 
-  async findUserByUsername(username: string): Promise<UserCategory3Entity> {
-    const user = await this.userRepository.findOne({ where: { username } });
-    if (!user) {
-      throw new NotFoundException(`User with username ${username} not found`);
-    }
-    return user;
+  // 4. Relational CRUD Create 1:1 (POST)
+  async createEmployeeProfile(userId: string, dto: CreateEmployeeProfileDto) {
+    const user = await this.userRepository.findOne({ where: { userId } });
+    if (!user) throw new NotFoundException('User not found');
+
+    const employee = this.employeeRepository.create({
+      skills: dto.skills,
+      experience: dto.experience,
+      portfolio: dto.portfolio,
+      user: user,
+    });
+    return await this.employeeRepository.save(employee);
   }
 
-  async removeUserByUsername(username: string): Promise<object> {
-    const user = await this.findUserByUsername(username); 
+  // 5. Relational CRUD Update 1:1 (PUT)
+  async updateEmployeeProfile(userId: string, employeeId: string, dto: UpdateEmployeeProfileDto) {
+    const employee = await this.employeeRepository.findOne({ where: { employeeId, user: { userId } } });
+    if (!employee) throw new NotFoundException('Employee profile not found for this user');
+
+    if (dto.skills) employee.skills = dto.skills;
+    if (dto.experience) employee.experience = dto.experience;
+    if (dto.portfolio) employee.portfolio = dto.portfolio;
+    return await this.employeeRepository.save(employee);
+  }
+
+  // 6. Relational CRUD Create 1:N (POST)
+  async createNotification(userId: string, dto: CreateNotificationDto) {
+    const user = await this.userRepository.findOne({ where: { userId } });
+    if (!user) throw new NotFoundException('User not found');
+
+    const notification = this.notificationRepository.create({
+      title: dto.title,
+      message: dto.message,
+      user: user,
+    });
+    return await this.notificationRepository.save(notification);
+  }
+
+  // 7. Basic CRUD Delete (DELETE)
+  async deleteUser(userId: string) {
+    const user = await this.userRepository.findOne({ where: { userId } });
+    if (!user) throw new NotFoundException('User not found');
     await this.userRepository.remove(user);
-    return { message: `User ${username} successfully deleted` };
+    return { message: 'User and cascade relations deleted successfully' };
   }
 }
