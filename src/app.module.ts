@@ -10,11 +10,11 @@ import { MailerModule } from '@nestjs-modules/mailer';
     AdminModule,
     MailerModule.forRoot({
       transport: {
-        host: 'sandbox.smtp.mailtrap.io',
-        port: 2525,
+        host: 'smtp.gmail.com',
+        port: 587,
         auth: {
-          user: 'replace_with_user',
-          pass: 'replace_with_password',
+          user: 'mhim2580@gmail.com',
+          pass: 'hjtq wwqn tmjm uwgo',
         },
       },
       defaults: {
@@ -35,4 +35,4 @@ import { MailerModule } from '@nestjs-modules/mailer';
   controllers: [],
   providers: [],
 })
-export class AppModule {}
+export class AppModule { }
