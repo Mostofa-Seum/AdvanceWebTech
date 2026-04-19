@@ -1,0 +1,5 @@
+$kind: http-request
+name: Delete User
+url: http://localhost:3000/reviewer/4c9c3196-2560-4b8e-a77d-5059d956e6a2
+method: DELETE
+order: 4427324052527159
