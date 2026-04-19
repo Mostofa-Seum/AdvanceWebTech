@@ -1,5 +1,0 @@
-$kind: http-request
-name: AuthLogin
-url: ""
-method: GET
-order: 4488266759777786
