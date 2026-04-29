@@ -6,16 +6,6 @@ import Layout from "../layout";
 
 // Zod schema
 const loginSchema = z.object({
-  email: z
-    .string()
-    .min(1, "Email is required")
-    .email("Invalid email address"),
-  password: z
-    .string()
-    .min(1, "Password is required")
-    .min(6, "Password must be at least 6 characters"),
-  
-
   fullName: z.string()
   .min(3, { message: "Name must be at least 3 characters long" })
   .max(50, { message: "Name cannot exceed 50 characters" }),
@@ -24,7 +14,14 @@ const loginSchema = z.object({
   .int({ message: "Age must be a whole number" })
   .min(18, { message: "You must be at least 18 years old to register" })
   .max(120, { message: "Please enter a valid age" }),
-
+  email: z
+    .string()
+    .min(1, "Email is required")
+    .email("Invalid email address"),
+  password: z
+    .string()
+    .min(1, "Password is required")
+    .min(6, "Password must be at least 6 characters"),
   confirmpassword: z.string(),
 })
 .refine((data) => data.password === data.confirmpassword, {
