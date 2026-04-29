@@ -5,7 +5,7 @@ import { z } from "zod";
 import Layout from "../layout";
 
 // Zod schema
-const loginSchema = z.object({
+const registrationSchema = z.object({
   fullName: z.string()
   .min(3, { message: "Name must be at least 3 characters long" })
   .max(50, { message: "Name cannot exceed 50 characters" }),
@@ -29,7 +29,7 @@ const loginSchema = z.object({
   path: ["confirmpassword"],
 });
 
-type RegistrationData = z.infer<typeof loginSchema>;
+type RegistrationData = z.infer<typeof registrationSchema>;
 
 
 export default function RegistrationPage(): JSX.Element {
@@ -43,7 +43,7 @@ export default function RegistrationPage(): JSX.Element {
   const handleSubmit = (e: FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
 
-    const result = loginSchema.safeParse({ fullName, age, email, password, confirmpassword });
+    const result = registrationSchema.safeParse({ fullName, age, email, password, confirmpassword });
 
     if (!result.success) {
       setError(result.error.issues[0].message);
