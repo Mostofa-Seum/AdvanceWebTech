@@ -2,15 +2,16 @@
 
 import { useState, FormEvent, JSX } from "react";
 import { z } from "zod";
-import Layout from "../layout";
 
 // Zod schema
 const registrationSchema = z.object({
-  fullName: z.string()
+  fullName: z
+  .string()
   .min(3, { message: "Name must be at least 3 characters long" })
   .max(50, { message: "Name cannot exceed 50 characters" }),
 
-  age: z.coerce.number()
+  age: z
+  .coerce.number()
   .int({ message: "Age must be a whole number" })
   .min(18, { message: "You must be at least 18 years old to register" })
   .max(120, { message: "Please enter a valid age" }),
@@ -50,7 +51,6 @@ export default function RegistrationPage(): JSX.Element {
       return;
     }
 
-    console.log(result.data);
     setFullName("");
     setAge("");
     setEmail("");
@@ -61,7 +61,6 @@ export default function RegistrationPage(): JSX.Element {
 
   return (
     <>
-      <Layout>
         <center><h5 className="text-2xl font-bold mb-4">Registration</h5></center>
         <form onSubmit={handleSubmit}>
             <div>
@@ -118,7 +117,6 @@ export default function RegistrationPage(): JSX.Element {
 
           <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Register</button>
         </form>
-      </Layout>
     </>
   );
 }
