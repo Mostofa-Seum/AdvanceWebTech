@@ -24,7 +24,7 @@ export default function Header() {
         <div className="flex lg:flex-1">
           <a href="#" className="-m-1.5 p-1.5 flex items-center gap-2">
             <AcademicCapIcon className="h-8 w-auto text-indigo-600 dark:text-indigo-500" />
-            <span className="font-bold text-xl tracking-tight text-gray-900 dark:text-white">GigStart</span>
+            <span className="font-bold text-xl tracking-tight text-gray-900 dark:text-white">SkillSeed</span>
           </a>
         </div>
         <div className="flex lg:hidden">

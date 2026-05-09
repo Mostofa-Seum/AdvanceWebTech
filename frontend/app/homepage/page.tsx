@@ -71,9 +71,6 @@ export default function Example() {
               <a href="#" className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 dark:bg-indigo-500 dark:hover:bg-indigo-400">
                 Get started
               </a>
-              <a href="#about" className="text-sm/6 font-semibold text-gray-900 dark:text-white">
-                Learn more <span aria-hidden="true">→</span>
-              </a>
             </div>
           </div>
         </div>
@@ -86,7 +83,7 @@ export default function Example() {
               <h2 className="text-base/7 font-semibold text-indigo-600 dark:text-indigo-400">Our Mission</h2>
               <p className="mt-2 text-3xl font-semibold tracking-tight text-gray-900 dark:text-white sm:text-4xl">Bridging the Gap Between Learning and Earning</p>
               <p className="mt-6 text-lg/8 text-gray-600 dark:text-gray-400">
-                GigStart was founded to solve the "entry-level experience" paradox. We empower students by turning professional tasks into accessible learning opportunities.
+                SkillSeed was founded to solve the "entry-level experience" paradox. We empower students by turning professional tasks into accessible learning opportunities.
               </p>
               <div className="mt-10 max-w-xl space-y-8 text-base/7 text-gray-600 dark:text-gray-400 lg:max-w-none">
                 <div className="relative pl-9">

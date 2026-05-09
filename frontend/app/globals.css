@@ -10,9 +10,6 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-  --color-brand: #87CEEB; /* skyblue */
-  --color-brand-medium: #7ec0db; /* slightly darker skyblue for rings */
-  --color-brand-strong: #6ca6be; /* darker skyblue for hover */
 }
 
 body {
