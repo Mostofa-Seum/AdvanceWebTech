@@ -40,7 +40,6 @@ export class ReviewerController {
     return this.reviewerService.signup(userDto);
   }
 
-  @UseGuards(AuthGuard)
   @Post('login')
   async login(@Body() loginDto: LoginDto) {
     return this.reviewerService.login(loginDto);

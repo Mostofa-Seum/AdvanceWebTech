@@ -1,11 +1,11 @@
 'use client'
 
-import Header from '@/components/header'
-import Footer from '@/components/footer'
-import { 
-  RocketLaunchIcon, 
-  UserGroupIcon, 
-  DocumentCheckIcon, 
+import Header from '@/app/components/header'
+import Footer from '@/app/components/footer'
+import {
+  RocketLaunchIcon,
+  UserGroupIcon,
+  DocumentCheckIcon,
   AcademicCapIcon,
   BriefcaseIcon,
   PresentationChartLineIcon,
@@ -83,7 +83,7 @@ export default function Example() {
               <h2 className="text-base/7 font-semibold text-indigo-600 dark:text-indigo-400">Our Mission</h2>
               <p className="mt-2 text-3xl font-semibold tracking-tight text-gray-900 dark:text-white sm:text-4xl">Bridging the Gap Between Learning and Earning</p>
               <p className="mt-6 text-lg/8 text-gray-600 dark:text-gray-400">
-                SkillSeed was founded to solve the "entry-level experience" paradox. We empower students by turning professional tasks into accessible learning opportunities.
+                SkillSeed was founded to solve the &quot;entry-level experience&quot; paradox. We empower students by turning professional tasks into accessible learning opportunities.
               </p>
               <div className="mt-10 max-w-xl space-y-8 text-base/7 text-gray-600 dark:text-gray-400 lg:max-w-none">
                 <div className="relative pl-9">
@@ -93,9 +93,9 @@ export default function Example() {
               </div>
             </div>
             <div className="flex items-center justify-center lg:pt-4">
-               <div className="bg-indigo-600/5 dark:bg-indigo-500/10 p-8 rounded-2xl border border-indigo-600/10 dark:border-indigo-500/20">
-                  <PresentationChartLineIcon className="h-48 w-48 text-indigo-600 dark:text-indigo-400" />
-               </div>
+              <div className="bg-indigo-600/5 dark:bg-indigo-500/10 p-8 rounded-2xl border border-indigo-600/10 dark:border-indigo-500/20">
+                <PresentationChartLineIcon className="h-48 w-48 text-indigo-600 dark:text-indigo-400" />
+              </div>
             </div>
           </div>
         </div>

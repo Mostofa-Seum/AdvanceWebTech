@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useState } from 'react'
 import { Dialog, DialogPanel } from '@headlessui/react'
 import { 
@@ -45,9 +46,9 @@ export default function Header() {
           ))}
         </div>
         <div className="hidden lg:flex lg:flex-1 lg:justify-end lg:gap-x-4 lg:items-center">
-          <a href="#">
+          <Link href="/login">
             <button type="button" className="text-gray-900 bg-white border border-gray-300 hover:bg-gray-50 font-medium rounded-md text-sm px-4 py-2.5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 transition-colors cursor-pointer">Log in</button>
-          </a>
+          </Link>
           <a href="#">
             <button type="button" className="text-white bg-indigo-600 hover:bg-indigo-500 shadow-sm font-medium rounded-md text-sm px-4 py-2.5 dark:bg-indigo-500 dark:hover:bg-indigo-400 transition-colors cursor-pointer">Sign Up</button>
           </a>
