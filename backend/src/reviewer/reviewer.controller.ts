@@ -91,12 +91,17 @@ export class ReviewerController {
     return this.reviewerService.updateUserStatus(id, body.status, body.reviewerId);
   }
 
-  @Post('work/:workId/review')
-  reviewWork(
-    @Param('workId', ParseIntPipe) workId: number,
+  @Get('work/pending')
+  async getPendingSubmissions() {
+    return this.reviewerService.getPendingSubmissions();
+  }
+
+  @Post('work/:submissionId/review')
+  async reviewWork(
+    @Param('submissionId', ParseUUIDPipe) submissionId: string,
     @Body() verifyWorkDto: VerifyWorkDto
   ) {
-    return this.reviewerService.reviewWork(workId, verifyWorkDto);
+    return this.reviewerService.reviewWork(submissionId, verifyWorkDto);
   }
 
   @Delete(':id')

@@ -8,6 +8,10 @@ import { ReviewerEntity } from './reviewer.entity';
 import { CompanyEntity, CompanyStatus } from './company.entity';
 import { CreateUserDto } from './user.dto';
 import { LoginDto, UpdateProfileDto, VerifyWorkDto } from './reviewer.dto';
+import { SubmissionEntity, SubmissionStatus } from './submission.entity';
+import { WorkVerificationEntity, VerificationDecision } from './work_verification.entity';
+import { JobEntity, JobStatus } from './job.entity';
+import { AssignedJobEntity, AssignedJobStatus } from './assigned_job.entity';
 
 @Injectable()
 export class ReviewerService {
@@ -26,6 +30,14 @@ export class ReviewerService {
     private readonly reviewerRepository: Repository<ReviewerEntity>,
     @InjectRepository(CompanyEntity)
     private readonly companyRepository: Repository<CompanyEntity>,
+    @InjectRepository(SubmissionEntity)
+    private readonly submissionRepository: Repository<SubmissionEntity>,
+    @InjectRepository(WorkVerificationEntity)
+    private readonly workVerificationRepository: Repository<WorkVerificationEntity>,
+    @InjectRepository(JobEntity)
+    private readonly jobRepository: Repository<JobEntity>,
+    @InjectRepository(AssignedJobEntity)
+    private readonly assignedJobRepository: Repository<AssignedJobEntity>,
     private readonly mailerService: MailerService,
   ) {}
 
@@ -208,12 +220,79 @@ verifyUser(id: number) {
   }
 
   
+  // Get Pending Submissions
+  async getPendingSubmissions() {
+    return this.submissionRepository.find({
+      where: { status: SubmissionStatus.SUBMITTED },
+      relations: ['assignedJob', 'assignedJob.job'],
+    });
+  }
+
   //Review Work
-  reviewWork(workId: number, verifyWorkDto: VerifyWorkDto) {
+  async reviewWork(submissionId: string, verifyWorkDto: VerifyWorkDto) {
+    const submission = await this.submissionRepository.findOne({ 
+      where: { submissionId },
+      relations: ['assignedJob', 'assignedJob.job'] 
+    });
+    if (!submission) {
+      throw new NotFoundException('Submission not found');
+    }
+
+    const reviewer = await this.reviewerRepository.findOne({ where: { reviewerId: verifyWorkDto.reviewerId } });
+    if (!reviewer) {
+      throw new NotFoundException('Reviewer not found');
+    }
+
+    // Map dto status to entity enums
+    let newSubmissionStatus: SubmissionStatus;
+    let decision: VerificationDecision;
+    let newJobStatus: JobStatus;
+    let newAssignedJobStatus: AssignedJobStatus;
+
+    if (verifyWorkDto.status === 'approved') {
+      newSubmissionStatus = SubmissionStatus.APPROVED;
+      decision = VerificationDecision.APPROVED;
+      newJobStatus = JobStatus.APPROVED;
+      newAssignedJobStatus = AssignedJobStatus.COMPLETED;
+    } else if (verifyWorkDto.status === 'rejected') {
+      newSubmissionStatus = SubmissionStatus.REJECTED;
+      decision = VerificationDecision.REJECTED;
+      newJobStatus = JobStatus.REJECTED;
+      newAssignedJobStatus = AssignedJobStatus.IN_PROGRESS;
+    } else if (verifyWorkDto.status === 'revision_requested') {
+      newSubmissionStatus = SubmissionStatus.REVISION;
+      decision = VerificationDecision.REVISION_REQUESTED;
+      newJobStatus = JobStatus.IN_PROGRESS;
+      newAssignedJobStatus = AssignedJobStatus.IN_PROGRESS;
+    } else {
+      throw new ConflictException('Invalid status');
+    }
+
+    submission.status = newSubmissionStatus;
+    await this.submissionRepository.save(submission);
+
+    if (submission.assignedJob) {
+      submission.assignedJob.status = newAssignedJobStatus;
+      await this.assignedJobRepository.save(submission.assignedJob);
+      
+      if (submission.assignedJob.job) {
+        submission.assignedJob.job.status = newJobStatus;
+        await this.jobRepository.save(submission.assignedJob.job);
+      }
+    }
+
+    const verification = this.workVerificationRepository.create({
+      submission: submission,
+      reviewer: reviewer,
+      decision: decision,
+      comments: verifyWorkDto.comments || null,
+    });
+    await this.workVerificationRepository.save(verification);
+
     return {
-      message: 'Work submission reviewed',
-      workId: workId,
-      verdict: verifyWorkDto.status,
+      message: 'Work submission reviewed successfully',
+      submissionId: submissionId,
+      verdict: decision,
     };
   }
 

@@ -29,7 +29,7 @@ export class UpdateProfileDto {
 }
 
 export class VerifyWorkDto {
-  score: number;
-  comments: string;
-  status: 'approved' | 'rejected';
+  reviewerId: string;
+  status: 'approved' | 'rejected' | 'revision_requested';
+  comments?: string;
 }
