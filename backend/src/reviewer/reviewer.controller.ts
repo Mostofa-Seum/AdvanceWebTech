@@ -96,6 +96,16 @@ export class ReviewerController {
     return this.reviewerService.getPendingSubmissions();
   }
 
+  @Get('payments/pending')
+  async getPendingPayments() {
+    return this.reviewerService.getPendingPayments();
+  }
+
+  @Patch('payments/:id/release')
+  async releasePayment(@Param('id', ParseUUIDPipe) id: string) {
+    return this.reviewerService.releasePayment(id);
+  }
+
   @Post('work/:submissionId/review')
   async reviewWork(
     @Param('submissionId', ParseUUIDPipe) submissionId: string,

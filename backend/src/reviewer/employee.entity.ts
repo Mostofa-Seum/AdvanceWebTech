@@ -21,6 +21,9 @@ export class EmployeeEntity {
   @Column({ type: 'decimal', precision: 10, scale: 2, default: 0 })
   trustScore: number;
 
+  @Column({ type: 'double precision', default: 0.0 })
+  balance: number;
+
   @OneToOne(() => UserEntity, (user) => user.employee, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'userId' })
   user: UserEntity;

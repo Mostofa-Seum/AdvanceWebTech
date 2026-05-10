@@ -12,17 +12,19 @@ import { SubmissionEntity, SubmissionStatus } from './submission.entity';
 import { WorkVerificationEntity, VerificationDecision } from './work_verification.entity';
 import { JobEntity, JobStatus } from './job.entity';
 import { AssignedJobEntity, AssignedJobStatus } from './assigned_job.entity';
+import { PaymentEntity, PaymentStatus } from './payment.entity';
+import { EmployeeEntity } from './employee.entity';
 
 @Injectable()
 export class ReviewerService {
-    async findOne(username: string): Promise<UserEntity | undefined> {
-    const user = await this.userRepository.findOne({ 
+  async findOne(username: string): Promise<UserEntity | undefined> {
+    const user = await this.userRepository.findOne({
       where: { email: username, role: UserRole.REVIEWER },
-      relations: ['reviewer'] 
+      relations: ['reviewer']
     });
     return user || undefined;
   }
-    
+
   constructor(
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
@@ -38,8 +40,12 @@ export class ReviewerService {
     private readonly jobRepository: Repository<JobEntity>,
     @InjectRepository(AssignedJobEntity)
     private readonly assignedJobRepository: Repository<AssignedJobEntity>,
+    @InjectRepository(PaymentEntity)
+    private readonly paymentRepository: Repository<PaymentEntity>,
+    @InjectRepository(EmployeeEntity)
+    private readonly employeeRepository: Repository<EmployeeEntity>,
     private readonly mailerService: MailerService,
-  ) {}
+  ) { }
 
   //Signup
   async signup(userDto: CreateUserDto) {
@@ -63,15 +69,15 @@ export class ReviewerService {
       fullName: userDto.fullName,
       phone: userDto.phone,
       address: userDto.address,
-      filename: userDto.filename, 
-      role: UserRole.REVIEWER,    
+      filename: userDto.filename,
+      role: UserRole.REVIEWER,
       status: UserStatus.PENDING,
     });
 
     const savedUser = await this.userRepository.save(newUser);
 
     const newReviewer = this.reviewerRepository.create({
-      user: savedUser, 
+      user: savedUser,
       trustScore: 0,
       serviceFee: 0,
     });
@@ -89,7 +95,7 @@ export class ReviewerService {
 
     // Removed password for security
     const { password, ...result } = savedUser;
-    
+
     return {
       message: 'Reviewer account created successfully',
       user: result,
@@ -98,9 +104,9 @@ export class ReviewerService {
 
   //Login
   async login(loginDto: LoginDto) {
-    const user = await this.userRepository.findOne({ 
+    const user = await this.userRepository.findOne({
       where: { email: loginDto.email, role: UserRole.REVIEWER },
-      relations: ['reviewer'] 
+      relations: ['reviewer']
     });
 
     if (!user) {
@@ -114,7 +120,7 @@ export class ReviewerService {
 
     // Strip password from output
     const { password, ...result } = user;
-    
+
     return {
       message: 'Login successful',
       user: result,
@@ -123,7 +129,7 @@ export class ReviewerService {
   }
 
 
-//Get Profile
+  //Get Profile
   async getProfile(reviewerId: string) {
     const reviewer = await this.reviewerRepository.findOne({
       where: { reviewerId: reviewerId },
@@ -156,7 +162,7 @@ export class ReviewerService {
     if (updateProfileDto.address) reviewer.user.address = updateProfileDto.address;
     if (updateProfileDto.email) reviewer.user.email = updateProfileDto.email;
 
-    
+
     // Update the Reviewer properties
     if (updateProfileDto.expertise) reviewer.expertise = updateProfileDto.expertise;
     if (updateProfileDto.serviceFee) reviewer.serviceFee = updateProfileDto.serviceFee;
@@ -171,7 +177,7 @@ export class ReviewerService {
 
 
   //Verify User
-verifyUser(id: number) {
+  verifyUser(id: number) {
     return {
       message: 'User identity verified successfully',
       userId: id,
@@ -200,7 +206,7 @@ verifyUser(id: number) {
   // Get Pending Users (Employees)
   async getPendingUsers() {
     return this.userRepository.find({
-      where: { 
+      where: {
         status: UserStatus.PENDING,
         role: UserRole.EMPLOYEE
       },
@@ -221,7 +227,7 @@ verifyUser(id: number) {
     return { message: `User status updated successfully` };
   }
 
-  
+
   // Get Pending Submissions
   async getPendingSubmissions() {
     return this.submissionRepository.find({
@@ -230,11 +236,51 @@ verifyUser(id: number) {
     });
   }
 
+  // Get Pending Payments
+  async getPendingPayments() {
+    return this.paymentRepository.find({
+      where: { paymentStatus: PaymentStatus.PENDING },
+      relations: ['job', 'job.company', 'employeeUser'],
+    });
+  }
+
+  // Release Payment
+  async releasePayment(paymentId: string) {
+    const payment = await this.paymentRepository.findOne({
+      where: { paymentId },
+      relations: ['job', 'employeeUser']
+    });
+    if (!payment) {
+      throw new NotFoundException('Payment not found');
+    }
+
+    payment.paymentStatus = PaymentStatus.RELEASED;
+    await this.paymentRepository.save(payment);
+
+    if (payment.job) {
+      payment.job.status = JobStatus.PAID;
+      await this.jobRepository.save(payment.job);
+    }
+
+    if (payment.employeeUser) {
+      const employee = await this.employeeRepository.findOne({
+        where: { user: { userId: payment.employeeUser.userId } }
+      });
+      if (employee) {
+        // Convert to number to ensure we do math addition, not string concatenation
+        employee.balance = Number(employee.balance || 0) + Number(payment.amount || 0);
+        await this.employeeRepository.save(employee);
+      }
+    }
+
+    return { message: 'Payment released successfully' };
+  }
+
   //Review Work
   async reviewWork(submissionId: string, verifyWorkDto: VerifyWorkDto) {
-    const submission = await this.submissionRepository.findOne({ 
+    const submission = await this.submissionRepository.findOne({
       where: { submissionId },
-      relations: ['assignedJob', 'assignedJob.job'] 
+      relations: ['assignedJob', 'assignedJob.job']
     });
     if (!submission) {
       throw new NotFoundException('Submission not found');
@@ -276,7 +322,7 @@ verifyUser(id: number) {
     if (submission.assignedJob) {
       submission.assignedJob.status = newAssignedJobStatus;
       await this.assignedJobRepository.save(submission.assignedJob);
-      
+
       if (submission.assignedJob.job) {
         submission.assignedJob.job.status = newJobStatus;
         await this.jobRepository.save(submission.assignedJob.job);
@@ -312,7 +358,7 @@ verifyUser(id: number) {
 
     // Remove the Reviewer profile first
     await this.reviewerRepository.remove(reviewer);
-    
+
     // Then remove the core User profile
     if (reviewer.user) {
       await this.userRepository.remove(reviewer.user);
