@@ -6,7 +6,10 @@ import axios from 'axios';
 import { useState } from 'react';
 
 
+import { useRouter } from 'next/navigation';
+
 export default function Login() {
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -22,13 +25,14 @@ export default function Login() {
       password: password,
     });
 
-    // 3. If successful, the backend usually sends back a token (like a JWT)
+    // 3. If successful, the backend will send back the user details
     console.log("Login successful!", response.data);
     
-    // Example of saving the token so the user stays logged in:
-    // localStorage.setItem('token', response.data.token);
+    // Save the user info so we can display their name
+    localStorage.setItem('user', JSON.stringify(response.data.user));
 
-    // Then, you can redirect them to the dashboard using window.location.href or Next.js useRouter!
+    // Redirect them to the dashboard/homepage
+    router.push('/homepage');
 
   } catch (err) {
     // 4. If the backend rejects the login (wrong password, etc.), handle the error

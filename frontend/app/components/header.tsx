@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Dialog, DialogPanel } from '@headlessui/react'
 import { 
   Bars3Icon, 
@@ -18,6 +18,23 @@ const navigation = [
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      try {
+        setUser(JSON.parse(storedUser));
+      } catch (e) {
+        console.error("Failed to parse user from localStorage");
+      }
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('user');
+    setUser(null);
+  };
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md">
@@ -46,12 +63,29 @@ export default function Header() {
           ))}
         </div>
         <div className="hidden lg:flex lg:flex-1 lg:justify-end lg:gap-x-4 lg:items-center">
-          <Link href="/login">
-            <button type="button" className="text-gray-900 bg-white border border-gray-300 hover:bg-gray-50 font-medium rounded-md text-sm px-4 py-2.5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 transition-colors cursor-pointer">Log in</button>
-          </Link>
-          <a href="#">
-            <button type="button" className="text-white bg-indigo-600 hover:bg-indigo-500 shadow-sm font-medium rounded-md text-sm px-4 py-2.5 dark:bg-indigo-500 dark:hover:bg-indigo-400 transition-colors cursor-pointer">Sign Up</button>
-          </a>
+          {user ? (
+            <>
+              <span className="text-sm font-semibold text-gray-900 dark:text-white mr-2">
+                Hello, {user.fullName || user.email}
+              </span>
+              <button 
+                type="button" 
+                onClick={handleLogout}
+                className="text-white bg-red-600 hover:bg-red-500 shadow-sm font-medium rounded-md text-sm px-4 py-2.5 dark:bg-red-500 dark:hover:bg-red-400 transition-colors cursor-pointer"
+              >
+                Log out
+              </button>
+            </>
+          ) : (
+            <>
+              <Link href="/login">
+                <button type="button" className="text-gray-900 bg-white border border-gray-300 hover:bg-gray-50 font-medium rounded-md text-sm px-4 py-2.5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 transition-colors cursor-pointer">Log in</button>
+              </Link>
+              <a href="#">
+                <button type="button" className="text-white bg-indigo-600 hover:bg-indigo-500 shadow-sm font-medium rounded-md text-sm px-4 py-2.5 dark:bg-indigo-500 dark:hover:bg-indigo-400 transition-colors cursor-pointer">Sign Up</button>
+              </a>
+            </>
+          )}
         </div>
       </nav>
       <Dialog open={mobileMenuOpen} onClose={setMobileMenuOpen} className="lg:hidden">
