@@ -31,8 +31,8 @@ export default function Login() {
     // Save the user info so we can display their name
     localStorage.setItem('user', JSON.stringify(response.data.user));
 
-    // Redirect them to the dashboard/homepage
-    router.push('/homepage');
+    // Redirect
+    router.push('/reviewer_dashboard');
 
   } catch (err) {
     // 4. If the backend rejects the login (wrong password, etc.), handle the error
