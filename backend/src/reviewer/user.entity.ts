@@ -8,7 +8,7 @@ import { RatingReviewEntity } from './rating_review.entity';
 import { PaymentEntity } from './payment.entity';
 import { ReportEntity } from './report.entity';
 import { NotificationEntity } from './notification.entity';
-import { AccountVerificationEntity } from './account_verification.entity';
+import { VerifyUsersEntity } from './verify_users.entity';
 
 export enum UserRole {
   ADMIN = 'admin',
@@ -109,9 +109,6 @@ export class UserEntity {
   @OneToMany(() => NotificationEntity, (notification) => notification.user)
   notifications: NotificationEntity[];
 
-  @OneToMany(
-    () => AccountVerificationEntity,
-    (verification) => verification.user,
-  )
-  accountVerifications: AccountVerificationEntity[];
+  @OneToMany(() => VerifyUsersEntity, (verifyUser) => verifyUser.user)
+  verifyUsers: VerifyUsersEntity[];
 }

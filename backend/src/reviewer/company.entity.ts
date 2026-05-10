@@ -1,6 +1,7 @@
 import {Entity,PrimaryGeneratedColumn,Column,OneToOne,JoinColumn, OneToMany,} from 'typeorm';
 import { UserEntity } from './user.entity';
 import { JobEntity } from './job.entity';
+import { VerifyCompanyEntity } from './verify_company.entity';
 
 @Entity('companies')
 export class CompanyEntity {
@@ -25,4 +26,7 @@ export class CompanyEntity {
 
   @OneToMany(() => JobEntity, (job) => job.company)
   jobs: JobEntity[];
+
+  @OneToMany(() => VerifyCompanyEntity, (verifyCompany) => verifyCompany.company)
+  verifyCompanies: VerifyCompanyEntity[];
 }
