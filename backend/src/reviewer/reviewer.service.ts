@@ -5,6 +5,7 @@ import { MailerService } from '@nestjs-modules/mailer';
 import * as bcrypt from 'bcrypt';
 import { UserEntity, UserRole, UserStatus } from './user.entity';
 import { ReviewerEntity } from './reviewer.entity';
+import { CompanyEntity, CompanyStatus } from './company.entity';
 import { CreateUserDto } from './user.dto';
 import { LoginDto, UpdateProfileDto, VerifyWorkDto } from './reviewer.dto';
 
@@ -23,6 +24,8 @@ export class ReviewerService {
     private readonly userRepository: Repository<UserEntity>,
     @InjectRepository(ReviewerEntity)
     private readonly reviewerRepository: Repository<ReviewerEntity>,
+    @InjectRepository(CompanyEntity)
+    private readonly companyRepository: Repository<CompanyEntity>,
     private readonly mailerService: MailerService,
   ) {}
 
@@ -161,6 +164,47 @@ verifyUser(id: number) {
       message: 'User identity verified successfully',
       userId: id,
     };
+  }
+
+  //Get Pending Companies
+  async getPendingCompanies() {
+    return this.companyRepository.find({
+      where: { status: CompanyStatus.PENDING },
+    });
+  }
+
+  // Update Company Status
+  async updateCompanyStatus(companyId: string, status: CompanyStatus, reviewerId: string) {
+    const company = await this.companyRepository.findOne({ where: { companyId } });
+    if (!company) {
+      throw new NotFoundException('Company not found');
+    }
+    company.status = status;
+    company.reviewerId = reviewerId;
+    await this.companyRepository.save(company);
+    return { message: `Company status updated successfully` };
+  }
+
+  // Get Pending Users (Employees)
+  async getPendingUsers() {
+    return this.userRepository.find({
+      where: { 
+        status: UserStatus.PENDING,
+        role: UserRole.EMPLOYEE
+      },
+    });
+  }
+
+  // Update User Status
+  async updateUserStatus(userId: string, status: UserStatus, reviewerId: string) {
+    const user = await this.userRepository.findOne({ where: { userId } });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    user.status = status;
+    user.reviewerId = reviewerId;
+    await this.userRepository.save(user);
+    return { message: `User status updated successfully` };
   }
 
   

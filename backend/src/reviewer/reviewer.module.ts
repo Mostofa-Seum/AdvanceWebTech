@@ -2,8 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ReviewerController } from './reviewer.controller';
 import { ReviewerService } from './reviewer.service';
-import { VerifyUsersEntity } from './verify_users.entity';
-import { VerifyCompanyEntity } from './verify_company.entity';
+
 import { ApplicationEntity } from './application.entity';
 import { AssignedJobEntity } from './assigned_job.entity';
 import { CompanyEntity } from './company.entity';
@@ -21,7 +20,7 @@ import { WorkVerificationEntity } from './work_verification.entity';
 import { MailerModule } from "@nestjs-modules/mailer"
 @Module({
   imports: [
-    TypeOrmModule.forFeature([VerifyUsersEntity, VerifyCompanyEntity, ApplicationEntity,AssignedJobEntity,
+    TypeOrmModule.forFeature([ApplicationEntity,AssignedJobEntity,
       CompanyEntity,EmployeeEntity,JobCategoryEntity,JobEntity,NotificationEntity,PaymentEntity,
       RatingReviewEntity,ReportEntity,ReviewerEntity,SubmissionEntity,UserEntity,
       WorkVerificationEntity]),

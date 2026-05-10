@@ -1,6 +1,5 @@
 import {Entity,PrimaryGeneratedColumn,Column,OneToOne,OneToMany,} from 'typeorm';
 import { EmployeeEntity } from './employee.entity';
-import { CompanyEntity } from './company.entity';
 import { ReviewerEntity } from './reviewer.entity';
 import { JobEntity } from './job.entity';
 import { ApplicationEntity } from './application.entity';
@@ -8,12 +7,10 @@ import { RatingReviewEntity } from './rating_review.entity';
 import { PaymentEntity } from './payment.entity';
 import { ReportEntity } from './report.entity';
 import { NotificationEntity } from './notification.entity';
-import { VerifyUsersEntity } from './verify_users.entity';
 
 export enum UserRole {
   ADMIN = 'admin',
   EMPLOYEE = 'employee',
-  COMPANY = 'company',
   REVIEWER = 'reviewer',
 }
 
@@ -76,9 +73,6 @@ export class UserEntity {
   @OneToOne(() => EmployeeEntity, (employee) => employee.user)
   employee: EmployeeEntity;
 
-  @OneToOne(() => CompanyEntity, (company) => company.user)
-  company: CompanyEntity;
-
   @OneToOne(() => ReviewerEntity, (reviewer) => reviewer.user)
   reviewer: ReviewerEntity;
 
@@ -109,6 +103,6 @@ export class UserEntity {
   @OneToMany(() => NotificationEntity, (notification) => notification.user)
   notifications: NotificationEntity[];
 
-  @OneToMany(() => VerifyUsersEntity, (verifyUser) => verifyUser.user)
-  verifyUsers: VerifyUsersEntity[];
+  @Column({ type: 'uuid', nullable: true })
+  reviewerId: string;
 }

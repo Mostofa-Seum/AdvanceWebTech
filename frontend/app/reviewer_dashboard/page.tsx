@@ -122,7 +122,15 @@ export default function ReviewerDashboard() {
             <DashboardProfile sessionUser={user} />
           )}
 
-          {activeTab !== 'Dashboard' && (
+          {activeTab === 'Verify Company' && (
+            <VerifyCompanyModule sessionUser={user} />
+          )}
+
+          {activeTab === 'Verify Users' && (
+            <VerifyUserModule sessionUser={user} />
+          )}
+
+          {activeTab !== 'Dashboard' && activeTab !== 'Verify Company' && activeTab !== 'Verify Users' && (
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-12 text-center mt-8">
               <h2 className="text-2xl font-semibold text-gray-900">{activeTab}</h2>
               <p className="text-gray-500 mt-2">This module is currently under construction and will be available soon.</p>
@@ -292,6 +300,187 @@ function DashboardProfile({ sessionUser }: { sessionUser: any }) {
           />
         </div>
       </div>
+    </div>
+  );
+}
+
+function VerifyCompanyModule({ sessionUser }: { sessionUser: any }) {
+  const [companies, setCompanies] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchCompanies();
+  }, []);
+
+  const fetchCompanies = async () => {
+    setLoading(true);
+    try {
+      const res = await axios.get('http://localhost:3000/reviewer/companies/pending');
+      setCompanies(res.data);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleUpdateStatus = async (companyId: string, status: string) => {
+    if (!sessionUser?.reviewer?.reviewerId) {
+      alert('Reviewer session not found. Please log in again.');
+      return;
+    }
+    
+    // Optimistically update UI
+    setCompanies(prev => prev.filter(c => c.companyId !== companyId));
+    
+    try {
+      await axios.patch(`http://localhost:3000/reviewer/companies/${companyId}/status`, {
+        status,
+        reviewerId: sessionUser.reviewer.reviewerId
+      });
+    } catch (err) {
+      console.error(err);
+      alert('Failed to update company status');
+      fetchCompanies(); // Revert on failure
+    }
+  };
+
+  if (loading) return <div className="text-gray-500 text-center mt-12">Loading pending companies...</div>;
+
+  if (companies.length === 0) return (
+    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-12 text-center mt-8">
+      <h2 className="text-2xl font-semibold text-gray-900">All Caught Up!</h2>
+      <p className="text-gray-500 mt-2">There are no pending companies waiting for verification.</p>
+    </div>
+  );
+
+  return (
+    <div className="space-y-4 mt-8">
+      <h2 className="text-2xl font-semibold text-gray-900 mb-6">Pending Company Verifications</h2>
+      {companies.map((company) => (
+        <div key={company.companyId} className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 flex flex-col md:flex-row justify-between md:items-center gap-4">
+          <div>
+            <h3 className="text-lg font-bold text-gray-900">{company.companyName}</h3>
+            {company.website && (
+               <p className="text-sm text-blue-600 mt-1 hover:underline">
+                 <a href={company.website.startsWith('http') ? company.website : `https://${company.website}`} target="_blank" rel="noopener noreferrer">
+                   {company.website}
+                 </a>
+               </p>
+            )}
+            <p className="text-sm text-gray-600 mt-2 line-clamp-3">
+               <strong>Description:</strong> {company.description || 'No description provided.'}
+            </p>
+          </div>
+          <div className="flex space-x-3 shrink-0">
+            <button 
+              onClick={() => handleUpdateStatus(company.companyId, 'active')}
+              className="bg-green-100 text-green-700 hover:bg-green-200 px-4 py-2 rounded-lg transition-colors font-medium text-sm flex items-center"
+            >
+              <CheckBadgeIcon className="w-5 h-5 mr-1" />
+              Accept
+            </button>
+            <button 
+              onClick={() => handleUpdateStatus(company.companyId, 'rejected')}
+              className="bg-red-100 text-red-700 hover:bg-red-200 px-4 py-2 rounded-lg transition-colors font-medium text-sm flex items-center"
+            >
+              <TrashIcon className="w-5 h-5 mr-1" />
+              Reject
+            </button>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function VerifyUserModule({ sessionUser }: { sessionUser: any }) {
+  const [users, setUsers] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  const fetchUsers = async () => {
+    setLoading(true);
+    try {
+      const res = await axios.get('http://localhost:3000/reviewer/users/pending');
+      setUsers(res.data);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleUpdateStatus = async (userId: string, status: string) => {
+    if (!sessionUser?.reviewer?.reviewerId) {
+      alert('Reviewer session not found. Please log in again.');
+      return;
+    }
+    
+    // Optimistically update UI
+    setUsers(prev => prev.filter(u => u.userId !== userId));
+    
+    try {
+      await axios.patch(`http://localhost:3000/reviewer/users/${userId}/status`, {
+        status,
+        reviewerId: sessionUser.reviewer.reviewerId
+      });
+    } catch (err) {
+      console.error(err);
+      alert('Failed to update user status');
+      fetchUsers(); // Revert on failure
+    }
+  };
+
+  if (loading) return <div className="text-gray-500 text-center mt-12">Loading pending users...</div>;
+
+  if (users.length === 0) return (
+    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-12 text-center mt-8">
+      <h2 className="text-2xl font-semibold text-gray-900">All Caught Up!</h2>
+      <p className="text-gray-500 mt-2">There are no pending employee users waiting for verification.</p>
+    </div>
+  );
+
+  return (
+    <div className="space-y-4 mt-8">
+      <h2 className="text-2xl font-semibold text-gray-900 mb-6">Pending User Verifications</h2>
+      {users.map((user) => (
+        <div key={user.userId} className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 flex flex-col md:flex-row justify-between md:items-center gap-4">
+          <div>
+            <h3 className="text-lg font-bold text-gray-900">{user.fullName || 'No Name Provided'}</h3>
+            <p className="text-sm text-gray-600 mt-1">
+              <strong>Email:</strong> {user.email}
+            </p>
+            {user.phone && (
+              <p className="text-sm text-gray-600 mt-1">
+                <strong>Phone:</strong> {user.phone}
+              </p>
+            )}
+            <p className="text-sm text-gray-600 mt-1">
+               <strong>Address:</strong> {user.address || 'N/A'}
+            </p>
+          </div>
+          <div className="flex space-x-3 shrink-0">
+            <button 
+              onClick={() => handleUpdateStatus(user.userId, 'active')}
+              className="bg-green-100 text-green-700 hover:bg-green-200 px-4 py-2 rounded-lg transition-colors font-medium text-sm flex items-center"
+            >
+              <CheckBadgeIcon className="w-5 h-5 mr-1" />
+              Accept
+            </button>
+            <button 
+              onClick={() => handleUpdateStatus(user.userId, 'rejected')}
+              className="bg-red-100 text-red-700 hover:bg-red-200 px-4 py-2 rounded-lg transition-colors font-medium text-sm flex items-center"
+            >
+              <TrashIcon className="w-5 h-5 mr-1" />
+              Reject
+            </button>
+          </div>
+        </div>
+      ))}
     </div>
   );
 }

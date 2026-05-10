@@ -4,6 +4,8 @@ import { diskStorage, MulterError } from 'multer';
 import { ReviewerService } from './reviewer.service';
 import { LoginDto, UpdateProfileDto, VerifyWorkDto } from './reviewer.dto';
 import { CreateUserDto } from './user.dto'; 
+import { CompanyStatus } from './company.entity';
+import { UserStatus } from './user.entity';
 
 @Controller('reviewer')
 export class ReviewerController {
@@ -61,6 +63,32 @@ export class ReviewerController {
   @Patch('verify/:id')
   verifyUser(@Param('id', ParseIntPipe) id: number) {
     return this.reviewerService.verifyUser(id);
+  }
+
+  @Get('companies/pending')
+  async getPendingCompanies() {
+    return this.reviewerService.getPendingCompanies();
+  }
+
+  @Patch('companies/:id/status')
+  async updateCompanyStatus(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() body: { status: CompanyStatus, reviewerId: string }
+  ) {
+    return this.reviewerService.updateCompanyStatus(id, body.status, body.reviewerId);
+  }
+
+  @Get('users/pending')
+  async getPendingUsers() {
+    return this.reviewerService.getPendingUsers();
+  }
+
+  @Patch('users/:id/status')
+  async updateUserStatus(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() body: { status: UserStatus, reviewerId: string }
+  ) {
+    return this.reviewerService.updateUserStatus(id, body.status, body.reviewerId);
   }
 
   @Post('work/:workId/review')
