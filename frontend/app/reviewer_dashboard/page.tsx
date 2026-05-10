@@ -418,7 +418,7 @@ function VerifyUserModule({ sessionUser }: { sessionUser: any }) {
     }
   };
 
-  const handleUpdateStatus = async (userId: string, status: string) => {
+  const handleUpdateStatus = async (userId: string, status: string, isEmailVerified: boolean, isPhoneVerified: boolean) => {
     if (!sessionUser?.reviewer?.reviewerId) {
       alert('Reviewer session not found. Please log in again.');
       return;
@@ -430,6 +430,8 @@ function VerifyUserModule({ sessionUser }: { sessionUser: any }) {
     try {
       await axios.patch(`http://localhost:3000/reviewer/users/${userId}/status`, {
         status,
+        isEmailVerified,
+        isPhoneVerified,
         reviewerId: sessionUser.reviewer.reviewerId
       });
     } catch (err) {
@@ -469,14 +471,14 @@ function VerifyUserModule({ sessionUser }: { sessionUser: any }) {
           </div>
           <div className="flex space-x-3 shrink-0">
             <button 
-              onClick={() => handleUpdateStatus(user.userId, 'active')}
+              onClick={() => handleUpdateStatus(user.userId, 'active', true, true)}
               className="bg-green-100 text-green-700 hover:bg-green-200 px-4 py-2 rounded-lg transition-colors font-medium text-sm flex items-center"
             >
               <CheckBadgeIcon className="w-5 h-5 mr-1" />
               Accept
             </button>
             <button 
-              onClick={() => handleUpdateStatus(user.userId, 'rejected')}
+              onClick={() => handleUpdateStatus(user.userId, 'rejected', false, false)}
               className="bg-red-100 text-red-700 hover:bg-red-200 px-4 py-2 rounded-lg transition-colors font-medium text-sm flex items-center"
             >
               <TrashIcon className="w-5 h-5 mr-1" />

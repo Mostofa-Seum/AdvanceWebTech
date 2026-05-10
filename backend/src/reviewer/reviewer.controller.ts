@@ -86,9 +86,9 @@ export class ReviewerController {
   @Patch('users/:id/status')
   async updateUserStatus(
     @Param('id', ParseUUIDPipe) id: string,
-    @Body() body: { status: UserStatus, reviewerId: string }
+    @Body() body: { status: UserStatus, reviewerId: string, isEmailVerified: boolean, isPhoneVerified: boolean }
   ) {
-    return this.reviewerService.updateUserStatus(id, body.status, body.reviewerId);
+    return this.reviewerService.updateUserStatus(id, body.status, body.reviewerId, body.isEmailVerified, body.isPhoneVerified);
   }
 
   @Get('work/pending')

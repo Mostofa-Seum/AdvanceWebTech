@@ -208,13 +208,15 @@ verifyUser(id: number) {
   }
 
   // Update User Status
-  async updateUserStatus(userId: string, status: UserStatus, reviewerId: string) {
+  async updateUserStatus(userId: string, status: UserStatus, reviewerId: string, isEmailVerified?: boolean, isPhoneVerified?: boolean) {
     const user = await this.userRepository.findOne({ where: { userId } });
     if (!user) {
       throw new NotFoundException('User not found');
     }
     user.status = status;
     user.reviewerId = reviewerId;
+    if (isEmailVerified !== undefined) user.isEmailVerified = isEmailVerified;
+    if (isPhoneVerified !== undefined) user.isPhoneVerified = isPhoneVerified;
     await this.userRepository.save(user);
     return { message: `User status updated successfully` };
   }
