@@ -6,6 +6,7 @@ import { LoginDto, UpdateProfileDto, VerifyWorkDto } from './reviewer.dto';
 import { CreateUserDto } from './user.dto'; 
 import { CompanyStatus } from './company.entity';
 import { UserStatus } from './user.entity';
+import { ReportStatus } from './report.entity';
 
 @Controller('reviewer')
 export class ReviewerController {
@@ -112,6 +113,19 @@ export class ReviewerController {
     @Body() verifyWorkDto: VerifyWorkDto
   ) {
     return this.reviewerService.reviewWork(submissionId, verifyWorkDto);
+  }
+
+  @Get('reports/pending')
+  async getPendingReports() {
+    return this.reviewerService.getPendingReports();
+  }
+
+  @Patch('reports/:id/status')
+  async updateReportStatus(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() body: { status: ReportStatus }
+  ) {
+    return this.reviewerService.updateReportStatus(id, body.status);
   }
 
   @Delete(':id')

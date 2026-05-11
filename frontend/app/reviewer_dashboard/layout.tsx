@@ -12,6 +12,7 @@ import {
   CreditCardIcon,
   DocumentTextIcon,
   BellIcon,
+  ArrowRightOnRectangleIcon,
 } from '@heroicons/react/24/outline';
 
 export default function ReviewerDashboardLayout({
@@ -33,6 +34,11 @@ export default function ReviewerDashboardLayout({
       }
     }
   }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('user');
+    router.push('/homepage');
+  };
 
   const menuItems = [
     { name: 'Dashboard', path: '/reviewer_dashboard', icon: HomeIcon },
@@ -85,6 +91,18 @@ export default function ReviewerDashboardLayout({
             })}
           </div>
         </nav>
+
+        {/* Logout Button */}
+        <div className="px-4 mt-4">
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="w-full flex items-center px-4 py-3 rounded-lg transition-colors text-white bg-red-600 hover:bg-red-500 shadow-sm font-medium text-sm cursor-pointer"
+          >
+            <ArrowRightOnRectangleIcon className="h-5 w-5 mr-3" />
+            Log out
+          </button>
+        </div>
         
         <div className="absolute bottom-4 left-4 right-4">
           <div className="bg-gray-800 rounded-lg p-4">
@@ -102,12 +120,11 @@ export default function ReviewerDashboardLayout({
       {/* Main Content */}
       <div className="ml-64">
         {/* Top Header */}
-        <header className="bg-white shadow-sm border-b border-gray-200">
-          <div className="px-6 py-4">
+        <header className="bg-white shadow-sm border-b border-gray-200 h-16 flex items-center">
+          <div className="px-6 w-full">
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-2xl font-semibold text-gray-900">{activeTabName}</h1>
-                <p className="text-gray-600 text-sm mt-1">Welcome back, here's what's happening today</p>
+                <h1 className="text-xl font-semibold text-gray-900">{activeTabName}</h1>
               </div>
               <div className="flex items-center space-x-4">
                 <div className="relative">

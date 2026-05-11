@@ -14,6 +14,7 @@ import { JobEntity, JobStatus } from './job.entity';
 import { AssignedJobEntity, AssignedJobStatus } from './assigned_job.entity';
 import { PaymentEntity, PaymentStatus } from './payment.entity';
 import { EmployeeEntity } from './employee.entity';
+import { ReportEntity, ReportStatus } from './report.entity';
 
 @Injectable()
 export class ReviewerService {
@@ -44,6 +45,8 @@ export class ReviewerService {
     private readonly paymentRepository: Repository<PaymentEntity>,
     @InjectRepository(EmployeeEntity)
     private readonly employeeRepository: Repository<EmployeeEntity>,
+    @InjectRepository(ReportEntity)
+    private readonly reportRepository: Repository<ReportEntity>,
     private readonly mailerService: MailerService,
   ) { }
 
@@ -344,6 +347,25 @@ export class ReviewerService {
     };
   }
 
+
+  // Get Pending Reports
+  async getPendingReports() {
+    return this.reportRepository.find({
+      where: { status: ReportStatus.PENDING },
+      relations: ['reportedAgainst', 'job'],
+    });
+  }
+
+  // Update Report Status
+  async updateReportStatus(reportId: string, status: ReportStatus) {
+    const report = await this.reportRepository.findOne({ where: { reportId } });
+    if (!report) {
+      throw new NotFoundException('Report not found');
+    }
+    report.status = status;
+    await this.reportRepository.save(report);
+    return { message: `Report status updated to ${status}` };
+  }
 
   //Delete Reviewer
   async deleteReviewer(reviewerId: string) {
