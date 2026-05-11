@@ -2,7 +2,7 @@ import { Controller, Get, Post, Put, Patch, Delete, Body, Param, Query, ParseUUI
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage, MulterError } from 'multer';
 import { ReviewerService } from './reviewer.service';
-import { LoginDto, UpdateProfileDto, VerifyWorkDto } from './reviewer.dto';
+import { LoginDto, UpdateProfileDto, VerifyWorkDto, ChangePasswordDto } from './reviewer.dto';
 import { CreateUserDto } from './user.dto'; 
 import { CompanyStatus } from './company.entity';
 import { UserStatus } from './user.entity';
@@ -59,6 +59,15 @@ export class ReviewerController {
     @Body() updateProfileDto: UpdateProfileDto
   ) {
     return this.reviewerService.updateProfile(id, updateProfileDto);
+  }
+
+  @Patch('profile/:id/change-password')
+  @UsePipes(new ValidationPipe())
+  async changePassword(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() changePasswordDto: ChangePasswordDto
+  ) {
+    return this.reviewerService.changePassword(id, changePasswordDto);
   }
 
   @Patch('verify/:id')

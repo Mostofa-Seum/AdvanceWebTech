@@ -7,7 +7,7 @@ import { UserEntity, UserRole, UserStatus } from './user.entity';
 import { ReviewerEntity } from './reviewer.entity';
 import { CompanyEntity, CompanyStatus } from './company.entity';
 import { CreateUserDto } from './user.dto';
-import { LoginDto, UpdateProfileDto, VerifyWorkDto } from './reviewer.dto';
+import { LoginDto, UpdateProfileDto, VerifyWorkDto, ChangePasswordDto } from './reviewer.dto';
 import { SubmissionEntity, SubmissionStatus } from './submission.entity';
 import { WorkVerificationEntity, VerificationDecision } from './work_verification.entity';
 import { JobEntity, JobStatus } from './job.entity';
@@ -176,6 +176,29 @@ export class ReviewerService {
     await this.reviewerRepository.save(reviewer);
 
     return { message: 'Profile updated successfully' };
+  }
+
+
+  //Change Password
+  async changePassword(reviewerId: string, dto: ChangePasswordDto) {
+    const reviewer = await this.reviewerRepository.findOne({
+      where: { reviewerId },
+      relations: ['user'],
+    });
+    if (!reviewer) {
+      throw new NotFoundException('Reviewer not found');
+    }
+
+    const isMatch = await bcrypt.compare(dto.oldPassword, reviewer.user.password);
+    if (!isMatch) {
+      throw new UnauthorizedException('Old password is incorrect');
+    }
+
+    const salt = await bcrypt.genSalt();
+    reviewer.user.password = await bcrypt.hash(dto.newPassword, salt);
+    await this.userRepository.save(reviewer.user);
+
+    return { message: 'Password changed successfully' };
   }
 
 

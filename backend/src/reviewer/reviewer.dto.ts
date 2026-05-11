@@ -33,3 +33,10 @@ export class VerifyWorkDto {
   status: 'approved' | 'rejected' | 'revision_requested';
   comments?: string;
 }
+
+export class ChangePasswordDto {
+  oldPassword: string;
+
+  @MinLength(8, { message: 'New password must be at least 8 characters long' })
+  newPassword: string;
+}
