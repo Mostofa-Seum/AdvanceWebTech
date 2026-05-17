@@ -4,7 +4,7 @@ import { diskStorage, MulterError } from 'multer';
 import { ReviewerService } from './reviewer.service';
 import { LoginDto, UpdateProfileDto, VerifyWorkDto, ChangePasswordDto } from './reviewer.dto';
 import { CreateUserDto } from './user.dto'; 
-import { CompanyStatus } from './company.entity';
+import {CompanyStatus} from './company.entity';
 import { UserStatus } from './user.entity';
 import { ReportStatus } from './report.entity';
 
