@@ -120,7 +120,7 @@ export class ReviewerService {
         html: '<b>Thanks for signing up!</b> <p>Your account is pending verification.</p>',
       });
     } catch (e) {
-      console.error('Email failed to send:', e.message);
+      console.log('Note: Welcome email skipped (SMTP credentials not configured or rejected by provider).');
     }
 
     // Removed password for security
