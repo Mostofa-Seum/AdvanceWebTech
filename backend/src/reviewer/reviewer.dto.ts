@@ -1,4 +1,4 @@
-import {  IsEmail , Matches, MinLength, IsIn, IsPhoneNumber } from 'class-validator';
+import {  IsEmail , Matches, MinLength} from 'class-validator';
 export class CreateReviewerDto {
   name: string;
 
