@@ -72,7 +72,7 @@ export default function SignUpPage(): JSX.Element {
     }
 
     try {
-      await axios.post(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/auth/signup`, {
+      await axios.post('http://localhost:3000/reviewer/signup', {
         fullName,
         email,
         phone,

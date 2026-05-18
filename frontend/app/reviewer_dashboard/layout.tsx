@@ -35,6 +35,44 @@ export default function ReviewerDashboardLayout({
     }
   }, []);
 
+  // ========== PUSHER BEAMS — Browser push notifications ==========
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    let beamsClient: any = null;
+    let started = false;
+
+    const initBeams = async () => {
+      try {
+        const instanceId = process.env.NEXT_PUBLIC_PUSHER_BEAMS_INSTANCE_ID;
+        if (!instanceId) {
+          console.warn('Pusher Beams: No instance ID configured, skipping.');
+          return;
+        }
+
+        // Dynamically import to avoid Next.js SSR crashes
+        const PusherPushNotifications = await import('@pusher/push-notifications-web');
+        
+        beamsClient = new PusherPushNotifications.Client({ instanceId });
+        await beamsClient.start();
+        started = true;
+        await beamsClient.addDeviceInterest('reviewer-notifications');
+        console.log('✅ Pusher Beams: Subscribed to reviewer-notifications');
+      } catch (err) {
+        console.warn('Pusher Beams init skipped (service worker may not be available in dev):', err);
+        started = false;
+      }
+    };
+
+    initBeams();
+
+    return () => {
+      if (beamsClient && started) {
+        beamsClient.removeDeviceInterest('reviewer-notifications').catch(() => {});
+      }
+    };
+  }, []);
+
   const handleLogout = () => {
     localStorage.removeItem('user');
     router.push('/homepage');

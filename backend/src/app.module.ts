@@ -3,6 +3,7 @@ import { ReviewerModule } from './reviewer/reviewer.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { AdminModule } from './admin/admin.module';
+import { PusherModule } from './pusher/pusher.module';
 
 @Module({
   imports: [
@@ -11,13 +12,14 @@ import { AdminModule } from './admin/admin.module';
     }),
     ReviewerModule,
     AdminModule,
+    PusherModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'localhost',
       port: 5432,
       username: 'postgres',
       password: 'admin',
-      database: 'secc',
+      database: 'secd',
       autoLoadEntities: true,
       synchronize: true,
     }),

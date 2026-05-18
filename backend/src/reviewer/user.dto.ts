@@ -17,7 +17,7 @@ export class CreateUserDto {
   fullName: string;
 
   @IsOptional()
-  @IsPhoneNumber() 
+  @Matches(/^0\d{10}$/, { message: 'Phone number must be a valid Bangladeshi number' })
   phone?: string;
 
   @IsOptional()

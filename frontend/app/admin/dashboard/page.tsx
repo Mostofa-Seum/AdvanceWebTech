@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import axios from 'axios';
+// Removed top-level Pusher Beams import to avoid SSR crashes
 import ReviewerRequestCard from '@/app/components/admin/ReviewerRequestCard';
 
 type TabType = 'users' | 'companies' | 'reviewers' | 'reviewer-requests' | 'create-admin' | 'profile';
@@ -46,6 +47,9 @@ export default function AdminDashboard() {
   const [createErr, setCreateErr] = useState('');
   const [createLoading, setCreateLoading] = useState(false);
 
+  // Pusher notification state
+  const [notification, setNotification] = useState<{ message: string; fullName: string; email: string } | null>(null);
+
   useEffect(() => {
     const userStr = localStorage.getItem('user');
     if (!userStr) { router.push('/login'); return; }
@@ -58,12 +62,51 @@ export default function AdminDashboard() {
   }, []);
 
   useEffect(() => {
+    if (!adminUser) return;
     if (activeTab === 'reviewer-requests') {
       fetchReviewerRequests();
     } else if (activeTab !== 'profile' && activeTab !== 'create-admin') {
       fetchData(activeTab);
     }
-  }, [activeTab]);
+  }, [activeTab, adminUser]);
+
+  // ========== PUSHER BEAMS — Browser push notifications ==========
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    let beamsClient: any = null;
+    let started = false;
+
+    const initBeams = async () => {
+      try {
+        const instanceId = process.env.NEXT_PUBLIC_PUSHER_BEAMS_INSTANCE_ID;
+        if (!instanceId) {
+          console.warn('Pusher Beams: No instance ID configured, skipping.');
+          return;
+        }
+
+        // Dynamically import to avoid Next.js SSR crashes (window/navigator is not defined)
+        const PusherPushNotifications = await import('@pusher/push-notifications-web');
+        
+        beamsClient = new PusherPushNotifications.Client({ instanceId });
+        await beamsClient.start();
+        started = true;
+        await beamsClient.addDeviceInterest('admin-notifications');
+        console.log('✅ Pusher Beams: Subscribed to admin-notifications');
+      } catch (err) {
+        console.warn('Pusher Beams init skipped (service worker may not be available in dev):', err);
+        started = false;
+      }
+    };
+
+    initBeams();
+
+    return () => {
+      if (beamsClient && started) {
+        beamsClient.removeDeviceInterest('admin-notifications').catch(() => {});
+      }
+    };
+  }, []);
 
   // ========== GET — Fetch tab data ==========
   const fetchData = async (tab: TabType) => {
@@ -414,6 +457,38 @@ export default function AdminDashboard() {
           </div>
         )}
       </div>
+
+      {/* ===================== Pusher Toast Notification ===================== */}
+      {notification && (
+        <div className="fixed bottom-6 right-6 z-50 animate-bounce">
+          <div className="bg-blue-600 text-white rounded-xl shadow-2xl p-5 max-w-sm border border-blue-500">
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-lg">🔔</span>
+                  <p className="font-semibold text-sm">New Reviewer Request</p>
+                </div>
+                <p className="text-sm text-blue-100 mt-1">
+                  <span className="font-medium text-white">{notification.fullName}</span> wants to join as a reviewer
+                </p>
+                <p className="text-xs text-blue-200 mt-1">{notification.email}</p>
+              </div>
+              <button
+                onClick={() => setNotification(null)}
+                className="text-blue-200 hover:text-white transition-colors text-lg leading-none"
+              >
+                ✕
+              </button>
+            </div>
+            <button
+              onClick={() => { setActiveTab('reviewer-requests'); setNotification(null); }}
+              className="mt-3 w-full bg-white text-blue-600 text-sm font-medium py-2 rounded-lg hover:bg-blue-50 transition-colors"
+            >
+              View Request →
+            </button>
+          </div>
+        </div>
+      )}
     </>
   );
 }

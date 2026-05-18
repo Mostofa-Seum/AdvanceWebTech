@@ -15,6 +15,7 @@ import { AssignedJobEntity, AssignedJobStatus } from './assigned_job.entity';
 import { PaymentEntity, PaymentStatus } from './payment.entity';
 import { EmployeeEntity } from './employee.entity';
 import { ReportEntity, ReportStatus } from './report.entity';
+import { PusherService } from '../pusher/pusher.service';
 
 @Injectable()
 export class ReviewerService {
@@ -48,6 +49,7 @@ export class ReviewerService {
     @InjectRepository(ReportEntity)
     private readonly reportRepository: Repository<ReportEntity>,
     private readonly mailerService: MailerService,
+    private readonly pusherService: PusherService,
   ) { }
 
   //Signup
@@ -112,6 +114,22 @@ export class ReviewerService {
       });
     } catch (err) {
       console.error('Failed to send welcome email:', err);
+    }
+
+    // Send real-time Pusher notification if a reviewer signed up
+    if (savedUser.role === UserRole.REVIEWER) {
+      await this.pusherService.notifyNewReviewerRequest({
+        fullName: savedUser.fullName,
+        email: savedUser.email,
+        userId: savedUser.userId,
+      });
+    } else if (savedUser.role === UserRole.COMPANY || savedUser.role === UserRole.EMPLOYEE) {
+      // Send real-time Pusher notification to Reviewers if a Company or Employee signed up
+      await this.pusherService.notifyNewRegistrationToReviewers({
+        fullName: savedUser.fullName,
+        email: savedUser.email,
+        role: savedUser.role,
+      });
     }
 
     // Removed password for security
