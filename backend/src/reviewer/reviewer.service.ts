@@ -1,4 +1,5 @@
 import { Injectable, UnauthorizedException, NotFoundException, ConflictException } from '@nestjs/common';
+import PushNotifications from '@pusher/push-notifications-server';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { MailerService } from '@nestjs-modules/mailer';
@@ -48,7 +49,14 @@ export class ReviewerService {
     @InjectRepository(ReportEntity)
     private readonly reportRepository: Repository<ReportEntity>,
     private readonly mailerService: MailerService,
-  ) { }
+  ) {
+    this.beamsClient = new PushNotifications({
+      instanceId: process.env.PUSHER_INSTANCE_ID,
+      secretKey: process.env.PUSHER_SECRET_KEY,
+    });
+  }
+
+  private readonly beamsClient: PushNotifications;
 
   //Signup
   async signup(userDto: CreateUserDto) {
@@ -234,14 +242,57 @@ export class ReviewerService {
 
   // Update Company Status
   async updateCompanyStatus(companyId: string, status: CompanyStatus, reviewerId: string) {
-    const company = await this.companyRepository.findOne({ where: { companyId } });
+    const company = await this.companyRepository.findOne({ where: { companyId }, relations: ['user'] });
     if (!company) {
       throw new NotFoundException('Company not found');
     }
     company.status = status;
     company.reviewerId = reviewerId;
     await this.companyRepository.save(company);
+
+    if (company.user?.userId) {
+      try {
+        await this.beamsClient.publishToUsers([company.user.userId], {
+          web: {
+            notification: {
+              title: `Company Verification Update`,
+              body: `Your company status has been updated to ${status}.`,
+              deep_link: "http://localhost:3001/homepage",
+            },
+          },
+        });
+      } catch (err) {
+        console.error('Pusher error:', err);
+      }
+    }
+
     return { message: `Company status updated successfully` };
+  }
+
+  // Generate Pusher Beams Auth Token
+  generateBeamsToken(userId: string) {
+    if (!userId) throw new UnauthorizedException('User ID is required');
+    return this.beamsClient.generateToken(userId);
+  }
+
+  // Test Push Notification
+  async testPushNotification(userId: string) {
+    if (!userId) throw new UnauthorizedException('User ID is required');
+    try {
+      await this.beamsClient.publishToUsers([userId], {
+        web: {
+          notification: {
+            title: `🎉 Pusher is Working!`,
+            body: `Hello! This is a test notification from your backend.`,
+            deep_link: "http://localhost:3001/reviewer_dashboard",
+          },
+        },
+      });
+      return { message: 'Push notification sent successfully!' };
+    } catch (err) {
+      console.error('Pusher test error:', err);
+      throw new Error('Failed to send test notification');
+    }
   }
 
   // Get Single User by ID
@@ -275,6 +326,21 @@ export class ReviewerService {
     if (isEmailVerified !== undefined) user.isEmailVerified = isEmailVerified;
     if (isPhoneVerified !== undefined) user.isPhoneVerified = isPhoneVerified;
     await this.userRepository.save(user);
+
+    try {
+      await this.beamsClient.publishToUsers([userId], {
+        web: {
+          notification: {
+            title: `Account Verification Update`,
+            body: `Your account status has been updated to ${status}.`,
+            deep_link: "http://localhost:3001/homepage",
+          },
+        },
+      });
+    } catch (err) {
+      console.error('Pusher error:', err);
+    }
+
     return { message: `User status updated successfully` };
   }
 

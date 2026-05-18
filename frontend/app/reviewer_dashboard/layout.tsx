@@ -14,6 +14,7 @@ import {
   BellIcon,
   ArrowRightOnRectangleIcon,
 } from '@heroicons/react/24/outline';
+import PusherClient from '@/app/components/PusherClient';
 
 export default function ReviewerDashboardLayout({
   children,
@@ -59,6 +60,7 @@ export default function ReviewerDashboardLayout({
 
   return (
     <div className="bg-gray-100 min-h-screen font-sans">
+      <PusherClient />
       {/* Sidebar */}
       <div className="fixed inset-y-0 left-0 w-64 bg-slate-800 shadow-xl z-50">
         <div className="flex items-center justify-center h-16 bg-blue-800">

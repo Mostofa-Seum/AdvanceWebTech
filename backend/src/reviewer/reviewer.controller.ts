@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Patch, Delete, Body, Param, ParseUUIDPipe, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Controller, Get, Post, Put, Patch, Delete, Body, Param, ParseUUIDPipe, UsePipes, ValidationPipe, Query } from '@nestjs/common';
 import { ReviewerService } from './reviewer.service';
 import { LoginDto, UpdateProfileDto, VerifyWorkDto, ChangePasswordDto } from './reviewer.dto';
 import { CompanyStatus } from './company.entity';
@@ -8,6 +8,17 @@ import { ReportStatus } from './report.entity';
 @Controller('reviewer')
 export class ReviewerController {
   constructor(private readonly reviewerService: ReviewerService) {}
+  
+  @Get('pusher/beams-auth')
+  generateBeamsToken(@Query('user_id') userId: string) {
+    return this.reviewerService.generateBeamsToken(userId);
+  }
+
+  @Post('pusher/test')
+  async testPushNotification(@Body() body: { userId: string }) {
+    return this.reviewerService.testPushNotification(body.userId);
+  }
+
   @Post('login')
   async login(@Body() loginDto: LoginDto) {
     return this.reviewerService.login(loginDto);
