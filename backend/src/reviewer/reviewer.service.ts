@@ -81,28 +81,47 @@ export class ReviewerService {
       phone: userDto.phone,
       address: userDto.address,
       filename: userDto.filename,
-      role: UserRole.REVIEWER,
+      role: userDto.role,
       status: UserStatus.PENDING,
     });
 
     const savedUser = await this.userRepository.save(newUser);
 
-    const newReviewer = this.reviewerRepository.create({
-      user: savedUser,
-      trustScore: 0,
-      serviceFee: 0,
-    });
-
-    await this.reviewerRepository.save(newReviewer);
+    if (userDto.role === UserRole.REVIEWER) {
+      const newReviewer = this.reviewerRepository.create({
+        user: savedUser,
+        trustScore: 0,
+        serviceFee: 0,
+      });
+      await this.reviewerRepository.save(newReviewer);
+    } else if (userDto.role === UserRole.EMPLOYEE) {
+      const newEmployee = this.employeeRepository.create({
+        user: savedUser,
+        balance: 0,
+        trustScore: 0,
+      });
+      await this.employeeRepository.save(newEmployee);
+    } else if (userDto.role === UserRole.COMPANY) {
+      const newCompany = this.companyRepository.create({
+        user: savedUser,
+        companyName: userDto.fullName,
+        status: CompanyStatus.PENDING,
+      });
+      await this.companyRepository.save(newCompany);
+    }
 
     // Send a welcome email
-    await this.mailerService.sendMail({
-      to: savedUser.email,
-      from: '"Support Team" <support@abc.com>',
-      subject: 'Welcome to our Platform!',
-      text: 'Thanks for signing up! Your account is pending verification.',
-      html: '<b>Thanks for signing up!</b> <p>Your account is pending verification.</p>',
-    });
+    try {
+      await this.mailerService.sendMail({
+        to: savedUser.email,
+        from: '"Support Team" <support@abc.com>',
+        subject: 'Welcome to our Platform!',
+        text: 'Thanks for signing up! Your account is pending verification.',
+        html: '<b>Thanks for signing up!</b> <p>Your account is pending verification.</p>',
+      });
+    } catch (e) {
+      console.error('Email failed to send:', e.message);
+    }
 
     // Removed password for security
     const { password, ...result } = savedUser;

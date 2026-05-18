@@ -4,6 +4,7 @@ import { LoginDto, UpdateProfileDto, VerifyWorkDto, ChangePasswordDto } from './
 import { CompanyStatus } from './company.entity';
 import { UserStatus } from './user.entity';
 import { ReportStatus } from './report.entity';
+import { CreateUserDto } from './user.dto';
 
 @Controller('reviewer')
 export class ReviewerController {
@@ -22,6 +23,11 @@ export class ReviewerController {
   @Post('login')
   async login(@Body() loginDto: LoginDto) {
     return this.reviewerService.login(loginDto);
+  }
+
+  @Post('signup')
+  async signup(@Body() createUserDto: CreateUserDto) {
+    return this.reviewerService.signup(createUserDto);
   }
 
   @Get('profile/:id')

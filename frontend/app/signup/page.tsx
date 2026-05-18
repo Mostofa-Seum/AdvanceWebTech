@@ -30,7 +30,7 @@ const signUpSchema = z
     password: z
       .string()
       .min(1, "Password is required")
-      .min(6, "Password must be at least 6 characters"),
+      .min(8, "Password must be at least 8 characters"),
     confirmPassword: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {
@@ -72,7 +72,7 @@ export default function SignUpPage(): JSX.Element {
     }
 
     try {
-      await axios.post(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/auth/signup`, {
+      await axios.post(`http://localhost:3000/reviewer/signup`, {
         fullName,
         email,
         phone,
@@ -95,8 +95,11 @@ export default function SignUpPage(): JSX.Element {
         router.push("/login");
       }, 2000);
     } catch (err: any) {
+      const backendError = err.response?.data?.message;
       setError(
-        err.response?.data?.message || "Registration failed. Try again.",
+        Array.isArray(backendError) 
+          ? backendError.join(", ") 
+          : backendError || "Registration failed. Try again.",
       );
     }
   };
