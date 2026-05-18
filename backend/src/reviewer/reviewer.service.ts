@@ -139,6 +139,21 @@ export class ReviewerService {
       throw new UnauthorizedException('Invalid email or password');
     }
 
+    // Block login for pending reviewer accounts
+    if (user.role === UserRole.REVIEWER && user.status === UserStatus.PENDING) {
+      throw new UnauthorizedException('Your reviewer account is pending admin approval. Please wait for approval.');
+    }
+
+    // Block login for rejected accounts
+    if (user.status === UserStatus.REJECTED) {
+      throw new UnauthorizedException('Your account request has been rejected by the admin.');
+    }
+
+    // Block login for suspended accounts
+    if (user.status === UserStatus.SUSPENDED) {
+      throw new UnauthorizedException('Your account has been suspended. Please contact support.');
+    }
+
     // Strip password from output
     const { password, ...result } = user;
 

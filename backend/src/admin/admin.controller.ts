@@ -153,6 +153,21 @@ export class AdminController {
     return this.adminService.getAllEmployees();
   }
 
+  // ===================== Reviewer Request Management =====================
+
+  @Get('reviewer-requests')
+  async getPendingReviewerRequests() {
+    return this.adminService.getPendingReviewerRequests();
+  }
+
+  @Patch('reviewer-requests/:id')
+  async handleReviewerRequest(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() body: { action: 'accept' | 'reject' }
+  ) {
+    return this.adminService.handleReviewerRequest(id, body.action);
+  }
+
   // ===================== Other Global Management =====================
 
   @Get('reports')

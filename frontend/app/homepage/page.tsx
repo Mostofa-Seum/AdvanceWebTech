@@ -68,7 +68,7 @@ export default function Example() {
               No experience? No problem. <br /> Connect with real companies, complete bite-sized projects, and build a resume that stands out.
             </p>
             <div className="mt-10 flex items-center justify-center gap-x-6">
-              <a href="/login" className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 dark:bg-indigo-500 dark:hover:bg-indigo-400">
+              <a href="/signup" className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 dark:bg-indigo-500 dark:hover:bg-indigo-400">
                 Get started
               </a>
             </div>

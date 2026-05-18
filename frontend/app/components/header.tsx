@@ -81,7 +81,7 @@ export default function Header() {
               <Link href="/login">
                 <button type="button" className="text-gray-900 bg-white border border-gray-300 hover:bg-gray-50 font-medium rounded-md text-sm px-4 py-2.5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 transition-colors cursor-pointer">Log in</button>
               </Link>
-              <Link href="/Registration">
+              <Link href="/signup">
                 <button type="button" className="text-white bg-indigo-600 hover:bg-indigo-500 shadow-sm font-medium rounded-md text-sm px-4 py-2.5 dark:bg-indigo-500 dark:hover:bg-indigo-400 transition-colors cursor-pointer">Sign Up</button>
               </Link>
             </>

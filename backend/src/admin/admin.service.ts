@@ -325,6 +325,43 @@ export class AdminService {
     return { message: 'Reviewer demoted to employee successfully' };
   }
 
+  // ===================== Reviewer Request Management =====================
+
+  async getPendingReviewerRequests() {
+    const pendingReviewers = await this.userRepository.find({
+      where: {
+        role: UserRole.REVIEWER,
+        status: UserStatus.PENDING,
+      },
+      order: { createdAt: 'DESC' },
+    });
+
+    return pendingReviewers.map(u => {
+      delete u.password;
+      return u;
+    });
+  }
+
+  async handleReviewerRequest(userId: string, action: 'accept' | 'reject') {
+    const user = await this.userRepository.findOne({
+      where: { userId, role: UserRole.REVIEWER, status: UserStatus.PENDING },
+    });
+
+    if (!user) {
+      throw new NotFoundException('Pending reviewer request not found');
+    }
+
+    if (action === 'accept') {
+      user.status = UserStatus.ACTIVE;
+      await this.userRepository.save(user);
+      return { message: 'Reviewer request accepted. User is now active.' };
+    } else {
+      user.status = UserStatus.REJECTED;
+      await this.userRepository.save(user);
+      return { message: 'Reviewer request rejected.' };
+    }
+  }
+
   // ===================== Other Global Management =====================
 
   async getAllReports() {
