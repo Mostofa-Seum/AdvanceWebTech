@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Patch, Body, Param, ParseUUIDPipe, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Controller, Get, Post, Put, Patch, Delete, Body, Param, ParseUUIDPipe, UsePipes, ValidationPipe } from '@nestjs/common';
 import { ReviewerService } from './reviewer.service';
 import { LoginDto, UpdateProfileDto, VerifyWorkDto, ChangePasswordDto } from './reviewer.dto';
 import { CompanyStatus } from './company.entity';
@@ -40,6 +40,11 @@ export class ReviewerController {
     return this.reviewerService.getPendingCompanies();
   }
 
+  @Get('companies/:id')
+  async getCompany(@Param('id', ParseUUIDPipe) id: string) {
+    return this.reviewerService.getCompany(id);
+  }
+
   @Patch('companies/:id/status')
   async updateCompanyStatus(
     @Param('id', ParseUUIDPipe) id: string,
@@ -51,6 +56,11 @@ export class ReviewerController {
   @Get('users/pending')
   async getPendingUsers() {
     return this.reviewerService.getPendingUsers();
+  }
+
+  @Get('users/:id')
+  async getUser(@Param('id', ParseUUIDPipe) id: string) {
+    return this.reviewerService.getUser(id);
   }
 
   @Patch('users/:id/status')
@@ -97,4 +107,8 @@ export class ReviewerController {
     return this.reviewerService.updateReportStatus(id, body.status);
   }
 
+  @Delete(':id')
+  async deleteReviewer(@Param('id', ParseUUIDPipe) id: string) {
+    return this.reviewerService.deleteReviewer(id);
+  }
 }

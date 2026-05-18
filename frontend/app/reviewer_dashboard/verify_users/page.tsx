@@ -1,10 +1,12 @@
 'use client'
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import axios from 'axios';
 import {
   CheckBadgeIcon,
-  TrashIcon
+  TrashIcon,
+  EyeIcon,
 } from '@heroicons/react/24/outline';
 
 export default function VerifyUserModule() {
@@ -91,6 +93,13 @@ export default function VerifyUserModule() {
             </p>
           </div>
           <div className="flex space-x-3 shrink-0">
+            <Link
+              href={`/reviewer_dashboard/verify_users/${user.userId}`}
+              className="bg-blue-100 text-blue-700 hover:bg-blue-200 px-4 py-2 rounded-lg transition-colors font-medium text-sm flex items-center"
+            >
+              <EyeIcon className="w-5 h-5 mr-1" />
+              View Details
+            </Link>
             <button 
               onClick={() => handleUpdateStatus(user.userId, 'active', true, true)}
               className="bg-green-100 text-green-700 hover:bg-green-200 px-4 py-2 rounded-lg transition-colors font-medium text-sm flex items-center"

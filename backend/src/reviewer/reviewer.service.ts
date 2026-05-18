@@ -210,6 +210,21 @@ export class ReviewerService {
     };
   }
 
+  // Get Single Company by ID
+  async getCompany(companyId: string) {
+    const company = await this.companyRepository.findOne({
+      where: { companyId },
+      relations: ['user'],
+    });
+    if (!company) {
+      throw new NotFoundException('Company not found');
+    }
+    if (company.user?.password) {
+      delete company.user.password;
+    }
+    return company;
+  }
+
   //Get Pending Companies
   async getPendingCompanies() {
     return this.companyRepository.find({
@@ -227,6 +242,16 @@ export class ReviewerService {
     company.reviewerId = reviewerId;
     await this.companyRepository.save(company);
     return { message: `Company status updated successfully` };
+  }
+
+  // Get Single User by ID
+  async getUser(userId: string) {
+    const user = await this.userRepository.findOne({ where: { userId } });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    const { password, ...result } = user;
+    return result;
   }
 
   // Get Pending Users (Employees)
