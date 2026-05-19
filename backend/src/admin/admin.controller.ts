@@ -1,9 +1,9 @@
 import { Controller, Get, Post, Put, Patch, Delete, Body, Param, ParseUUIDPipe, UsePipes, ValidationPipe } from '@nestjs/common';
 import { AdminService } from './admin.service';
-import { 
-  CreateAdminDto, 
-  LoginAdminDto, 
-  UpdateAdminProfileDto, 
+import {
+  CreateAdminDto,
+  LoginAdminDto,
+  UpdateAdminProfileDto,
   ChangePasswordDto,
   UpdateUserStatusDto,
   UpdateUserRoleDto,
@@ -13,9 +13,9 @@ import {
 
 @Controller('admin')
 export class AdminController {
-  constructor(private readonly adminService: AdminService) {}
+  constructor(private readonly adminService: AdminService) { }
 
-  // ===================== Admin Auth & Profile =====================
+  // admin Auth & Profile
 
   @Post('signup')
   @UsePipes(new ValidationPipe())
@@ -35,7 +35,7 @@ export class AdminController {
 
   @Put('profile/:id')
   async updateProfile(
-    @Param('id', ParseUUIDPipe) id: string, 
+    @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: UpdateAdminProfileDto
   ) {
     return this.adminService.updateProfile(id, dto);
@@ -50,8 +50,7 @@ export class AdminController {
     return this.adminService.changePassword(id, dto);
   }
 
-  // ===================== User Management =====================
-
+  //User Management
   @Get('users')
   async getAllUsers() {
     return this.adminService.getAllUsers();
@@ -85,7 +84,7 @@ export class AdminController {
     return this.adminService.deleteUser(id);
   }
 
-  // ===================== Job Management =====================
+  //Job Management
 
   @Get('jobs')
   async getAllJobs() {
@@ -106,7 +105,7 @@ export class AdminController {
     return this.adminService.deleteJob(id);
   }
 
-  // ===================== Company Management =====================
+  //C ompany Management
 
   @Get('companies')
   async getAllCompanies() {
@@ -127,7 +126,7 @@ export class AdminController {
     return this.adminService.updateCompanyStatus(id, dto);
   }
 
-  // ===================== Reviewer Management =====================
+  // Reviewer Management
 
   @Get('reviewers')
   async getAllReviewers() {
@@ -153,8 +152,7 @@ export class AdminController {
     return this.adminService.getAllEmployees();
   }
 
-  // ===================== Reviewer Request Management =====================
-
+  // Reviewer Request Management    
   @Get('reviewer-requests')
   async getPendingReviewerRequests() {
     return this.adminService.getPendingReviewerRequests();
@@ -168,7 +166,7 @@ export class AdminController {
     return this.adminService.handleReviewerRequest(id, body.action);
   }
 
-  // ===================== Other Global Management =====================
+  // Other Global Management
 
   @Get('reports')
   async getAllReports() {

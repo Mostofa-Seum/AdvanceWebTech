@@ -25,7 +25,7 @@ export default function AdminDashboard() {
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [modal, setModal] = useState<{isOpen:boolean; type:string; data:any}>({ isOpen: false, type: 'user', data: null });
+  const [modal, setModal] = useState<{ isOpen: boolean; type: string; data: any }>({ isOpen: false, type: 'user', data: null });
   const [adminUser, setAdminUser] = useState<any>(null);
 
   // Reviewer requests state
@@ -70,7 +70,7 @@ export default function AdminDashboard() {
     }
   }, [activeTab, adminUser]);
 
-  // ========== PUSHER BEAMS — Browser push notifications ==========
+  // pusher BEAMS — Browser push notifications 
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
@@ -87,7 +87,7 @@ export default function AdminDashboard() {
 
         // Dynamically import to avoid Next.js SSR crashes (window/navigator is not defined)
         const PusherPushNotifications = await import('@pusher/push-notifications-web');
-        
+
         beamsClient = new PusherPushNotifications.Client({ instanceId });
         await beamsClient.start();
         started = true;
@@ -103,12 +103,12 @@ export default function AdminDashboard() {
 
     return () => {
       if (beamsClient && started) {
-        beamsClient.removeDeviceInterest('admin-notifications').catch(() => {});
+        beamsClient.removeDeviceInterest('admin-notifications').catch(() => { });
       }
     };
   }, []);
 
-  // ========== GET — Fetch tab data ==========
+  //  GET — Fetch tab data 
   const fetchData = async (tab: TabType) => {
     setLoading(true); setError(''); setData([]);
     try {
@@ -119,7 +119,7 @@ export default function AdminDashboard() {
     } finally { setLoading(false); }
   };
 
-  // ========== GET — Fetch reviewer requests ==========
+  //  GET — Fetch reviewer requests 
   const fetchReviewerRequests = async () => {
     setRequestsLoading(true); setRequestsError(''); setReviewerRequests([]);
     try {
@@ -130,7 +130,7 @@ export default function AdminDashboard() {
     } finally { setRequestsLoading(false); }
   };
 
-  // ========== PATCH — Handle reviewer action ==========
+  //  PATCH — Handle reviewer action 
   const handleReviewerAction = async (userId: string, action: 'accept' | 'reject') => {
     if (action === 'reject' && !confirm('Are you sure you want to reject this reviewer request?')) return;
     setActionLoading(userId);
@@ -142,34 +142,34 @@ export default function AdminDashboard() {
     } finally { setActionLoading(null); }
   };
 
-  // ========== DELETE — Delete user ==========
+  //  DELETE — Delete user 
   const deleteUser = async (id: string) => {
     if (!confirm('Are you sure you want to delete this user?')) return;
     try { await axios.delete(`http://localhost:3000/admin/users/${id}`); fetchData(activeTab); }
     catch (err: any) { alert('Error: ' + (err.response?.data?.message || err.message)); }
   };
 
-  // ========== PATCH — Demote reviewer ==========
+  //  PATCH — Demote reviewer 
   const demoteReviewer = async (id: string) => {
     if (!confirm('Demote this reviewer to employee?')) return;
     try { await axios.patch(`http://localhost:3000/admin/reviewers/${id}/demote`); fetchData(activeTab); }
     catch (err: any) { alert('Error: ' + (err.response?.data?.message || err.message)); }
   };
 
-  // ========== PATCH — Promote employee ==========
+  //  PATCH — Promote employee  
   const promoteEmployee = async (id: string) => {
     if (!confirm('Promote this employee to reviewer?')) return;
     try { await axios.patch(`http://localhost:3000/admin/employees/${id}/promote`); fetchData(activeTab); }
     catch (err: any) { alert('Error: ' + (err.response?.data?.message || err.message)); }
   };
 
-  // ========== PATCH — Update status ==========
+  //  PATCH — Update status 
   const updateStatus = async (id: string, status: string, endpoint: string) => {
     try { await axios.patch(`http://localhost:3000/admin/${endpoint}/${id}/status`, { status }); fetchData(activeTab); }
     catch (err: any) { alert('Error: ' + (err.response?.data?.message || err.message)); }
   };
 
-  // ========== PUT — Update profile ==========
+  //  PUT — Update profile  
   const handleProfileUpdate = async () => {
     setProfileMsg('');
     try {
@@ -181,7 +181,7 @@ export default function AdminDashboard() {
     } catch (err: any) { setProfileMsg('Error: ' + (err.response?.data?.message || err.message)); }
   };
 
-  // ========== PATCH — Change password ==========
+  //  PATCH — Change password 
   const handlePasswordChange = async () => {
     setPwErr(''); setPwMsg('');
     if (!pwForm.oldPassword || !pwForm.newPassword || !pwForm.confirmPassword) { setPwErr('All fields are required.'); return; }
@@ -196,7 +196,7 @@ export default function AdminDashboard() {
     }
   };
 
-  // ========== POST — Create admin account ==========
+  //  POST — Create admin account 
   const handleCreateAdmin = async (e: React.FormEvent) => {
     e.preventDefault();
     setCreateErr(''); setCreateMsg(''); setCreateLoading(true);
@@ -246,7 +246,7 @@ export default function AdminDashboard() {
           ))}
         </div>
 
-        {/* ===================== Profile Tab ===================== */}
+        {/* Profile Tab */}
         {activeTab === 'profile' && (
           <div className="space-y-6 max-w-2xl">
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
@@ -284,7 +284,7 @@ export default function AdminDashboard() {
           </div>
         )}
 
-        {/* ===================== Create Admin Tab (POST) ===================== */}
+        {/* Create Admin Tab (POST) */}
         {activeTab === 'create-admin' && (
           <div className="max-w-2xl">
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
@@ -331,7 +331,7 @@ export default function AdminDashboard() {
           </div>
         )}
 
-        {/* ===================== Reviewer Requests Tab ===================== */}
+        {/* Reviewer Requests Tab */}
         {activeTab === 'reviewer-requests' && (
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
             <div className="flex items-center justify-between mb-6">
@@ -377,7 +377,7 @@ export default function AdminDashboard() {
           </div>
         )}
 
-        {/* ===================== Data Tabs (users / companies / reviewers) ===================== */}
+        {/* Data Tabs (users / companies / reviewers)  */}
         {activeTab !== 'profile' && activeTab !== 'reviewer-requests' && activeTab !== 'create-admin' && (
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
             <div className="flex items-center mb-6">
@@ -458,7 +458,7 @@ export default function AdminDashboard() {
         )}
       </div>
 
-      {/* ===================== Pusher Toast Notification ===================== */}
+      {/* Pusher Toast Notification */}
       {notification && (
         <div className="fixed bottom-6 right-6 z-50 animate-bounce">
           <div className="bg-blue-600 text-white rounded-xl shadow-2xl p-5 max-w-sm border border-blue-500">

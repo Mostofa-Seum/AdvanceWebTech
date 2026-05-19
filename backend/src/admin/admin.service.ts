@@ -12,10 +12,10 @@ import { ReportEntity, ReportStatus } from '../reviewer/report.entity';
 import { PaymentEntity } from '../reviewer/payment.entity';
 import { SubmissionEntity } from '../reviewer/submission.entity';
 
-import { 
-  CreateAdminDto, 
-  LoginAdminDto, 
-  UpdateAdminProfileDto, 
+import {
+  CreateAdminDto,
+  LoginAdminDto,
+  UpdateAdminProfileDto,
   ChangePasswordDto,
   UpdateUserStatusDto,
   UpdateUserRoleDto,
@@ -42,9 +42,9 @@ export class AdminService {
     private readonly paymentRepository: Repository<PaymentEntity>,
     @InjectRepository(SubmissionEntity)
     private readonly submissionRepository: Repository<SubmissionEntity>,
-  ) {}
+  ) { }
 
-  // ===================== Admin Auth & Profile =====================
+  // Admin Auth & Profile 
 
   async signup(adminDto: CreateAdminDto) {
     const existingUser = await this.userRepository.findOne({
@@ -156,7 +156,7 @@ export class AdminService {
     return { message: 'Password changed successfully' };
   }
 
-  // ===================== User Management =====================
+  // User Management
 
   async getAllUsers() {
     const users = await this.userRepository.find({ relations: ['employee', 'reviewer', 'company'] });
@@ -241,7 +241,7 @@ export class AdminService {
     return this.employeeRepository.find({ relations: ['user'] });
   }
 
-  // ===================== Job Management =====================
+  // Job Management
 
   async getAllJobs() {
     return this.jobRepository.find({ relations: ['company', 'category'] });
@@ -264,7 +264,7 @@ export class AdminService {
     return { message: 'Job deleted successfully' };
   }
 
-  // ===================== Company Management =====================
+  // Company Management
 
   async getAllCompanies() {
     return this.companyRepository.find({ relations: ['user'] });
@@ -288,7 +288,7 @@ export class AdminService {
     return { message: `Company status updated to ${dto.status}` };
   }
 
-  // ===================== Reviewer Management =====================
+  // Reviewer Management
 
   async getAllReviewers() {
     return this.reviewerRepository.find({ relations: ['user'] });
@@ -311,7 +311,7 @@ export class AdminService {
     if (user) {
       user.role = UserRole.EMPLOYEE; // Or a general user role, depending on system
       await this.userRepository.save(user);
-      
+
       // Also create an employee profile since they are now an employee
       const newEmployee = this.employeeRepository.create({
         user: user,
@@ -325,7 +325,7 @@ export class AdminService {
     return { message: 'Reviewer demoted to employee successfully' };
   }
 
-  // ===================== Reviewer Request Management =====================
+  // Reviewer Request Management 
 
   async getPendingReviewerRequests() {
     const pendingReviewers = await this.userRepository.find({
@@ -362,7 +362,7 @@ export class AdminService {
     }
   }
 
-  // ===================== Other Global Management =====================
+  // Other Global Management
 
   async getAllReports() {
     return this.reportRepository.find({ relations: ['reportedBy', 'reportedAgainst', 'job'] });
