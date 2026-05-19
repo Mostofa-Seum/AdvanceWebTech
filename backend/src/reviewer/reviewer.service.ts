@@ -123,7 +123,7 @@ export class ReviewerService {
       console.log('Note: Welcome email skipped (SMTP credentials not configured or rejected by provider).');
     }
 
-    // Removed password for security
+
     const { password, ...result } = savedUser;
 
     return {
@@ -148,13 +148,13 @@ export class ReviewerService {
       throw new UnauthorizedException('Invalid email or password');
     }
 
-    // Strip password from output
+
     const { password, ...result } = user;
 
     return {
       message: 'Login successful',
       user: result,
-      reviewerId: user.reviewer.reviewerId, // Handing back the specific reviewer ID
+      reviewerId: user.reviewer.reviewerId, 
     };
   }
 
@@ -170,7 +170,7 @@ export class ReviewerService {
       throw new NotFoundException();
     }
 
-    // Strip password before returning
+
     delete reviewer.user.password;
     return reviewer;
   }

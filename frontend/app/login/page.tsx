@@ -20,15 +20,16 @@ export default function Login() {
 
   try {
     // 2. Make the POST request to your backend using axios
-    const response = await axios.post('http://localhost:3000/reviewer/login', {
+    const response = await axios.post('http://localhost:3000/auth/login', {
       email: email,
       password: password,
     });
 
-    // 3. If successful, the backend will send back the user details
+    // 3. If successful, the backend will send back the user details and token
     console.log("Login successful!", response.data);
     
-    // Save the user info so we can display their name
+    // Save the token and user info
+    localStorage.setItem('access_token', response.data.access_token);
     localStorage.setItem('user', JSON.stringify(response.data.user));
 
     // Redirect
