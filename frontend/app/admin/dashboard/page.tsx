@@ -52,10 +52,16 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     const userStr = localStorage.getItem('user');
-    if (!userStr) { router.push('/login'); return; }
+    const token = localStorage.getItem('token');
+    
+    if (!userStr || !token) { router.push('/login'); return; }
     try {
       const user = JSON.parse(userStr);
       if (user.role !== 'admin') { router.push('/login'); return; }
+      
+      // Set the Bearer token for all Axios requests
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      
       setAdminUser(user);
       setProfileForm({ fullName: user.fullName || '', email: user.email || '', phone: user.phone || '', address: user.address || '' });
     } catch { router.push('/login'); }

@@ -19,18 +19,23 @@ export default function Login() {
   setError(''); // Clear any old errors
 
   try {
-    // 2. Make the POST request to your backend using axios
-    const response = await axios.post('http://localhost:3000/reviewer/login', {
+    // 2. Make the POST request to your backend using axios via the Auth module
+    const response = await axios.post('http://localhost:3000/auth/login', {
       email: email,
       password: password,
     });
 
-    // 3. If successful, the backend will send back the user details
+    // 3. If successful, the backend will send back the user details and JWT
     console.log("Login successful!", response.data);
     
-    // Save the user info so we can display their name
+    // Save the user info and JWT token
     const loggedInUser = response.data.user;
+    const token = response.data.access_token;
+    
     localStorage.setItem('user', JSON.stringify(loggedInUser));
+    if (token) {
+      localStorage.setItem('token', token);
+    }
 
     // Dynamic Redirect based on user role
     if (loggedInUser.role === 'admin') {
