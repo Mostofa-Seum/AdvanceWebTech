@@ -2,7 +2,7 @@
 
 import { useState, FormEvent, JSX } from "react";
 import { z } from "zod";
-import axios from "axios";
+import axios from '@/lib/axios';
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 

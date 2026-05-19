@@ -2,7 +2,8 @@
 
 import Link from 'next/link'
 import { ArrowLeftIcon, AcademicCapIcon } from '@heroicons/react/24/outline'
-import axios from 'axios';
+import axios from '@/lib/axios';
+import { isAxiosError } from 'axios';
 import { useState } from 'react';
 
 
@@ -38,7 +39,7 @@ export default function Login() {
   } catch (err) {
     // 4. If the backend rejects the login (wrong password, etc.), handle the error
     console.error("Login failed", err);
-    if (axios.isAxiosError(err)) {
+    if (isAxiosError(err)) {
       setError(err.response?.data?.message || 'Invalid email or password');
     } else {
       setError('An unexpected error occurred');

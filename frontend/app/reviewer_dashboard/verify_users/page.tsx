@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import axios from 'axios';
+import axios from '@/lib/axios';
 import {
   CheckBadgeIcon,
   TrashIcon,

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import axios from 'axios';
+import axios from '@/lib/axios';
 import { CheckBadgeIcon, TrashIcon } from '@heroicons/react/24/outline';
 
 interface ActionButtonsProps {
