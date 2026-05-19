@@ -112,12 +112,6 @@ export default async function UserDetailPage({
           ))}
         </div>
       </div>
-
-      {/*
-        ActionButtons is a CLIENT COMPONENT — it uses localStorage + useRouter.
-        The server passes userId as a prop so the client component can make the PATCH call.
-        This is the "client island" pattern inside an SSR page.
-      */}
       <ActionButtons userId={id} />
 
     </div>
