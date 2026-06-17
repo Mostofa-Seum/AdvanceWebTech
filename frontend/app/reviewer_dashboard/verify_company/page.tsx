@@ -29,7 +29,7 @@ export default function VerifyCompanyModule() {
     fetchCompanies();
   }, []);
 
-  const fetchCompanies = async () => {
+  async function fetchCompanies() {
     setLoading(true);
     try {
       const res = await axios.get('http://localhost:3000/reviewer/companies/pending');
@@ -39,7 +39,7 @@ export default function VerifyCompanyModule() {
     } finally {
       setLoading(false);
     }
-  };
+  }
 
   const handleUpdateStatus = async (companyId: string, status: string) => {
     if (!sessionUser?.reviewer?.reviewerId) {

@@ -15,7 +15,7 @@ export default function ReviewReportsPage() {
     fetchReports();
   }, []);
 
-  const fetchReports = async () => {
+  async function fetchReports() {
     setLoading(true);
     try {
       const res = await axios.get('http://localhost:3000/reviewer/reports/pending');
@@ -25,7 +25,7 @@ export default function ReviewReportsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }
 
   const handleUpdateStatus = async (reportId: string, status: 'resolved' | 'rejected') => {
     // Optimistically remove from the list

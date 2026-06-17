@@ -29,7 +29,7 @@ export default function VerifyUserModule() {
     fetchUsers();
   }, []);
 
-  const fetchUsers = async () => {
+  async function fetchUsers() {
     setLoading(true);
     try {
       const res = await axios.get('http://localhost:3000/reviewer/users/pending');
@@ -39,7 +39,7 @@ export default function VerifyUserModule() {
     } finally {
       setLoading(false);
     }
-  };
+  }
 
   const handleUpdateStatus = async (userId: string, status: string, isEmailVerified: boolean, isPhoneVerified: boolean) => {
     if (!sessionUser?.reviewer?.reviewerId) {

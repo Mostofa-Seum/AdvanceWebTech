@@ -30,7 +30,7 @@ export default function WorkVerificationsModule() {
     fetchSubmissions();
   }, []);
 
-  const fetchSubmissions = async () => {
+  async function fetchSubmissions() {
     setLoading(true);
     try {
       const res = await axios.get('http://localhost:3000/reviewer/work/pending');
@@ -40,7 +40,7 @@ export default function WorkVerificationsModule() {
     } finally {
       setLoading(false);
     }
-  };
+  }
 
   const handleReview = async (submissionId: string, status: string, comments?: string) => {
     if (!sessionUser?.reviewer?.reviewerId) {

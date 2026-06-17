@@ -24,7 +24,7 @@ export default function PaymentsModule() {
     fetchPayments();
   }, []);
 
-  const fetchPayments = async () => {
+  async function fetchPayments() {
     setLoading(true);
     try {
       const res = await axios.get('http://localhost:3000/reviewer/payments/pending');
@@ -34,7 +34,7 @@ export default function PaymentsModule() {
     } finally {
       setLoading(false);
     }
-  };
+  }
 
   const handleRelease = async (paymentId: string) => {
     if (!sessionUser?.reviewer?.reviewerId) {
