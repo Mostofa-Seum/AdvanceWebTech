@@ -302,8 +302,8 @@ export default function Home() {
         </div>
         
         {/* Double width for seamless looping */}
-        <div className="flex w-[200%] whitespace-nowrap" ref={talentMarqueeRef}>
-          <div className="flex w-1/2 justify-around items-center gap-12 px-6">
+        <div className="flex w-max whitespace-nowrap" ref={talentMarqueeRef}>
+          <div className="flex items-center gap-16 sm:gap-32 px-8 sm:px-16 w-max">
              {topTalent.map((talent, i) => (
                 <div key={`a-${i}`} className="flex flex-col gap-2 shrink-0">
                   <div className="text-4xl font-bold tracking-tighter uppercase">{talent.name}</div>
@@ -314,7 +314,7 @@ export default function Home() {
                 </div>
              ))}
           </div>
-          <div className="flex w-1/2 justify-around items-center gap-12 px-6">
+          <div className="flex items-center gap-16 sm:gap-32 px-8 sm:px-16 w-max">
              {topTalent.map((talent, i) => (
                 <div key={`b-${i}`} className="flex flex-col gap-2 shrink-0">
                   <div className="text-4xl font-bold tracking-tighter uppercase">{talent.name}</div>
