@@ -67,99 +67,105 @@ export default function WorkVerificationsModule() {
     }
   };
 
-  if (loading) return <div className="text-gray-500 text-center mt-12">Loading pending submissions...</div>;
+  if (loading) return <div className="text-gray-500 font-bold uppercase tracking-widest text-center mt-12">Loading pending submissions...</div>;
 
   if (submissions.length === 0) return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-12 text-center mt-8">
-      <h2 className="text-2xl font-semibold text-gray-900">All Caught Up!</h2>
-      <p className="text-gray-500 mt-2">There are no pending work submissions waiting for verification.</p>
+    <div className="bg-white border-2 border-brand-black p-12 text-center shadow-[8px_8px_0px_0px_rgba(43,43,43,1)]">
+      <h2 className="text-4xl font-black text-brand-black uppercase tracking-widest">ALL CAUGHT UP</h2>
+      <p className="text-brand-red font-bold uppercase tracking-widest mt-4">There are no pending work submissions waiting for verification.</p>
     </div>
   );
 
   return (
-    <div className="space-y-4 mt-8">
-      <h2 className="text-2xl font-semibold text-gray-900 mb-6">Pending Work Verifications</h2>
-      {submissions.map((sub) => {
-        const job = sub.assignedJob?.job;
-        return (
-          <div key={sub.submissionId} className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 flex flex-col gap-4">
-            <div>
-              <h3 className="text-lg font-bold text-gray-900">Job: {job?.title || 'Unknown Job'}</h3>
-              <p className="text-sm text-gray-600 mt-1 line-clamp-2">
-                <strong>Description:</strong> {job?.description || 'N/A'}
-              </p>
-            </div>
-            
-            <div className="bg-gray-50 p-4 rounded-lg border border-gray-100">
-              <h4 className="font-semibold text-gray-800 mb-2">Submission Details</h4>
-              <p className="text-sm text-gray-700">
-                 <strong>Text:</strong> {sub.submissionText || 'No text provided.'}
-              </p>
-              {sub.fileUrl && (
-                 <p className="text-sm text-blue-600 mt-1 hover:underline truncate">
-                   <strong>File:</strong> <a href={sub.fileUrl} target="_blank" rel="noopener noreferrer">{sub.fileUrl}</a>
-                 </p>
-              )}
-              {sub.liveLink && (
-                 <p className="text-sm text-blue-600 mt-1 hover:underline truncate">
-                   <strong>Live Link:</strong> <a href={sub.liveLink.startsWith('http') ? sub.liveLink : `https://${sub.liveLink}`} target="_blank" rel="noopener noreferrer">{sub.liveLink}</a>
-                 </p>
-              )}
-            </div>
+    <div className="space-y-8">
+      <h2 className="text-3xl font-black text-brand-black uppercase tracking-widest border-b-4 border-brand-black pb-4">PENDING WORK VERIFICATIONS</h2>
+      <div className="space-y-6">
+        {submissions.map((sub) => {
+          const job = sub.assignedJob?.job;
+          return (
+            <div key={sub.submissionId} className="bg-white p-8 border-2 border-brand-black shadow-[8px_8px_0px_0px_rgba(43,43,43,1)] flex flex-col gap-6">
+              <div className="border-b-2 border-gray-200 pb-4">
+                <h3 className="text-2xl font-black text-brand-black uppercase tracking-widest">JOB: {job?.title || 'Unknown Job'}</h3>
+                <p className="text-sm font-medium text-gray-700 mt-2 line-clamp-2">
+                  <span className="font-bold uppercase tracking-widest text-brand-black mr-2">DESCRIPTION:</span> {job?.description || 'N/A'}
+                </p>
+              </div>
+              
+              <div className="bg-gray-50 border-2 border-brand-black p-6">
+                <h4 className="font-black text-brand-black uppercase tracking-widest mb-4">SUBMISSION DETAILS</h4>
+                <div className="space-y-4">
+                  <p className="text-sm font-medium text-gray-700 p-4 border-l-4 border-brand-black bg-white">
+                     <span className="text-xs font-bold uppercase tracking-widest text-brand-black block mb-2">TEXT:</span> {sub.submissionText || 'No text provided.'}
+                  </p>
+                  {sub.fileUrl && (
+                     <p className="text-xs font-bold uppercase tracking-widest text-brand-black p-4 border-l-4 border-gray-300 bg-white">
+                       <span className="mr-2">FILE:</span> <a href={sub.fileUrl} target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-brand-red truncate block mt-1">{sub.fileUrl}</a>
+                     </p>
+                  )}
+                  {sub.liveLink && (
+                     <p className="text-xs font-bold uppercase tracking-widest text-brand-black p-4 border-l-4 border-gray-300 bg-white">
+                       <span className="mr-2">LIVE LINK:</span> <a href={sub.liveLink.startsWith('http') ? sub.liveLink : `https://${sub.liveLink}`} target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-brand-red truncate block mt-1">{sub.liveLink}</a>
+                     </p>
+                  )}
+                </div>
+              </div>
 
-            <div className="flex flex-col sm:flex-row gap-3 mt-2 sm:items-center sm:justify-end">
-              {showRevisionFor === sub.submissionId ? (
-                <div className="flex-1 flex gap-2 w-full">
-                  <input 
-                    type="text" 
-                    placeholder="Enter revision instructions..." 
-                    className="flex-1 rounded-lg border border-gray-300 p-2 text-sm focus:ring-blue-500 focus:border-blue-500"
-                    value={revisionInputs[sub.submissionId] || ''}
-                    onChange={(e) => setRevisionInputs({...revisionInputs, [sub.submissionId]: e.target.value})}
-                  />
-                  <button 
-                    onClick={() => handleReview(sub.submissionId, 'revision_requested', revisionInputs[sub.submissionId])}
-                    className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
-                    disabled={!revisionInputs[sub.submissionId]}
-                  >
-                    Send
-                  </button>
-                  <button 
-                    onClick={() => setShowRevisionFor(null)}
-                    className="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-300 transition-colors"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              ) : (
-                <div className="flex gap-2">
-                  <button 
-                    onClick={() => handleReview(sub.submissionId, 'approved')}
-                    className="bg-green-100 text-green-700 hover:bg-green-200 px-4 py-2 rounded-lg transition-colors font-medium text-sm flex items-center justify-center flex-1 sm:flex-none"
-                  >
-                    <CheckBadgeIcon className="w-5 h-5 mr-1" />
-                    Accept
-                  </button>
-                  <button 
-                    onClick={() => handleReview(sub.submissionId, 'rejected')}
-                    className="bg-red-100 text-red-700 hover:bg-red-200 px-4 py-2 rounded-lg transition-colors font-medium text-sm flex items-center justify-center flex-1 sm:flex-none"
-                  >
-                    <TrashIcon className="w-5 h-5 mr-1" />
-                    Reject
-                  </button>
-                  <button 
-                    onClick={() => setShowRevisionFor(sub.submissionId)}
-                    className="bg-yellow-100 text-yellow-700 hover:bg-yellow-200 px-4 py-2 rounded-lg transition-colors font-medium text-sm flex items-center justify-center flex-1 sm:flex-none"
-                  >
-                    <PencilIcon className="w-5 h-5 mr-1" />
-                    Revision
-                  </button>
-                </div>
-              )}
+              <div className="flex flex-col sm:flex-row gap-4 mt-4 sm:items-center sm:justify-end">
+                {showRevisionFor === sub.submissionId ? (
+                  <div className="flex-1 flex flex-col sm:flex-row gap-4 w-full">
+                    <input 
+                      type="text" 
+                      placeholder="ENTER REVISION INSTRUCTIONS..." 
+                      className="flex-1 rounded-none border-2 border-brand-black p-3 text-xs font-bold tracking-widest uppercase focus:outline-none focus:border-brand-red"
+                      value={revisionInputs[sub.submissionId] || ''}
+                      onChange={(e) => setRevisionInputs({...revisionInputs, [sub.submissionId]: e.target.value})}
+                    />
+                    <div className="flex gap-4">
+                      <button 
+                        onClick={() => handleReview(sub.submissionId, 'revision_requested', revisionInputs[sub.submissionId])}
+                        className="bg-brand-black text-white px-8 py-3 rounded-none text-xs font-bold tracking-widest uppercase hover:bg-brand-red transition-colors disabled:opacity-50 cursor-pointer"
+                        disabled={!revisionInputs[sub.submissionId]}
+                      >
+                        SEND
+                      </button>
+                      <button 
+                        onClick={() => setShowRevisionFor(null)}
+                        className="bg-white text-brand-black border-2 border-brand-black px-8 py-3 rounded-none text-xs font-bold tracking-widest uppercase hover:bg-gray-100 transition-colors cursor-pointer"
+                      >
+                        CANCEL
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+                    <button 
+                      onClick={() => handleReview(sub.submissionId, 'approved')}
+                      className="bg-brand-black text-white hover:bg-green-700 px-6 py-4 rounded-none transition-colors font-bold text-xs uppercase tracking-widest flex items-center justify-center flex-1 sm:flex-none cursor-pointer"
+                    >
+                      <CheckBadgeIcon className="w-5 h-5 mr-2" />
+                      ACCEPT
+                    </button>
+                    <button 
+                      onClick={() => handleReview(sub.submissionId, 'rejected')}
+                      className="bg-white text-brand-black border-2 border-brand-black hover:bg-brand-red hover:text-white hover:border-brand-red px-6 py-4 rounded-none transition-colors font-bold text-xs uppercase tracking-widest flex items-center justify-center flex-1 sm:flex-none cursor-pointer"
+                    >
+                      <TrashIcon className="w-5 h-5 mr-2" />
+                      REJECT
+                    </button>
+                    <button 
+                      onClick={() => setShowRevisionFor(sub.submissionId)}
+                      className="bg-gray-200 text-brand-black border-2 border-brand-black hover:bg-gray-300 px-6 py-4 rounded-none transition-colors font-bold text-xs uppercase tracking-widest flex items-center justify-center flex-1 sm:flex-none cursor-pointer"
+                    >
+                      <PencilIcon className="w-5 h-5 mr-2" />
+                      REVISION
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-        );
-      })}
+          );
+        })}
+      </div>
     </div>
   );
 }

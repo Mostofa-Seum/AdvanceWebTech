@@ -1,11 +1,9 @@
 'use client'
 
 import Link from 'next/link'
-import { ArrowLeftIcon, AcademicCapIcon } from '@heroicons/react/24/outline'
+import { ArrowLeftIcon } from '@heroicons/react/24/outline'
 import axios from 'axios';
 import { useState } from 'react';
-
-
 import { useRouter } from 'next/navigation';
 
 export default function Login() {
@@ -13,90 +11,78 @@ export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  
   const handleLogin = async (e: React.FormEvent) => {
-  // 1. Stop the page from refreshing when you submit the form
-  e.preventDefault(); 
-  setError(''); // Clear any old errors
+    e.preventDefault(); 
+    setError('');
 
-  try {
-    // 2. Make the POST request to your backend using axios via the Auth module
-    const response = await axios.post('http://localhost:3000/auth/login', {
-      email: email,
-      password: password,
-    });
+    try {
+      const response = await axios.post('http://localhost:3000/auth/login', {
+        email: email,
+        password: password,
+      });
 
-    // 3. If successful, the backend will send back the user details and JWT
-    console.log("Login successful!", response.data);
-    
-    // Save the user info and JWT token
-    const loggedInUser = response.data.user;
-    const token = response.data.access_token;
-    
-    localStorage.setItem('user', JSON.stringify(loggedInUser));
-    if (token) {
-      localStorage.setItem('token', token);
+      console.log("Login successful!", response.data);
+      
+      const loggedInUser = response.data.user;
+      const token = response.data.access_token;
+      
+      localStorage.setItem('user', JSON.stringify(loggedInUser));
+      if (token) {
+        localStorage.setItem('token', token);
+      }
+
+      if (loggedInUser.role === 'admin') {
+        router.push('/admin/dashboard');
+      } else if (loggedInUser.role === 'company') {
+        router.push('/company/dashboard');
+      } else if (loggedInUser.role === 'employee') {
+        router.push('/employee/dashboard');
+      } else {
+        router.push('/reviewer_dashboard');
+      }
+
+    } catch (err) {
+      console.error("Login failed", err);
+      if (axios.isAxiosError(err)) {
+        setError(err.response?.data?.message || 'Invalid email or password');
+      } else {
+        setError('An unexpected error occurred');
+      }
     }
-
-    // Dynamic Redirect based on user role
-    if (loggedInUser.role === 'admin') {
-      router.push('/admin/dashboard');
-    } else if (loggedInUser.role === 'company') {
-      router.push('/company/dashboard');
-    } else if (loggedInUser.role === 'employee') {
-      router.push('/employee/dashboard');
-    } else {
-      // Default fallback or reviewer
-      router.push('/reviewer_dashboard');
-    }
-
-  } catch (err) {
-    // 4. If the backend rejects the login (wrong password, etc.), handle the error
-    console.error("Login failed", err);
-    if (axios.isAxiosError(err)) {
-      setError(err.response?.data?.message || 'Invalid email or password');
-    } else {
-      setError('An unexpected error occurred');
-    }
-  }
-};
-
+  };
 
   return (
-    <div className="bg-white dark:bg-gray-900 min-h-screen flex flex-col justify-center relative isolate sm:px-6 lg:px-8">
-      {/* Background Gradient from Homepage */}
-      <div aria-hidden="true" className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80">
-        <div
-          style={{ clipPath: 'polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)' }}
-          className="relative left-[calc(50%-11rem)] aspect-1155/678 w-144.5 -translate-x-1/2 rotate-30 bg-linear-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%-30rem)] sm:w-288.75"
-        />
-      </div>
+    <div className="bg-white min-h-screen flex flex-col justify-center relative py-12 sm:px-6 lg:px-8">
 
       {/* Back Button */}
       <div className="absolute top-8 left-8 sm:top-12 sm:left-12">
-        <Link href="/homepage" className="flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+        <Link href="/" className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-brand-black hover:text-brand-red transition-colors">
           <ArrowLeftIcon className="h-4 w-4" />
-          Back to home
+          BACK TO HOME
         </Link>
       </div>
 
       {/* Login Header */}
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
+      <div className="sm:mx-auto sm:w-full sm:max-w-md mt-16 sm:mt-0">
         <div className="flex justify-center items-center gap-2">
-          <AcademicCapIcon className="h-10 w-auto text-indigo-600 dark:text-indigo-500" />
-          <span className="font-bold text-3xl tracking-tight text-gray-900 dark:text-white">SkillSeed</span>
+          <div className="w-12 h-12 bg-brand-red flex items-center justify-center">
+            <span className="text-white font-bold text-2xl leading-none">S</span>
+          </div>
+          <span className="font-bold text-4xl tracking-widest uppercase text-brand-black">SkillSeed</span>
         </div>
-        <h2 className="mt-6 text-center text-2xl/9 font-bold tracking-tight text-gray-900 dark:text-white">
-          Sign in to your account
+        <h2 className="mt-8 text-center text-3xl font-bold tracking-tight uppercase text-brand-black">
+          SIGN IN TO YOUR ACCOUNT
         </h2>
       </div>
 
       {/* Login Card */}
-      <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-[480px]">
-        <div className="bg-white dark:bg-gray-800 px-6 py-12 shadow-sm sm:rounded-xl sm:px-12 border border-gray-200 dark:border-gray-700">
-          <form onSubmit={handleLogin} className="space-y-6">
-            {error && <div className="bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded relative">{error}</div>}
+      <div className="mt-12 sm:mx-auto sm:w-full sm:max-w-[480px]">
+        <div className="bg-white px-6 py-12 sm:px-12 border border-brand-black/20 shadow-[8px_8px_0px_0px_rgba(43,43,43,1)]">
+          <form onSubmit={handleLogin} className="space-y-8">
+            {error && <div className="bg-brand-red/10 border-l-4 border-brand-red text-brand-red px-4 py-3 text-sm font-bold tracking-wide uppercase">{error}</div>}
             <div>
-              <label htmlFor="email" className="block text-sm/6 font-medium text-gray-900 dark:text-gray-300">
+              <label htmlFor="email" className="block text-xs font-bold uppercase tracking-widest text-brand-black">
                 Email address
               </label>
               <div className="mt-2">
@@ -108,13 +94,13 @@ export default function Login() {
                   autoComplete="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="block w-full rounded-md bg-white dark:bg-gray-900 px-3 py-1.5 text-base text-gray-900 dark:text-white outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 dark:focus:outline-indigo-500 sm:text-sm/6 transition-all"
+                  className="block w-full border border-gray-300 bg-white px-4 py-3 text-base text-brand-black placeholder:text-gray-400 focus:border-brand-red focus:outline-none focus:ring-1 focus:ring-brand-red transition-colors rounded-none"
                 />
               </div>
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm/6 font-medium text-gray-900 dark:text-gray-300">
+              <label htmlFor="password" className="block text-xs font-bold uppercase tracking-widest text-brand-black">
                 Password
               </label>
               <div className="mt-2">
@@ -126,62 +112,45 @@ export default function Login() {
                   autoComplete="current-password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="block w-full rounded-md bg-white dark:bg-gray-900 px-3 py-1.5 text-base text-gray-900 dark:text-white outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 dark:focus:outline-indigo-500 sm:text-sm/6 transition-all"
+                  className="block w-full border border-gray-300 bg-white px-4 py-3 text-base text-brand-black placeholder:text-gray-400 focus:border-brand-red focus:outline-none focus:ring-1 focus:ring-brand-red transition-colors rounded-none"
                 />
               </div>
             </div>
 
             <div className="flex items-center justify-between">
-              <div className="flex gap-3">
-                <div className="flex h-6 shrink-0 items-center">
-                  <div className="group grid size-4 grid-cols-1">
-                    <input
-                      id="remember-me"
-                      name="remember-me"
-                      type="checkbox"
-                      className="col-start-1 row-start-1 appearance-none rounded-sm border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 checked:border-indigo-600 checked:bg-indigo-600 dark:checked:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:focus-visible:outline-indigo-500 cursor-pointer"
-                    />
-                    <svg
-                      fill="none"
-                      viewBox="0 0 14 14"
-                      className="pointer-events-none col-start-1 row-start-1 size-3.5 self-center justify-self-center stroke-white group-has-[:disabled]:stroke-gray-950/25"
-                    >
-                      <path
-                        d="M3 8L6 11L11 3.5"
-                        strokeWidth={2}
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        className="opacity-0 group-has-[:checked]:opacity-100"
-                      />
-                    </svg>
-                  </div>
-                </div>
-                <label htmlFor="remember-me" className="block text-sm/6 text-gray-900 dark:text-gray-300 cursor-pointer">
+              <div className="flex gap-3 items-center">
+                <input
+                  id="remember-me"
+                  name="remember-me"
+                  type="checkbox"
+                  className="w-4 h-4 appearance-none border border-brand-black bg-white checked:bg-brand-red checked:border-brand-red focus:outline-none focus:ring-2 focus:ring-brand-red focus:ring-offset-2 cursor-pointer transition-colors relative after:content-[''] after:absolute after:hidden checked:after:block after:left-1.5 after:top-0.5 after:w-1.5 after:h-2.5 after:border-r-2 after:border-b-2 after:border-white after:rotate-45"
+                />
+                <label htmlFor="remember-me" className="block text-xs font-bold uppercase tracking-wider text-gray-600 cursor-pointer">
                   Remember me
                 </label>
               </div>
 
-              <div className="text-sm/6">
-                <Link href="/forgot-password" className="font-semibold text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300 transition-colors">
+              <div className="text-xs font-bold uppercase tracking-wider">
+                <Link href="/forgot-password" className="text-brand-black hover:text-brand-red transition-colors border-b border-transparent hover:border-brand-red">
                   Forgot password?
                 </Link>
               </div>
             </div>
 
-            <div>
+            <div className="pt-2">
               <button
                 type="submit"
-                className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:bg-indigo-500 dark:hover:bg-indigo-400 transition-colors cursor-pointer"
+                className="flex w-full justify-center bg-brand-black px-4 py-4 text-sm font-bold uppercase tracking-widest text-white hover:bg-brand-red transition-colors cursor-pointer rounded-none"
               >
-                Sign in
+                SIGN IN
               </button>
             </div>
           </form>
           
-          <p className="mt-10 text-center text-sm/6 text-gray-500 dark:text-gray-400">
+          <p className="mt-12 text-center text-xs font-bold uppercase tracking-widest text-gray-500">
             Not a member?{' '}
-            <Link href="/signup" className="font-semibold text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300 transition-colors">
-              Create an account
+            <Link href="/signup" className="text-brand-black hover:text-brand-red transition-colors border-b border-brand-black hover:border-brand-red pb-0.5 ml-1">
+              CREATE AN ACCOUNT
             </Link>
           </p>
         </div>

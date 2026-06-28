@@ -1,132 +1,154 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useParams } from 'next/navigation';
 import Link from 'next/link';
+import axios from 'axios';
 import UserActions from '@/app/admin/users/[id]/UserActions';
 
-// SSR: This page is a Server Component — data is fetched at request time on the server
-export default async function UserDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
+export default function UserDetailPage() {
+  const { id } = useParams<{ id: string }>();
+  const [user, setUser] = useState<any>(null);
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(true);
 
-  let user: any = null;
-  let error = '';
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    axios
+      .get(`http://localhost:3000/admin/users/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => setUser(res.data))
+      .catch((err) => {
+        if (err.response?.status === 401) {
+          setError('Unauthorized. Please log in again.');
+        } else {
+          setError(err.response?.data?.message || 'User not found');
+        }
+      })
+      .finally(() => setLoading(false));
+  }, [id]);
 
-  try {
-    const res = await fetch(`http://localhost:3000/admin/users/${id}`, {
-      cache: 'no-store', // Always fetch fresh data (SSR, not ISR)
-    });
-
-    if (!res.ok) {
-      error = 'User not found';
-    } else {
-      user = await res.json();
-    }
-  } catch {
-    error = 'Failed to connect to the server';
+  if (loading) {
+    return (
+      <div className="max-w-4xl mx-auto p-8 text-center text-brand-black">
+        <p className="text-xl font-black uppercase tracking-widest animate-pulse">LOADING USER DATA...</p>
+      </div>
+    );
   }
 
   if (error || !user) {
     return (
       <div className="max-w-4xl mx-auto p-8">
-        <Link href="/admin/dashboard" className="text-blue-600 hover:underline text-sm font-medium mb-6 inline-block">
-          ← Back to Dashboard
+        <Link href="/admin/dashboard" className="text-brand-black hover:text-brand-red text-sm font-black uppercase tracking-widest mb-6 inline-flex items-center border-2 border-transparent hover:border-brand-red pb-1 transition-colors">
+          ← BACK TO DASHBOARD
         </Link>
-        <div className="bg-red-50 border border-red-200 text-red-600 p-6 rounded-xl text-center">
-          <p className="text-lg font-semibold">{error || 'User not found'}</p>
+        <div className="bg-white border-2 border-brand-red text-brand-red p-8 shadow-[8px_8px_0px_0px_rgba(228,22,19,1)]">
+          <p className="text-2xl font-black uppercase tracking-widest">{error || 'USER NOT FOUND'}</p>
         </div>
       </div>
     );
   }
 
   const statusColor =
-    user.status === 'active' ? 'bg-green-100 text-green-700' :
-    user.status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
-    user.status === 'suspended' || user.status === 'rejected' ? 'bg-red-100 text-red-700' :
-    'bg-gray-100 text-gray-600';
+    user.status === 'active' ? 'bg-green-100 text-green-800 border-2 border-brand-black' :
+    user.status === 'pending' ? 'bg-yellow-100 text-yellow-800 border-2 border-brand-black' :
+    user.status === 'suspended' || user.status === 'rejected' ? 'bg-white text-brand-red border-2 border-brand-red' :
+    'bg-gray-100 text-gray-800 border-2 border-brand-black';
 
   return (
-    <div className="max-w-4xl mx-auto p-4 md:p-8 space-y-6">
+    <div className="max-w-4xl mx-auto p-4 md:p-8 space-y-8">
       {/* Breadcrumb */}
-      <Link href="/admin/dashboard" className="text-blue-600 hover:underline text-sm font-medium inline-flex items-center gap-1">
-        ← Back to Dashboard
+      <Link href="/admin/dashboard" className="text-brand-black hover:text-brand-red text-sm font-black uppercase tracking-widest inline-flex items-center gap-1 border-2 border-transparent hover:border-brand-red pb-1 transition-colors">
+        ← BACK TO DASHBOARD
       </Link>
 
-      {/* User Info Card — Server Rendered */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-        <div className="bg-gray-50 border-b border-gray-200 p-6">
+      {/* User Info Card */}
+      <div className="bg-white border-2 border-brand-black shadow-[8px_8px_0px_0px_rgba(43,43,43,1)]">
+        <div className="bg-white border-b-4 border-brand-black p-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">{user.fullName}</h1>
-              <p className="text-sm text-gray-500 mt-1 font-mono">{user.userId}</p>
+              <h1 className="text-4xl font-black text-brand-black uppercase tracking-widest">{user.fullName}</h1>
+              <p className="text-sm font-bold text-gray-500 mt-2 uppercase tracking-widest">ID: {user.userId}</p>
             </div>
-            <div className="flex items-center gap-3">
-              <span className="px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-xs font-semibold uppercase">
+            <div className="flex flex-col items-end gap-3">
+              <span className="px-4 py-2 bg-white text-brand-black border-2 border-brand-black text-xs font-black uppercase tracking-widest">
                 {user.role}
               </span>
-              <span className={`px-3 py-1 rounded-full text-xs font-semibold uppercase ${statusColor}`}>
+              <span className={`px-4 py-2 text-xs font-black uppercase tracking-widest ${statusColor}`}>
                 {user.status}
               </span>
             </div>
           </div>
         </div>
 
-        <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <p className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Email Address</p>
-            <p className="text-sm text-gray-900 font-medium">{user.email}</p>
+        <div className="p-8 grid grid-cols-1 md:grid-cols-2 gap-8 bg-white">
+          <div className="border-2 border-brand-black p-4">
+            <p className="text-xs font-black text-brand-black uppercase tracking-widest mb-2 border-b-2 border-brand-black pb-2">EMAIL ADDRESS</p>
+            <p className="text-sm font-bold text-brand-black">{user.email}</p>
           </div>
-          <div>
-            <p className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Phone Number</p>
-            <p className="text-sm text-gray-900">{user.phone || 'Not provided'}</p>
+          <div className="border-2 border-brand-black p-4">
+            <p className="text-xs font-black text-brand-black uppercase tracking-widest mb-2 border-b-2 border-brand-black pb-2">PHONE NUMBER</p>
+            <p className="text-sm font-bold text-brand-black">{user.phone || 'NOT PROVIDED'}</p>
           </div>
-          <div>
-            <p className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Address</p>
-            <p className="text-sm text-gray-900">{user.address || 'Not provided'}</p>
+          <div className="border-2 border-brand-black p-4">
+            <p className="text-xs font-black text-brand-black uppercase tracking-widest mb-2 border-b-2 border-brand-black pb-2">ADDRESS</p>
+            <p className="text-sm font-bold text-brand-black">{user.address || 'NOT PROVIDED'}</p>
           </div>
-          <div>
-            <p className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Account Created</p>
-            <p className="text-sm text-gray-900">
+          <div className="border-2 border-brand-black p-4">
+            <p className="text-xs font-black text-brand-black uppercase tracking-widest mb-2 border-b-2 border-brand-black pb-2">ACCOUNT CREATED</p>
+            <p className="text-sm font-bold text-brand-black uppercase">
               {new Date(user.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
             </p>
           </div>
-          <div>
-            <p className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Email Verified</p>
-            <p className="text-sm">{user.isEmailVerified ? '✅ Yes' : '❌ No'}</p>
+          <div className="border-2 border-brand-black p-4">
+            <p className="text-xs font-black text-brand-black uppercase tracking-widest mb-2 border-b-2 border-brand-black pb-2">EMAIL VERIFIED</p>
+            <p className="text-sm font-bold text-brand-black">{user.isEmailVerified ? 'YES' : 'NO'}</p>
           </div>
-          <div>
-            <p className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Phone Verified</p>
-            <p className="text-sm">{user.isPhoneVerified ? '✅ Yes' : '❌ No'}</p>
+          <div className="border-2 border-brand-black p-4">
+            <p className="text-xs font-black text-brand-black uppercase tracking-widest mb-2 border-b-2 border-brand-black pb-2">PHONE VERIFIED</p>
+            <p className="text-sm font-bold text-brand-black">{user.isPhoneVerified ? 'YES' : 'NO'}</p>
           </div>
         </div>
 
-        {/* Related Profiles — Server Rendered */}
+        {/* Linked Profiles */}
         {(user.employee || user.reviewer || user.company) && (
-          <div className="border-t border-gray-200 p-6">
-            <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wider mb-4">Linked Profiles</h2>
-            <div className="space-y-2 text-sm">
+          <div className="border-t-4 border-brand-black p-8 bg-gray-50">
+            <h2 className="text-2xl font-black text-brand-black uppercase tracking-widest mb-6">LINKED PROFILES</h2>
+            <div className="space-y-4">
               {user.employee && (
-                <p className="text-gray-600">
-                  <span className="font-medium">Employee ID:</span>{' '}
-                  <span className="font-mono text-xs">{user.employee.employeeId}</span>{' | '}
-                  <span className="font-medium">Balance:</span> ${user.employee.balance || 0}
-                </p>
+                <div className="border-2 border-brand-black bg-white p-4">
+                  <p className="text-brand-black font-bold uppercase tracking-widest text-sm">
+                    <span className="font-black mr-2">EMPLOYEE ID:</span> {user.employee.employeeId} <br className="md:hidden" />
+                    <span className="md:mx-2 text-brand-red">|</span>
+                    <span className="font-black mr-2">BALANCE:</span> ${user.employee.balance || 0}
+                  </p>
+                </div>
               )}
               {user.reviewer && (
-                <p className="text-gray-600">
-                  <span className="font-medium">Reviewer ID:</span>{' '}
-                  <span className="font-mono text-xs">{user.reviewer.reviewerId}</span>{' | '}
-                  <span className="font-medium">Trust Score:</span> {user.reviewer.trustScore || 0}
-                </p>
+                <div className="border-2 border-brand-black bg-white p-4">
+                  <p className="text-brand-black font-bold uppercase tracking-widest text-sm">
+                    <span className="font-black mr-2">REVIEWER ID:</span> {user.reviewer.reviewerId} <br className="md:hidden" />
+                    <span className="md:mx-2 text-brand-red">|</span>
+                    <span className="font-black mr-2">TRUST SCORE:</span> {user.reviewer.trustScore || 0}
+                  </p>
+                </div>
               )}
               {user.company && (
-                <p className="text-gray-600">
-                  <span className="font-medium">Company:</span> {user.company.companyName}{' | '}
-                  <span className="font-medium">Status:</span> {user.company.status}
-                </p>
+                <div className="border-2 border-brand-black bg-white p-4">
+                  <p className="text-brand-black font-bold uppercase tracking-widest text-sm">
+                    <span className="font-black mr-2">COMPANY:</span> {user.company.companyName} <br className="md:hidden" />
+                    <span className="md:mx-2 text-brand-red">|</span>
+                    <span className="font-black mr-2">STATUS:</span> {user.company.status}
+                  </p>
+                </div>
               )}
             </div>
           </div>
         )}
       </div>
 
-      {/* Client-side interactive section */}
+      {/* Interactive actions */}
       <UserActions
         userId={user.userId}
         currentStatus={user.status}
@@ -134,13 +156,6 @@ export default async function UserDetailPage({ params }: { params: Promise<{ id:
         employeeId={user.employee?.employeeId}
         reviewerId={user.reviewer?.reviewerId}
       />
-
-      {/* SSR info badge */}
-      <div className="bg-blue-50 border border-blue-100 rounded-lg p-3 text-center">
-        <p className="text-xs text-blue-700 font-medium">
-          This page is Server-Side Rendered (SSR). User data was fetched on the server at request time.
-        </p>
-      </div>
     </div>
   );
 }

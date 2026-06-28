@@ -1,37 +1,35 @@
-import { AcademicCapIcon, EnvelopeIcon } from '@heroicons/react/24/outline'
+import { EnvelopeIcon } from '@heroicons/react/24/outline'
 
 export default function Footer() {
   return (
-    <footer id="footer" className="bg-gray-900 text-white py-16 sm:py-24">
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 border-b border-gray-800 pb-12">
-          <div>
-            <div className="flex items-center gap-2 mb-6">
-              <AcademicCapIcon className="h-8 w-auto text-indigo-500" />
-              <span className="font-bold text-2xl tracking-tight">SkillSeed</span>
-            </div>
-            <p className="text-gray-400 max-w-md">
-              The leading platform for student micro-internships. Empowering the next generation of tech talent through real-world experience.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-            <div>
-              <h3 className="text-sm font-semibold uppercase tracking-wider text-indigo-400 mb-4">Contact Info</h3>
-              <ul className="space-y-3 text-gray-400 text-sm">
-                <li className="flex items-center gap-2">
-                  <EnvelopeIcon className="h-4 w-4" /> support@SkillSeed.com
-                </li>
-                <li>Dhaka, Bangladesh</li>
-                <li>American International University-Bangladesh (AIUB)</li>
-              </ul>
-            </div>
+    <footer id="footer" className="bg-brand-black text-white relative z-0 h-screen">
+      <div className="sticky bottom-0 h-screen w-full flex flex-col justify-between pt-32 pb-12 px-6 lg:px-12">
+        
+        {/* Massive CTA */}
+        <div className="flex-1 flex flex-col justify-center max-w-[1400px] mx-auto w-full">
+          <h2 className="text-[10vw] sm:text-[8vw] font-bold tracking-tighter uppercase leading-[0.8] mb-12">
+            THE OPPORTUNITY TO <br />
+            <span className="text-brand-red">CREATE</span>, GROW, AND <br />
+            LOOK AHEAD.
+          </h2>
+          <div className="flex items-center gap-6">
+            <a href="mailto:support@skillseed.com" className="inline-block bg-white text-brand-black px-12 py-6 text-sm font-bold uppercase tracking-widest hover:bg-brand-red hover:text-white transition-colors duration-300">
+              CONTACT US
+            </a>
           </div>
         </div>
-        <div className="pt-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-gray-500">
-          <p>© 2026 SkillSeed. All rights reserved.</p>
-          <div className="flex gap-6">
-            <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
-            <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
+
+        {/* Footer Bottom Links */}
+        <div className="max-w-[1400px] mx-auto w-full pt-12 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6 text-xs sm:text-sm font-bold uppercase tracking-widest text-gray-500 border-t border-white/10">
+          <div className="flex flex-col gap-2">
+            <p>© 2026 SKILLSEED. ALL RIGHTS RESERVED.</p>
+            <p className="flex items-center gap-2"><EnvelopeIcon className="w-4 h-4" /> support@skillseed.com</p>
+          </div>
+          <div className="flex flex-wrap gap-8">
+            <a href="#" className="hover:text-brand-red transition-colors">Legal Notice</a>
+            <a href="#" className="hover:text-brand-red transition-colors">Privacy Policy</a>
+            <a href="#" className="hover:text-brand-red transition-colors">Cookies Policy</a>
+            <a href="#" className="hover:text-brand-red transition-colors">Whistleblowing Channel</a>
           </div>
         </div>
       </div>

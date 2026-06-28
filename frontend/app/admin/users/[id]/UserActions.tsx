@@ -68,49 +68,49 @@ export default function UserActions({ userId, currentStatus, currentRole, employ
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-5">
-      <h2 className="text-lg font-semibold text-gray-900">Actions</h2>
+    <div className="bg-white border-2 border-brand-black p-8 shadow-[8px_8px_0px_0px_rgba(43,43,43,1)] space-y-8 mt-8">
+      <h2 className="text-3xl font-black text-brand-black uppercase tracking-widest border-b-4 border-brand-black pb-4">ACTIONS</h2>
 
       {msg && (
-        <p className={`text-sm p-3 rounded-lg ${msg.startsWith('Error') ? 'bg-red-50 text-red-600 border border-red-200' : 'bg-green-50 text-green-700 border border-green-200'}`}>
+        <p className={`text-xs font-bold uppercase tracking-widest p-4 border-2 ${msg.startsWith('Error') ? 'bg-white text-brand-red border-brand-red' : 'bg-brand-black text-white border-brand-black'}`}>
           {msg}
         </p>
       )}
 
       {/* Status Management */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">Update Status</label>
-        <div className="flex items-center gap-3">
+        <label className="block text-xs font-black text-brand-black uppercase tracking-widest mb-4">UPDATE STATUS</label>
+        <div className="flex items-center gap-4">
           <select
             value={status}
             onChange={(e) => updateStatus(e.target.value)}
             disabled={loading}
-            className="block w-48 rounded-md shadow-sm p-2.5 border border-gray-300 focus:border-blue-500 bg-white text-sm"
+            className="block w-48 p-4 border-2 border-brand-black focus:border-brand-red focus:ring-0 focus:outline-none bg-white text-sm font-bold uppercase cursor-pointer"
           >
-            <option value="pending">Pending</option>
-            <option value="active">Active</option>
-            <option value="suspended">Suspended</option>
-            <option value="rejected">Rejected</option>
+            <option value="pending">PENDING</option>
+            <option value="active">ACTIVE</option>
+            <option value="suspended">SUSPENDED</option>
+            <option value="rejected">REJECTED</option>
           </select>
-          <span className="text-xs text-gray-400">Current: {status}</span>
+          <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">CURRENT: {status}</span>
         </div>
       </div>
 
       {/* Role Actions */}
       {(currentRole === 'employee' || currentRole === 'reviewer') && (
-        <div className="border-t border-gray-200 pt-5">
-          <p className="text-sm font-medium text-gray-700 mb-3">Role Management</p>
-          <div className="flex gap-3">
+        <div className="border-t-4 border-brand-black pt-8">
+          <p className="text-xs font-black text-brand-black uppercase tracking-widest mb-4">ROLE MANAGEMENT</p>
+          <div className="flex flex-wrap gap-4">
             {currentRole === 'employee' && (
               <button onClick={promoteToReviewer} disabled={loading}
-                className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 text-sm font-medium disabled:opacity-50">
-                Promote to Reviewer
+                className="bg-white text-brand-black border-2 border-brand-black px-6 py-3 hover:bg-brand-black hover:text-white transition-colors text-xs font-black tracking-widest uppercase disabled:opacity-50 cursor-pointer">
+                PROMOTE TO REVIEWER
               </button>
             )}
             {currentRole === 'reviewer' && (
               <button onClick={demoteToEmployee} disabled={loading}
-                className="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 text-sm font-medium disabled:opacity-50">
-                Demote to Employee
+                className="bg-white text-brand-black border-2 border-brand-black px-6 py-3 hover:bg-brand-black hover:text-white transition-colors text-xs font-black tracking-widest uppercase disabled:opacity-50 cursor-pointer">
+                DEMOTE TO EMPLOYEE
               </button>
             )}
           </div>
@@ -118,10 +118,10 @@ export default function UserActions({ userId, currentStatus, currentRole, employ
       )}
 
       {/* Delete */}
-      <div className="border-t border-gray-200 pt-5">
+      <div className="border-t-4 border-brand-black pt-8">
         <button onClick={deleteUser} disabled={loading}
-          className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 text-sm font-medium disabled:opacity-50">
-          Delete User Permanently
+          className="bg-brand-red text-white border-2 border-brand-red px-6 py-3 hover:bg-white hover:text-brand-red transition-colors text-xs font-black tracking-widest uppercase disabled:opacity-50 cursor-pointer">
+          DELETE USER PERMANENTLY
         </button>
       </div>
     </div>

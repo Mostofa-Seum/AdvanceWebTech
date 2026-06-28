@@ -60,51 +60,53 @@ export default function VerifyCompanyModule() {
     }
   };
 
-  if (loading) return <div className="text-gray-500 text-center mt-12">Loading pending companies...</div>;
+  if (loading) return <div className="text-gray-500 font-bold uppercase tracking-widest text-center mt-12">Loading pending companies...</div>;
 
   if (companies.length === 0) return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-12 text-center mt-8">
-      <h2 className="text-2xl font-semibold text-gray-900">All Caught Up!</h2>
-      <p className="text-gray-500 mt-2">There are no pending companies waiting for verification.</p>
+    <div className="bg-white border-2 border-brand-black p-12 text-center shadow-[8px_8px_0px_0px_rgba(43,43,43,1)]">
+      <h2 className="text-4xl font-black text-brand-black uppercase tracking-widest">ALL CAUGHT UP</h2>
+      <p className="text-brand-red font-bold uppercase tracking-widest mt-4">There are no pending companies waiting for verification.</p>
     </div>
   );
 
   return (
-    <div className="space-y-4 mt-8">
-      <h2 className="text-2xl font-semibold text-gray-900 mb-6">Pending Company Verifications</h2>
-      {companies.map((company) => (
-        <div key={company.companyId} className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 flex flex-col md:flex-row justify-between md:items-center gap-4">
-          <div>
-            <h3 className="text-lg font-bold text-gray-900">{company.companyName}</h3>
-            {company.website && (
-               <p className="text-sm text-blue-600 mt-1 hover:underline">
-                 <a href={company.website.startsWith('http') ? company.website : `https://${company.website}`} target="_blank" rel="noopener noreferrer">
-                   {company.website}
-                 </a>
-               </p>
-            )}
-            <p className="text-sm text-gray-600 mt-2 line-clamp-3">
-               <strong>Description:</strong> {company.description || 'No description provided.'}
-            </p>
+    <div className="space-y-8">
+      <h2 className="text-3xl font-black text-brand-black uppercase tracking-widest border-b-4 border-brand-black pb-4">PENDING COMPANY VERIFICATIONS</h2>
+      <div className="space-y-6">
+        {companies.map((company) => (
+          <div key={company.companyId} className="bg-white p-8 border-2 border-brand-black shadow-[8px_8px_0px_0px_rgba(43,43,43,1)] flex flex-col md:flex-row justify-between md:items-start gap-6">
+            <div className="flex-1">
+              <h3 className="text-2xl font-black text-brand-black uppercase tracking-widest mb-4">{company.companyName}</h3>
+              {company.website && (
+                 <p className="text-xs font-bold uppercase tracking-widest mt-2 hover:text-brand-red text-gray-500 transition-colors">
+                   <a href={company.website.startsWith('http') ? company.website : `https://${company.website}`} target="_blank" rel="noopener noreferrer">
+                     {company.website}
+                   </a>
+                 </p>
+              )}
+              <p className="text-sm font-medium text-gray-700 mt-6 p-4 bg-gray-50 border-l-4 border-brand-black line-clamp-3">
+                 <strong className="text-brand-black uppercase tracking-widest text-xs block mb-1">DESCRIPTION:</strong> {company.description || 'No description provided.'}
+              </p>
+            </div>
+            <div className="flex flex-col space-y-4 shrink-0 w-full md:w-48 mt-6 md:mt-0">
+              <button 
+                onClick={() => handleUpdateStatus(company.companyId, 'active')}
+                className="w-full bg-brand-black text-white hover:bg-green-700 px-6 py-4 transition-colors font-bold text-xs tracking-widest uppercase flex items-center justify-center cursor-pointer"
+              >
+                <CheckBadgeIcon className="w-5 h-5 mr-2" />
+                ACCEPT
+              </button>
+              <button 
+                onClick={() => handleUpdateStatus(company.companyId, 'rejected')}
+                className="w-full bg-white text-brand-black border-2 border-brand-black hover:bg-brand-red hover:text-white hover:border-brand-red px-6 py-4 transition-colors font-bold text-xs tracking-widest uppercase flex items-center justify-center cursor-pointer"
+              >
+                <TrashIcon className="w-5 h-5 mr-2" />
+                REJECT
+              </button>
+            </div>
           </div>
-          <div className="flex space-x-3 shrink-0">
-            <button 
-              onClick={() => handleUpdateStatus(company.companyId, 'active')}
-              className="bg-green-100 text-green-700 hover:bg-green-200 px-4 py-2 rounded-lg transition-colors font-medium text-sm flex items-center"
-            >
-              <CheckBadgeIcon className="w-5 h-5 mr-1" />
-              Accept
-            </button>
-            <button 
-              onClick={() => handleUpdateStatus(company.companyId, 'rejected')}
-              className="bg-red-100 text-red-700 hover:bg-red-200 px-4 py-2 rounded-lg transition-colors font-medium text-sm flex items-center"
-            >
-              <TrashIcon className="w-5 h-5 mr-1" />
-              Reject
-            </button>
-          </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 }

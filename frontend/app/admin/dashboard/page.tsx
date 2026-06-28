@@ -3,7 +3,6 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import axios from 'axios';
-// Removed top-level Pusher Beams import to avoid SSR crashes
 import ReviewerRequestCard from '@/app/components/admin/ReviewerRequestCard';
 
 type TabType = 'users' | 'companies' | 'reviewers' | 'reviewer-requests' | 'create-admin' | 'profile';
@@ -53,15 +52,15 @@ export default function AdminDashboard() {
   useEffect(() => {
     const userStr = localStorage.getItem('user');
     const token = localStorage.getItem('token');
-    
+
     if (!userStr || !token) { router.push('/login'); return; }
     try {
       const user = JSON.parse(userStr);
       if (user.role !== 'admin') { router.push('/login'); return; }
-      
+
       // Set the Bearer token for all Axios requests
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      
+
       setAdminUser(user);
       setProfileForm({ fullName: user.fullName || '', email: user.email || '', phone: user.phone || '', address: user.address || '' });
     } catch { router.push('/login'); }
@@ -91,7 +90,6 @@ export default function AdminDashboard() {
           return;
         }
 
-        // Dynamically import to avoid Next.js SSR crashes (window/navigator is not defined)
         const PusherPushNotifications = await import('@pusher/push-notifications-web');
 
         beamsClient = new PusherPushNotifications.Client({ instanceId });
@@ -238,13 +236,13 @@ export default function AdminDashboard() {
     <>
       <div className="max-w-7xl mx-auto p-4 md:p-8 mt-4 space-y-6">
         {/* Tabs */}
-        <div className="flex space-x-2 border-b border-gray-200 pb-2 overflow-x-auto">
+        <div className="flex gap-4 border-b-4 border-brand-black pb-4 overflow-x-auto">
           {tabs.map((tab) => (
             <button key={tab.key} onClick={() => setActiveTab(tab.key)}
-              className={`px-5 py-2.5 rounded-t-lg text-sm font-medium transition-colors whitespace-nowrap flex items-center gap-2 ${activeTab === tab.key ? 'bg-white border border-gray-200 border-b-white -mb-[9px] text-blue-600' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100 border border-transparent'}`}>
+              className={`px-6 py-3 border-2 border-brand-black text-xs font-black uppercase tracking-widest transition-colors whitespace-nowrap flex items-center gap-3 cursor-pointer ${activeTab === tab.key ? 'bg-brand-black text-white shadow-[4px_4px_0px_0px_rgba(228,22,19,1)]' : 'bg-white text-brand-black hover:bg-brand-red hover:text-white hover:border-brand-red shadow-[4px_4px_0px_0px_rgba(43,43,43,1)] hover:shadow-none translate-x-0 hover:translate-x-[4px] translate-y-0 hover:translate-y-[4px]'}`}>
               {tab.label}
               {tab.key === 'reviewer-requests' && reviewerRequests.length > 0 && (
-                <span className="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full min-w-[20px] text-center">
+                <span className="bg-brand-red text-white text-xs font-black px-2 py-1 border-2 border-transparent">
                   {reviewerRequests.length}
                 </span>
               )}
@@ -254,37 +252,37 @@ export default function AdminDashboard() {
 
         {/* Profile Tab */}
         {activeTab === 'profile' && (
-          <div className="space-y-6 max-w-2xl">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
-              <h2 className="text-2xl font-semibold text-gray-900 mb-6">My Profile</h2>
-              <div className="space-y-5">
+          <div className="space-y-8 max-w-2xl">
+            <div className="bg-white border-2 border-brand-black p-8 shadow-[8px_8px_0px_0px_rgba(43,43,43,1)]">
+              <h2 className="text-3xl font-black text-brand-black uppercase tracking-widest mb-8 border-b-4 border-brand-black pb-4">MY PROFILE</h2>
+              <div className="space-y-6">
                 {(['fullName', 'email', 'phone', 'address'] as const).map((field) => (
                   <div key={field}>
-                    <label className="block text-sm font-medium text-gray-700 mb-1 capitalize">{field === 'fullName' ? 'Full Name' : field}</label>
+                    <label className="block text-xs font-black uppercase tracking-widest text-brand-black mb-2">{field === 'fullName' ? 'Full Name' : field}</label>
                     <input type={field === 'email' ? 'email' : 'text'} value={(profileForm as any)[field]}
                       onChange={e => setProfileForm({ ...profileForm, [field]: e.target.value })}
-                      className="block w-full rounded-md shadow-sm p-2.5 border border-gray-300 focus:border-blue-500 focus:ring-blue-500 bg-white transition-colors" />
+                      className="block w-full p-4 border-2 border-brand-black focus:border-brand-red focus:ring-0 focus:outline-none bg-white transition-colors text-sm font-bold" />
                   </div>
                 ))}
-                {profileMsg && <p className={`text-sm p-2 rounded ${profileMsg.startsWith('Error') ? 'bg-red-50 text-red-600' : 'bg-green-50 text-green-700'}`}>{profileMsg}</p>}
-                <button onClick={handleProfileUpdate} className="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">Save Changes</button>
+                {profileMsg && <p className={`text-xs font-bold uppercase tracking-widest p-4 border-2 ${profileMsg.startsWith('Error') ? 'bg-white border-brand-red text-brand-red' : 'bg-brand-black text-white border-brand-black'}`}>{profileMsg}</p>}
+                <button onClick={handleProfileUpdate} className="bg-brand-black text-white px-8 py-4 hover:bg-brand-red transition-colors text-xs font-black tracking-widest uppercase cursor-pointer">SAVE CHANGES</button>
               </div>
             </div>
 
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
-              <h2 className="text-2xl font-semibold text-gray-900 mb-6">Change Password</h2>
-              <div className="space-y-5">
+            <div className="bg-white border-2 border-brand-black p-8 shadow-[8px_8px_0px_0px_rgba(43,43,43,1)]">
+              <h2 className="text-3xl font-black text-brand-black uppercase tracking-widest mb-8 border-b-4 border-brand-black pb-4">CHANGE PASSWORD</h2>
+              <div className="space-y-6">
                 {[{ key: 'oldPassword', label: 'Current Password' }, { key: 'newPassword', label: 'New Password' }, { key: 'confirmPassword', label: 'Confirm New Password' }].map(f => (
                   <div key={f.key}>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">{f.label}</label>
+                    <label className="block text-xs font-black uppercase tracking-widest text-brand-black mb-2">{f.label}</label>
                     <input type="password" value={(pwForm as any)[f.key]}
                       onChange={e => { setPwForm({ ...pwForm, [f.key]: e.target.value }); setPwErr(''); setPwMsg(''); }}
-                      className="block w-full rounded-md shadow-sm p-2.5 border border-gray-300 focus:border-blue-500 focus:ring-blue-500 bg-white transition-colors" />
+                      className="block w-full p-4 border-2 border-brand-black focus:border-brand-red focus:ring-0 focus:outline-none bg-white transition-colors text-sm font-bold" />
                   </div>
                 ))}
-                {pwErr && <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-md px-3 py-2">{pwErr}</p>}
-                {pwMsg && <p className="text-sm text-green-700 bg-green-50 border border-green-200 rounded-md px-3 py-2">{pwMsg}</p>}
-                <button onClick={handlePasswordChange} className="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">Update Password</button>
+                {pwErr && <p className="text-xs font-bold uppercase tracking-widest text-brand-red bg-white border-2 border-brand-red px-4 py-3">{pwErr}</p>}
+                {pwMsg && <p className="text-xs font-bold uppercase tracking-widest text-white bg-brand-black border-2 border-brand-black px-4 py-3">{pwMsg}</p>}
+                <button onClick={handlePasswordChange} className="bg-brand-black text-white px-8 py-4 hover:bg-brand-red transition-colors text-xs font-black tracking-widest uppercase cursor-pointer">UPDATE PASSWORD</button>
               </div>
             </div>
           </div>
@@ -293,44 +291,44 @@ export default function AdminDashboard() {
         {/* Create Admin Tab (POST) */}
         {activeTab === 'create-admin' && (
           <div className="max-w-2xl">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
-              <h2 className="text-2xl font-semibold text-gray-900 mb-2">Create Admin Account</h2>
-              <p className="text-sm text-gray-500 mb-6">Add a new administrator to the platform.</p>
+            <div className="bg-white border-2 border-brand-black p-8 shadow-[8px_8px_0px_0px_rgba(43,43,43,1)]">
+              <h2 className="text-3xl font-black text-brand-black uppercase tracking-widest mb-2 border-b-4 border-brand-black pb-4">CREATE ADMIN ACCOUNT</h2>
+              <p className="text-sm font-bold text-gray-500 mb-8 mt-4 uppercase">Add a new administrator to the platform.</p>
 
-              {createErr && <div className="mb-4 text-sm text-red-600 bg-red-50 border border-red-200 p-3 rounded-lg">⚠️ {createErr}</div>}
-              {createMsg && <div className="mb-4 text-sm text-green-700 bg-green-50 border border-green-200 p-3 rounded-lg">✓ {createMsg}</div>}
+              {createErr && <div className="mb-6 text-xs font-bold uppercase tracking-widest text-brand-red bg-white border-2 border-brand-red p-4">⚠️ {createErr}</div>}
+              {createMsg && <div className="mb-6 text-xs font-bold uppercase tracking-widest text-white bg-brand-black border-2 border-brand-black p-4">✓ {createMsg}</div>}
 
-              <form onSubmit={handleCreateAdmin} className="space-y-5">
+              <form onSubmit={handleCreateAdmin} className="space-y-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Full Name *</label>
+                  <label className="block text-xs font-black uppercase tracking-widest text-brand-black mb-2">Full Name *</label>
                   <input type="text" value={createForm.fullName} onChange={e => setCreateForm({ ...createForm, fullName: e.target.value })}
-                    className="block w-full rounded-md shadow-sm p-2.5 border border-gray-300 focus:border-blue-500 focus:ring-blue-500 bg-white" placeholder="Admin Name" />
+                    className="block w-full p-4 border-2 border-brand-black focus:border-brand-red focus:ring-0 focus:outline-none bg-white text-sm font-bold" placeholder="ADMIN NAME" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Email Address *</label>
+                  <label className="block text-xs font-black uppercase tracking-widest text-brand-black mb-2">Email Address *</label>
                   <input type="email" value={createForm.email} onChange={e => setCreateForm({ ...createForm, email: e.target.value })}
-                    className="block w-full rounded-md shadow-sm p-2.5 border border-gray-300 focus:border-blue-500 focus:ring-blue-500 bg-white" placeholder="admin@skillseed.com" />
+                    className="block w-full p-4 border-2 border-brand-black focus:border-brand-red focus:ring-0 focus:outline-none bg-white text-sm font-bold" placeholder="ADMIN@SKILLSEED.COM" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Password *</label>
+                  <label className="block text-xs font-black uppercase tracking-widest text-brand-black mb-2">Password *</label>
                   <input type="password" value={createForm.password} onChange={e => setCreateForm({ ...createForm, password: e.target.value })}
-                    className="block w-full rounded-md shadow-sm p-2.5 border border-gray-300 focus:border-blue-500 focus:ring-blue-500 bg-white" placeholder="Min 6 characters" />
+                    className="block w-full p-4 border-2 border-brand-black focus:border-brand-red focus:ring-0 focus:outline-none bg-white text-sm font-bold" placeholder="MIN 6 CHARACTERS" />
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                    <label className="block text-xs font-black uppercase tracking-widest text-brand-black mb-2">Phone</label>
                     <input type="text" value={createForm.phone} onChange={e => setCreateForm({ ...createForm, phone: e.target.value })}
-                      className="block w-full rounded-md shadow-sm p-2.5 border border-gray-300 focus:border-blue-500 focus:ring-blue-500 bg-white" placeholder="Optional" />
+                      className="block w-full p-4 border-2 border-brand-black focus:border-brand-red focus:ring-0 focus:outline-none bg-white text-sm font-bold" placeholder="OPTIONAL" />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                    <label className="block text-xs font-black uppercase tracking-widest text-brand-black mb-2">Address</label>
                     <input type="text" value={createForm.address} onChange={e => setCreateForm({ ...createForm, address: e.target.value })}
-                      className="block w-full rounded-md shadow-sm p-2.5 border border-gray-300 focus:border-blue-500 focus:ring-blue-500 bg-white" placeholder="Optional" />
+                      className="block w-full p-4 border-2 border-brand-black focus:border-brand-red focus:ring-0 focus:outline-none bg-white text-sm font-bold" placeholder="OPTIONAL" />
                   </div>
                 </div>
                 <button type="submit" disabled={createLoading}
-                  className="bg-blue-600 text-white px-6 py-2.5 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed">
-                  {createLoading ? 'Creating...' : 'Create Admin Account'}
+                  className="bg-brand-black text-white px-8 py-4 hover:bg-brand-red transition-colors text-xs font-black tracking-widest uppercase disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer w-full mt-4">
+                  {createLoading ? 'CREATING...' : 'CREATE ADMIN ACCOUNT'}
                 </button>
               </form>
             </div>
@@ -339,36 +337,34 @@ export default function AdminDashboard() {
 
         {/* Reviewer Requests Tab */}
         {activeTab === 'reviewer-requests' && (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
-            <div className="flex items-center justify-between mb-6">
+          <div className="bg-white border-2 border-brand-black p-8 shadow-[8px_8px_0px_0px_rgba(43,43,43,1)]">
+            <div className="flex items-center justify-between mb-8 border-b-4 border-brand-black pb-4">
               <div>
-                <h2 className="text-2xl font-semibold text-gray-900">Reviewer Requests</h2>
-                <p className="text-sm text-gray-500 mt-1">Users who signed up as reviewers and are awaiting your approval.</p>
+                <h2 className="text-3xl font-black text-brand-black uppercase tracking-widest">REVIEWER REQUESTS</h2>
+                <p className="text-sm font-bold text-gray-500 mt-2 uppercase tracking-widest">Users who signed up as reviewers and are awaiting your approval.</p>
               </div>
-              <button onClick={fetchReviewerRequests} className="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium border border-gray-200">
-                ↻ Refresh
+              <button onClick={fetchReviewerRequests} className="bg-white text-brand-black border-2 border-brand-black px-6 py-3 hover:bg-brand-black hover:text-white transition-colors text-xs font-black uppercase tracking-widest cursor-pointer">
+                ↻ REFRESH
               </button>
             </div>
 
             {requestsLoading && (
-              <div className="py-20 text-center text-gray-500">
-                <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-4"></div>
-                <p className="text-lg">Loading requests...</p>
+              <div className="py-20 text-center text-brand-black">
+                <p className="text-xl font-black uppercase tracking-widest animate-pulse">LOADING REQUESTS...</p>
               </div>
             )}
 
-            {requestsError && <div className="bg-red-50 border border-red-200 text-red-600 p-4 rounded-md mb-6 text-sm">{requestsError}</div>}
+            {requestsError && <div className="bg-white border-2 border-brand-red text-brand-red font-bold uppercase tracking-widest p-4 mb-6 text-xs">{requestsError}</div>}
 
             {!requestsLoading && reviewerRequests.length === 0 && !requestsError && (
-              <div className="py-20 text-center text-gray-500">
-                <div className="text-5xl mb-4">✓</div>
-                <p className="text-lg font-medium">No pending requests</p>
-                <p className="text-sm mt-1">All reviewer requests have been processed.</p>
+              <div className="py-20 text-center text-gray-500 border-2 border-dashed border-gray-300">
+                <p className="text-2xl font-black uppercase tracking-widest text-brand-black">NO PENDING REQUESTS</p>
+                <p className="text-sm font-bold mt-2 uppercase tracking-widest">All reviewer requests have been processed.</p>
               </div>
             )}
 
             {!requestsLoading && reviewerRequests.length > 0 && (
-              <div className="space-y-4">
+              <div className="space-y-6">
                 {reviewerRequests.map((request) => (
                   <ReviewerRequestCard
                     key={request.userId}
@@ -385,28 +381,28 @@ export default function AdminDashboard() {
 
         {/* Data Tabs (users / companies / reviewers)  */}
         {activeTab !== 'profile' && activeTab !== 'reviewer-requests' && activeTab !== 'create-admin' && (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
-            <div className="flex items-center mb-6">
-              <h2 className="text-2xl font-semibold text-gray-900 capitalize">Manage {activeTab}</h2>
-              {loading && <span className="ml-4 text-sm text-gray-500">Loading...</span>}
+          <div className="bg-white border-2 border-brand-black p-8 shadow-[8px_8px_0px_0px_rgba(43,43,43,1)]">
+            <div className="flex items-center mb-8 border-b-4 border-brand-black pb-4">
+              <h2 className="text-3xl font-black text-brand-black uppercase tracking-widest">MANAGE {activeTab}</h2>
+              {loading && <span className="ml-6 text-xs font-bold text-brand-black uppercase tracking-widest animate-pulse">LOADING...</span>}
             </div>
 
-            {error && <div className="bg-red-50 border border-red-200 text-red-600 p-4 rounded-md mb-6 text-sm">{error}</div>}
-            {!loading && data.length === 0 && !error && <div className="py-20 text-center text-gray-500"><p className="text-lg">No {activeTab} found</p></div>}
+            {error && <div className="bg-white border-2 border-brand-red text-brand-red font-bold uppercase tracking-widest p-4 mb-6 text-xs">{error}</div>}
+            {!loading && data.length === 0 && !error && <div className="py-20 text-center text-brand-black border-2 border-dashed border-gray-300"><p className="text-2xl font-black uppercase tracking-widest">NO {activeTab} FOUND</p></div>}
 
             {!loading && data.length > 0 && (
-              <div className="overflow-x-auto rounded-lg border border-gray-200">
+              <div className="overflow-x-auto border-2 border-brand-black">
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-gray-50 text-xs text-gray-500 uppercase tracking-wider border-b border-gray-200">
-                      <th className="p-4 font-medium">Name</th>
-                      <th className="p-4 font-medium">Contact</th>
-                      <th className="p-4 font-medium">Role</th>
-                      <th className="p-4 font-medium">Status</th>
-                      <th className="p-4 font-medium text-right">Actions</th>
+                    <tr className="bg-brand-black text-white text-xs font-black uppercase tracking-widest border-b-4 border-brand-black">
+                      <th className="p-4">NAME</th>
+                      <th className="p-4">CONTACT</th>
+                      <th className="p-4">ROLE</th>
+                      <th className="p-4">STATUS</th>
+                      <th className="p-4 text-right">ACTIONS</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-200">
+                  <tbody className="divide-y-2 divide-brand-black bg-white">
                     {data.map((item, idx) => {
                       const id = item.userId || item.companyId || item.reviewerId || item.employeeId;
                       const name = item.fullName || item.user?.fullName || item.name || item.companyName || 'N/A';
@@ -419,22 +415,22 @@ export default function AdminDashboard() {
                           <td className="p-4">
                             {/* Dynamic route link to /admin/users/[id] (SSR page) */}
                             {userId ? (
-                              <Link href={`/admin/users/${userId}`} className="font-semibold text-blue-600 hover:underline">
+                              <Link href={`/admin/users/${userId}`} className="font-bold text-brand-black hover:text-brand-red uppercase underline underline-offset-4 decoration-2 decoration-brand-black hover:decoration-brand-red">
                                 {name}
                               </Link>
                             ) : (
-                              <span className="font-semibold text-gray-900">{name}</span>
+                              <span className="font-bold text-brand-black uppercase">{name}</span>
                             )}
-                            <div className="text-xs text-gray-400 font-mono mt-1">{id ? id.substring(0, 8) + '...' : 'N/A'}</div>
+                            <div className="text-xs text-gray-500 font-bold tracking-widest uppercase mt-2">{id ? id.substring(0, 8) + '...' : 'N/A'}</div>
                           </td>
-                          <td className="p-4 text-sm text-gray-600">{email}</td>
-                          <td className="p-4"><span className="px-2.5 py-1 bg-gray-100 text-gray-600 rounded text-xs font-medium uppercase">{role}</span></td>
+                          <td className="p-4 text-sm font-bold text-gray-800">{email}</td>
+                          <td className="p-4"><span className="px-3 py-1 bg-white border-2 border-brand-black text-brand-black text-xs font-black uppercase tracking-widest">{role}</span></td>
                           <td className="p-4">
-                            <span className={`px-2.5 py-1 rounded text-xs font-medium uppercase ${status === 'active' || status === 'approved' ? 'bg-green-100 text-green-700' : status === 'pending' ? 'bg-yellow-100 text-yellow-700' : status === 'suspended' || status === 'rejected' ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-600'}`}>{status}</span>
+                            <span className={`px-3 py-1 text-xs font-black uppercase tracking-widest border-2 border-brand-black ${status === 'active' || status === 'approved' ? 'bg-green-100 text-green-800' : status === 'pending' ? 'bg-yellow-100 text-yellow-800' : status === 'suspended' || status === 'rejected' ? 'bg-white text-brand-red border-brand-red' : 'bg-gray-100 text-gray-800'}`}>{status}</span>
                           </td>
-                          <td className="p-4 text-right space-x-2">
+                          <td className="p-4 text-right space-x-3">
                             {userId && (
-                              <Link href={`/admin/users/${userId}`} className="bg-blue-600 text-white px-3 py-1.5 rounded hover:bg-blue-700 text-xs font-medium inline-block">View</Link>
+                              <Link href={`/admin/users/${userId}`} className="bg-brand-black text-white px-4 py-2 hover:bg-brand-red text-xs font-black tracking-widest uppercase inline-block">VIEW</Link>
                             )}
 
                             {activeTab === 'users' && role === 'employee' && (
@@ -442,15 +438,15 @@ export default function AdminDashboard() {
                                 const eId = item.employee?.employeeId;
                                 if (eId) promoteEmployee(eId);
                                 else alert('Employee profile not found.');
-                              }} className="bg-green-50 text-green-600 px-3 py-1.5 rounded hover:bg-green-100 text-xs font-medium border border-green-200">Promote</button>
+                              }} className="bg-white text-green-700 border-2 border-green-700 px-4 py-2 hover:bg-green-700 hover:text-white text-xs font-black tracking-widest uppercase cursor-pointer">PROMOTE</button>
                             )}
 
                             {activeTab === 'users' && (
-                              <button onClick={() => deleteUser(id)} className="bg-red-50 text-red-600 px-3 py-1.5 rounded hover:bg-red-100 text-xs font-medium border border-red-200">Delete</button>
+                              <button onClick={() => deleteUser(id)} className="bg-white text-brand-red border-2 border-brand-red px-4 py-2 hover:bg-brand-red hover:text-white text-xs font-black tracking-widest uppercase cursor-pointer">DELETE</button>
                             )}
 
                             {activeTab === 'reviewers' && (
-                              <button onClick={() => demoteReviewer(id)} className="bg-orange-50 text-orange-600 px-3 py-1.5 rounded hover:bg-orange-100 text-xs font-medium border border-orange-200">Demote</button>
+                              <button onClick={() => demoteReviewer(id)} className="bg-white text-orange-600 border-2 border-orange-600 px-4 py-2 hover:bg-orange-600 hover:text-white text-xs font-black tracking-widest uppercase cursor-pointer">DEMOTE</button>
                             )}
                           </td>
                         </tr>
@@ -466,31 +462,32 @@ export default function AdminDashboard() {
 
       {/* Pusher Toast Notification */}
       {notification && (
-        <div className="fixed bottom-6 right-6 z-50 animate-bounce">
-          <div className="bg-blue-600 text-white rounded-xl shadow-2xl p-5 max-w-sm border border-blue-500">
-            <div className="flex items-start justify-between gap-3">
+        <div className="fixed bottom-6 right-6 z-50">
+          <div className="bg-brand-black text-white border-4 border-brand-red shadow-[8px_8px_0px_0px_rgba(228,22,19,1)] p-6 max-w-sm">
+            <div className="flex items-start justify-between gap-4">
               <div className="flex-1">
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="text-lg">🔔</span>
-                  <p className="font-semibold text-sm">New Reviewer Request</p>
+                <div className="flex items-center gap-3 mb-2 border-b-2 border-gray-600 pb-2">
+                  <span className="text-xl">🔔</span>
+                  <p className="font-black text-xs uppercase tracking-widest text-brand-red">NEW REVIEWER REQUEST</p>
                 </div>
-                <p className="text-sm text-blue-100 mt-1">
-                  <span className="font-medium text-white">{notification.fullName}</span> wants to join as a reviewer
+                <p className="text-sm font-bold mt-4 uppercase">
+                  <span className="text-white bg-brand-red px-2 py-1 mr-2">{notification.fullName}</span>
+                  WANTS TO JOIN AS A REVIEWER
                 </p>
-                <p className="text-xs text-blue-200 mt-1">{notification.email}</p>
+                <p className="text-xs font-bold text-gray-400 mt-2 tracking-widest">{notification.email}</p>
               </div>
               <button
                 onClick={() => setNotification(null)}
-                className="text-blue-200 hover:text-white transition-colors text-lg leading-none"
+                className="text-gray-400 hover:text-brand-red transition-colors text-2xl leading-none cursor-pointer"
               >
                 ✕
               </button>
             </div>
             <button
               onClick={() => { setActiveTab('reviewer-requests'); setNotification(null); }}
-              className="mt-3 w-full bg-white text-blue-600 text-sm font-medium py-2 rounded-lg hover:bg-blue-50 transition-colors"
+              className="mt-6 w-full bg-white text-brand-black border-2 border-brand-black text-xs font-black uppercase tracking-widest py-3 hover:bg-brand-red hover:text-white hover:border-brand-red transition-colors cursor-pointer"
             >
-              View Request →
+              VIEW REQUEST →
             </button>
           </div>
         </div>

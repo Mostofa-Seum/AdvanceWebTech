@@ -3,22 +3,27 @@
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { Dialog, DialogPanel } from '@headlessui/react'
-import { 
-  Bars3Icon, 
-  XMarkIcon, 
-  AcademicCapIcon
-} from '@heroicons/react/24/outline'
+import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
 
 const navigation = [
-  { name: 'Home', href: '#' },
-  { name: 'About', href: '#about' },
-  { name: 'Services', href: '#services' },
-  { name: 'Contact Us', href: '#footer' },
+  { name: 'Tasks', href: '/projects' },
+  { name: 'Talent', href: '/talent' },
+  { name: 'Solutions', href: '/solutions/micro-internships' },
+  { name: 'Contact', href: '#footer' },
 ]
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [user, setUser] = useState<any>(null);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
@@ -37,86 +42,121 @@ export default function Header() {
   };
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md">
-      <nav aria-label="Global" className="flex items-center justify-between p-6 lg:px-8">
+    <header className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-white/95 backdrop-blur-md border-b border-gray-200' : 'bg-transparent border-transparent'}`}>
+      <nav aria-label="Global" className="flex items-center justify-between p-6 lg:px-8 max-w-[1440px] mx-auto">
         <div className="flex lg:flex-1">
-          <a href="#" className="-m-1.5 p-1.5 flex items-center gap-2">
-            <AcademicCapIcon className="h-8 w-auto text-indigo-600 dark:text-indigo-500" />
-            <span className="font-bold text-xl tracking-tight text-gray-900 dark:text-white">SkillSeed</span>
-          </a>
+          <Link href="/" className="-m-1.5 p-1.5 flex items-center gap-2">
+            {/* Minimalist Logo */}
+            <div className="w-8 h-8 bg-brand-red flex items-center justify-center">
+              <span className="text-white font-bold text-lg leading-none">S</span>
+            </div>
+            <span className="font-bold text-xl tracking-widest text-brand-black uppercase">SkillSeed</span>
+          </Link>
         </div>
         <div className="flex lg:hidden">
           <button
             type="button"
             onClick={() => setMobileMenuOpen(true)}
-            className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700 dark:text-gray-200"
+            className="-m-2.5 inline-flex items-center justify-center p-2.5 text-brand-black"
           >
             <span className="sr-only">Open main menu</span>
-            <Bars3Icon aria-hidden="true" className="size-6" />
+            <Bars3Icon aria-hidden="true" className="size-8" />
           </button>
         </div>
         <div className="hidden lg:flex lg:gap-x-12">
           {navigation.map((item) => (
-            <a key={item.name} href={item.href} className="text-sm/6 font-semibold text-gray-900 dark:text-white hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+            <a key={item.name} href={item.href} className="text-sm/6 font-bold uppercase tracking-widest text-brand-black hover:text-brand-red transition-colors">
               {item.name}
             </a>
           ))}
         </div>
-        <div className="hidden lg:flex lg:flex-1 lg:justify-end lg:gap-x-4 lg:items-center">
+        <div className="hidden lg:flex lg:flex-1 lg:justify-end lg:gap-x-6 lg:items-center">
           {user ? (
             <>
-              <span className="text-sm font-semibold text-gray-900 dark:text-white mr-2">
-                Hello, {user.fullName || user.email}
+              <span className="text-sm font-bold uppercase tracking-wider text-brand-black mr-4">
+                {user.fullName || user.email}
               </span>
               <button 
                 type="button" 
                 onClick={handleLogout}
-                className="text-white bg-red-600 hover:bg-red-500 shadow-sm font-medium rounded-md text-sm px-4 py-2.5 dark:bg-red-500 dark:hover:bg-red-400 transition-colors cursor-pointer"
+                className="text-white bg-brand-black hover:bg-brand-red font-bold uppercase tracking-widest text-xs px-6 py-3 transition-colors cursor-pointer"
               >
-                Log out
+                LOG OUT
               </button>
             </>
           ) : (
             <>
-              <Link href="/login">
-                <button type="button" className="text-gray-900 bg-white border border-gray-300 hover:bg-gray-50 font-medium rounded-md text-sm px-4 py-2.5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 transition-colors cursor-pointer">Log in</button>
+              <Link href="/login" className="text-sm font-bold uppercase tracking-widest text-brand-black hover:text-brand-red transition-colors">
+                LOG IN
               </Link>
               <Link href="/signup">
-                <button type="button" className="text-white bg-indigo-600 hover:bg-indigo-500 shadow-sm font-medium rounded-md text-sm px-4 py-2.5 dark:bg-indigo-500 dark:hover:bg-indigo-400 transition-colors cursor-pointer">Sign Up</button>
+                <button type="button" className="text-white bg-brand-black hover:bg-brand-red font-bold uppercase tracking-widest text-xs px-6 py-3 transition-colors cursor-pointer">
+                  SIGN UP
+                </button>
               </Link>
             </>
           )}
         </div>
       </nav>
       <Dialog open={mobileMenuOpen} onClose={setMobileMenuOpen} className="lg:hidden">
-        <div className="fixed inset-0 z-50" />
-        <DialogPanel className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white p-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10 dark:bg-gray-900 dark:sm:ring-gray-100/10">
+        <div className="fixed inset-0 z-50 bg-black/50" />
+        <DialogPanel className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white p-6 sm:max-w-sm">
           <div className="flex items-center justify-between">
-            <a href="#" className="-m-1.5 p-1.5">
-              <AcademicCapIcon className="h-8 w-auto text-indigo-600 dark:text-indigo-500" />
-            </a>
+            <Link href="/" className="-m-1.5 p-1.5 flex items-center gap-2">
+              <div className="w-8 h-8 bg-brand-red flex items-center justify-center">
+                <span className="text-white font-bold text-lg leading-none">S</span>
+              </div>
+              <span className="font-bold text-xl tracking-widest text-brand-black uppercase">SkillSeed</span>
+            </Link>
             <button
               type="button"
               onClick={() => setMobileMenuOpen(false)}
-              className="-m-2.5 rounded-md p-2.5 text-gray-700 dark:text-gray-200"
+              className="-m-2.5 p-2.5 text-brand-black"
             >
               <span className="sr-only">Close menu</span>
-              <XMarkIcon aria-hidden="true" className="size-6" />
+              <XMarkIcon aria-hidden="true" className="size-8" />
             </button>
           </div>
-          <div className="mt-6 flow-root">
-            <div className="-my-6 divide-y divide-gray-500/10 dark:divide-white/10">
+          <div className="mt-12 flow-root">
+            <div className="-my-6 divide-y divide-gray-200">
               <div className="space-y-2 py-6">
                 {navigation.map((item) => (
                   <a
                     key={item.name}
                     href={item.href}
                     onClick={() => setMobileMenuOpen(false)}
-                    className="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50 dark:text-white dark:hover:bg-white/5"
+                    className="-mx-3 block px-3 py-4 text-lg font-bold uppercase tracking-widest text-brand-black hover:text-brand-red"
                   >
                     {item.name}
                   </a>
                 ))}
+              </div>
+              <div className="py-6 flex flex-col gap-4">
+                {user ? (
+                  <>
+                    <span className="text-sm font-bold uppercase tracking-wider text-brand-black">
+                      {user.fullName || user.email}
+                    </span>
+                    <button 
+                      type="button" 
+                      onClick={() => { handleLogout(); setMobileMenuOpen(false); }}
+                      className="text-white bg-brand-black font-bold uppercase tracking-widest text-xs px-6 py-4 w-full text-center"
+                    >
+                      LOG OUT
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <Link href="/login" onClick={() => setMobileMenuOpen(false)} className="-mx-3 block px-3 py-4 text-lg font-bold uppercase tracking-widest text-brand-black hover:text-brand-red">
+                      LOG IN
+                    </Link>
+                    <Link href="/signup" onClick={() => setMobileMenuOpen(false)}>
+                      <button type="button" className="text-white bg-brand-black font-bold uppercase tracking-widest text-xs px-6 py-4 w-full mt-4">
+                        SIGN UP
+                      </button>
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
           </div>

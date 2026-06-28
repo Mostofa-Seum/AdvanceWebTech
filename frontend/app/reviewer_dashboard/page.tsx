@@ -133,96 +133,96 @@ export default function DashboardProfile() {
     }
   };
 
-  if (loading) return <div className="text-gray-500 text-center mt-12">Loading profile data...</div>;
+  if (loading) return <div className="text-gray-500 font-bold uppercase tracking-widest text-center mt-12">Loading profile data...</div>;
 
-  if (!profile) return <div className="text-gray-500 text-center mt-12">Unable to load profile data. Ensure you are logged in correctly.</div>;
+  if (!profile) return <div className="text-brand-red font-bold uppercase tracking-widest text-center mt-12">Unable to load profile data. Ensure you are logged in correctly.</div>;
 
   return (
-    <div className="space-y-6 max-w-2xl mx-auto mt-8">
+    <div className="space-y-12 max-w-2xl mx-auto">
 
       {/* ── Update Profile ── */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-semibold text-gray-900">My Profile</h2>
+      <div className="bg-white border-2 border-brand-black p-8 shadow-[8px_8px_0px_0px_rgba(43,43,43,1)]">
+        <div className="flex justify-between items-center mb-8 pb-4 border-b-2 border-brand-black">
+          <h2 className="text-2xl font-black text-brand-black uppercase tracking-widest">MY PROFILE</h2>
           {!isEditing ? (
             <button 
               onClick={() => setIsEditing(true)} 
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors shadow-sm text-sm font-medium"
+              className="bg-brand-black text-white px-6 py-3 hover:bg-brand-red transition-colors text-xs font-bold tracking-widest uppercase rounded-none cursor-pointer"
             >
-              Update
+              UPDATE
             </button>
           ) : (
-            <div className="space-x-3">
+            <div className="flex space-x-3">
                <button 
                   onClick={() => setIsEditing(false)} 
-                  className="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors text-sm font-medium"
+                  className="bg-white text-brand-black border-2 border-brand-black px-6 py-3 hover:bg-gray-100 transition-colors text-xs font-bold tracking-widest uppercase rounded-none cursor-pointer"
                >
-                  Cancel
+                  CANCEL
                </button>
                <button 
                   onClick={handleUpdate} 
-                  className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors shadow-sm text-sm font-medium"
+                  className="bg-brand-red text-white border-2 border-brand-red px-6 py-3 hover:bg-red-700 transition-colors text-xs font-bold tracking-widest uppercase rounded-none cursor-pointer"
                >
-                  Save
+                  SAVE
                </button>
             </div>
           )}
         </div>
 
-        <div className="space-y-5">
+        <div className="space-y-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+            <label className="block text-xs font-bold uppercase tracking-widest text-brand-black mb-2">Full Name</label>
             <input 
               type="text" 
               disabled={!isEditing}
               value={formData.name}
               onChange={e => setFormData({...formData, name: e.target.value})}
-              className={`block w-full rounded-md shadow-sm p-2.5 border transition-colors ${
+              className={`block w-full rounded-none p-3 border-2 transition-colors focus:outline-none ${
                   isEditing 
-                  ? "border-blue-300 focus:border-blue-500 focus:ring-blue-500 bg-white" 
-                  : "border-gray-200 bg-gray-50 text-gray-600"
+                  ? "border-brand-black focus:border-brand-red bg-white text-brand-black" 
+                  : "border-gray-200 bg-gray-50 text-gray-500"
               }`}
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+            <label className="block text-xs font-bold uppercase tracking-widest text-brand-black mb-2">Email</label>
             <input 
               type="email" 
               disabled={!isEditing}
               value={formData.email}
               onChange={e => setFormData({...formData, email: e.target.value})}
-              className={`block w-full rounded-md shadow-sm p-2.5 border transition-colors ${
+              className={`block w-full rounded-none p-3 border-2 transition-colors focus:outline-none ${
                   isEditing 
-                  ? "border-blue-300 focus:border-blue-500 focus:ring-blue-500 bg-white" 
-                  : "border-gray-200 bg-gray-50 text-gray-600"
+                  ? "border-brand-black focus:border-brand-red bg-white text-brand-black" 
+                  : "border-gray-200 bg-gray-50 text-gray-500"
               }`}
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+            <label className="block text-xs font-bold uppercase tracking-widest text-brand-black mb-2">Phone</label>
             <input 
               type="text" 
               disabled={!isEditing}
               value={formData.phone}
               onChange={e => setFormData({...formData, phone: e.target.value})}
-              className={`block w-full rounded-md shadow-sm p-2.5 border transition-colors ${
+              className={`block w-full rounded-none p-3 border-2 transition-colors focus:outline-none ${
                   isEditing 
-                  ? "border-blue-300 focus:border-blue-500 focus:ring-blue-500 bg-white" 
-                  : "border-gray-200 bg-gray-50 text-gray-600"
+                  ? "border-brand-black focus:border-brand-red bg-white text-brand-black" 
+                  : "border-gray-200 bg-gray-50 text-gray-500"
               }`}
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
+            <label className="block text-xs font-bold uppercase tracking-widest text-brand-black mb-2">Address</label>
             <input 
               type="text" 
               disabled={!isEditing}
               value={formData.address}
               onChange={e => setFormData({...formData, address: e.target.value})}
-              className={`block w-full rounded-md shadow-sm p-2.5 border transition-colors ${
+              className={`block w-full rounded-none p-3 border-2 transition-colors focus:outline-none ${
                   isEditing 
-                  ? "border-blue-300 focus:border-blue-500 focus:ring-blue-500 bg-white" 
-                  : "border-gray-200 bg-gray-50 text-gray-600"
+                  ? "border-brand-black focus:border-brand-red bg-white text-brand-black" 
+                  : "border-gray-200 bg-gray-50 text-gray-500"
               }`}
             />
           </div>
@@ -230,63 +230,65 @@ export default function DashboardProfile() {
       </div>
 
       {/* ── Change Password ── */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
-        <h2 className="text-2xl font-semibold text-gray-900 mb-6">Change Password</h2>
+      <div className="bg-white border-2 border-brand-black p-8 shadow-[8px_8px_0px_0px_rgba(43,43,43,1)]">
+        <h2 className="text-2xl font-black text-brand-black uppercase tracking-widest mb-8 pb-4 border-b-2 border-brand-black">CHANGE PASSWORD</h2>
 
-        <div className="space-y-5">
+        <div className="space-y-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Old Password</label>
+            <label className="block text-xs font-bold uppercase tracking-widest text-brand-black mb-2">Old Password</label>
             <input
               type="password"
               value={pwData.oldPassword}
               onChange={e => { setPwData({...pwData, oldPassword: e.target.value}); setPwError(''); setPwSuccess(''); }}
               placeholder="Enter your current password"
-              className="block w-full rounded-md shadow-sm p-2.5 border border-gray-300 focus:border-blue-500 focus:ring-blue-500 bg-white transition-colors"
+              className="block w-full rounded-none p-3 border-2 border-gray-300 focus:border-brand-red bg-white transition-colors focus:outline-none text-brand-black placeholder:text-gray-400"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">New Password</label>
+            <label className="block text-xs font-bold uppercase tracking-widest text-brand-black mb-2">New Password</label>
             <input
               type="password"
               value={pwData.newPassword}
               onChange={e => { setPwData({...pwData, newPassword: e.target.value}); setPwError(''); setPwSuccess(''); }}
               placeholder="Min. 8 characters"
-              className="block w-full rounded-md shadow-sm p-2.5 border border-gray-300 focus:border-blue-500 focus:ring-blue-500 bg-white transition-colors"
+              className="block w-full rounded-none p-3 border-2 border-gray-300 focus:border-brand-red bg-white transition-colors focus:outline-none text-brand-black placeholder:text-gray-400"
             />
-            <p className="text-xs text-gray-400 mt-1">Must be at least 8 characters.</p>
+            <p className="text-[10px] font-bold tracking-widest uppercase text-gray-500 mt-2">Must be at least 8 characters.</p>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Confirm New Password</label>
+            <label className="block text-xs font-bold uppercase tracking-widest text-brand-black mb-2">Confirm New Password</label>
             <input
               type="password"
               value={pwData.confirmPassword}
               onChange={e => { setPwData({...pwData, confirmPassword: e.target.value}); setPwError(''); setPwSuccess(''); }}
               placeholder="Re-enter your new password"
-              className="block w-full rounded-md shadow-sm p-2.5 border border-gray-300 focus:border-blue-500 focus:ring-blue-500 bg-white transition-colors"
+              className="block w-full rounded-none p-3 border-2 border-gray-300 focus:border-brand-red bg-white transition-colors focus:outline-none text-brand-black placeholder:text-gray-400"
             />
           </div>
 
           {/* Error / Success feedback */}
           {pwError && (
-            <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-md px-3 py-2">
+            <div className="text-xs font-bold uppercase tracking-widest text-brand-red bg-brand-red/10 border-l-4 border-brand-red p-3">
               {pwError}
-            </p>
+            </div>
           )}
           {pwSuccess && (
-            <p className="text-sm text-green-700 bg-green-50 border border-green-200 rounded-md px-3 py-2">
+            <div className="text-xs font-bold uppercase tracking-widest text-green-700 bg-green-50 border-l-4 border-green-600 p-3">
               {pwSuccess}
-            </p>
+            </div>
           )}
 
-          <button
-            onClick={handleChangePassword}
-            disabled={pwLoading}
-            className="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 transition-colors shadow-sm text-sm font-medium disabled:opacity-60 disabled:cursor-not-allowed"
-          >
-            {pwLoading ? 'Updating...' : 'Update Password'}
-          </button>
+          <div className="pt-2">
+            <button
+              onClick={handleChangePassword}
+              disabled={pwLoading}
+              className="w-full bg-brand-black text-white px-6 py-4 hover:bg-brand-red transition-colors text-xs font-bold tracking-widest uppercase rounded-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {pwLoading ? 'UPDATING...' : 'UPDATE PASSWORD'}
+            </button>
+          </div>
         </div>
       </div>
 

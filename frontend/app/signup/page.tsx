@@ -5,6 +5,7 @@ import { z } from "zod";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 
 const signUpSchema = z
   .object({
@@ -102,174 +103,164 @@ export default function SignUpPage(): JSX.Element {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-[#0f111a] text-gray-200 p-4 font-sans selection:bg-indigo-500 selection:text-white relative overflow-hidden">
-      { }
-      <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] bg-purple-900/20 rounded-full blur-[120px] pointer-events-none"></div>
-      <div className="absolute bottom-[-20%] right-[-10%] w-[500px] h-[500px] bg-indigo-900/20 rounded-full blur-[120px] pointer-events-none"></div>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-white text-brand-black p-4 font-sans py-12 relative">
 
-      { }
-      <div className="w-full max-w-lg mb-4 z-10">
-        <Link
-          href="/"
-          className="text-sm text-gray-400 hover:text-white flex items-center gap-1 transition-colors"
-        >
-          ← Back to home
+      {/* Back Button */}
+      <div className="absolute top-8 left-8 sm:top-12 sm:left-12">
+        <Link href="/" className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-brand-black hover:text-brand-red transition-colors">
+          <ArrowLeftIcon className="h-4 w-4" />
+          BACK TO HOME
         </Link>
       </div>
 
-      <div className="w-full max-w-lg bg-[#161925] border border-gray-800 rounded-xl shadow-2xl p-8 z-10">
-        { }
-        <div className="flex flex-col items-center mb-6">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="text-2xl font-bold text-white tracking-wide">
-              Skill<span className="text-[#6366f1]">Seed</span>
-            </span>
+      <div className="w-full max-w-2xl bg-white border-2 border-brand-black p-8 sm:p-12 z-10 shadow-[8px_8px_0px_0px_rgba(43,43,43,1)] mt-16 sm:mt-0">
+        
+        <div className="flex flex-col items-center mb-10">
+          <div className="flex justify-center items-center gap-2">
+            <div className="w-12 h-12 bg-brand-red flex items-center justify-center">
+              <span className="text-white font-bold text-2xl leading-none">S</span>
+            </div>
+            <span className="font-bold text-4xl tracking-widest uppercase text-brand-black">SkillSeed</span>
           </div>
-          <h2 className="text-xl font-semibold text-gray-300">
-            Create your account
+          <h2 className="mt-8 text-xl font-bold tracking-tight uppercase text-brand-black">
+            CREATE YOUR ACCOUNT
           </h2>
         </div>
 
-        { }
         {error && (
-          <div className="mb-4 text-sm text-red-400 bg-red-950/40 border border-red-900/50 p-3 rounded-lg font-medium">
-            ⚠️ {error}
+          <div className="mb-6 text-sm text-brand-red bg-brand-red/10 border-l-4 border-brand-red p-3 font-bold tracking-wide uppercase">
+            {error}
           </div>
         )}
         {success && (
-          <div className="mb-4 text-sm text-green-400 bg-green-950/40 border border-green-900/50 p-3 rounded-lg font-medium">
-            ✓ {success}
+          <div className="mb-6 text-sm text-green-700 bg-green-50 border-l-4 border-green-600 p-3 font-bold tracking-wide uppercase">
+            {success}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {/* নাম */}
+        <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block text-sm font-medium text-gray-400 mb-1">
+            <label className="block text-xs font-bold uppercase tracking-widest text-brand-black mb-2">
               Full Name
             </label>
             <input
               type="text"
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
-              className="w-full p-2.5 bg-[#1f2335] border border-gray-700 rounded-lg text-white focus:border-[#6366f1] focus:ring-1 focus:ring-[#6366f1] focus:outline-none transition-all placeholder-gray-500 text-sm"
+              className="w-full p-3 bg-white border-2 border-brand-black rounded-none text-brand-black focus:border-brand-red focus:ring-0 focus:outline-none transition-all placeholder-gray-400 text-sm font-bold tracking-widest"
               placeholder="John Doe"
             />
           </div>
 
-          { }
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium text-gray-400 mb-1">
+              <label className="block text-xs font-bold uppercase tracking-widest text-brand-black mb-2">
                 Email address
               </label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full p-2.5 bg-[#1f2335] border border-gray-700 rounded-lg text-white focus:border-[#6366f1] focus:ring-1 focus:ring-[#6366f1] focus:outline-none transition-all text-sm"
+                className="w-full p-3 bg-white border-2 border-brand-black rounded-none text-brand-black focus:border-brand-red focus:ring-0 focus:outline-none transition-all placeholder-gray-400 text-sm font-bold tracking-widest"
                 placeholder="name@example.com"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-400 mb-1">
+              <label className="block text-xs font-bold uppercase tracking-widest text-brand-black mb-2">
                 Phone Number
               </label>
               <input
                 type="text"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                className="w-full p-2.5 bg-[#1f2335] border border-gray-700 rounded-lg text-white focus:border-[#6366f1] focus:ring-1 focus:ring-[#6366f1] focus:outline-none transition-all text-sm"
+                className="w-full p-3 bg-white border-2 border-brand-black rounded-none text-brand-black focus:border-brand-red focus:ring-0 focus:outline-none transition-all placeholder-gray-400 text-sm font-bold tracking-widest"
                 placeholder="01xxxxxxxxx"
               />
             </div>
           </div>
 
-          { }
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium text-gray-400 mb-1">
+              <label className="block text-xs font-bold uppercase tracking-widest text-brand-black mb-2">
                 Address
               </label>
               <input
                 type="text"
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
-                className="w-full p-2.5 bg-[#1f2335] border border-gray-700 rounded-lg text-white focus:border-[#6366f1] focus:ring-1 focus:ring-[#6366f1] focus:outline-none transition-all text-sm"
+                className="w-full p-3 bg-white border-2 border-brand-black rounded-none text-brand-black focus:border-brand-red focus:ring-0 focus:outline-none transition-all placeholder-gray-400 text-sm font-bold tracking-widest"
                 placeholder="Dhaka, Bangladesh"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-400 mb-1">
+              <label className="block text-xs font-bold uppercase tracking-widest text-brand-black mb-2">
                 Join As
               </label>
-              <select
-                value={role}
-                onChange={(e) => setRole(e.target.value)}
-                className="w-full p-2.5 bg-[#1f2335] border border-gray-700 rounded-lg text-gray-300 focus:border-[#6366f1] focus:ring-1 focus:ring-[#6366f1] focus:outline-none transition-all text-sm cursor-pointer"
-              >
-                <option value="" className="bg-[#161925]">
-                  -- Select Role --
-                </option>
-                <option value="employee" className="bg-[#161925]">
-                  Worker / Employee
-                </option>
-                <option value="company" className="bg-[#161925]">
-                  Company / Client
-                </option>
-                <option value="reviewer" className="bg-[#161925]">
-                  Reviewer
-                </option>
-              </select>
+              <div className="relative">
+                <select
+                  value={role}
+                  onChange={(e) => setRole(e.target.value)}
+                  className="w-full p-3 bg-white border-2 border-brand-black rounded-none text-brand-black focus:border-brand-red focus:ring-0 focus:outline-none transition-all text-sm font-bold tracking-widest uppercase cursor-pointer appearance-none"
+                >
+                  <option value="" disabled>-- Select Role --</option>
+                  <option value="employee">Worker / Employee</option>
+                  <option value="company">Company / Client</option>
+                  <option value="reviewer">Reviewer</option>
+                </select>
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-brand-black">
+                  <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                    <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
+                  </svg>
+                </div>
+              </div>
             </div>
           </div>
 
-          { }
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium text-gray-400 mb-1">
+              <label className="block text-xs font-bold uppercase tracking-widest text-brand-black mb-2">
                 Password
               </label>
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full p-2.5 bg-[#1f2335] border border-gray-700 rounded-lg text-white focus:border-[#6366f1] focus:ring-1 focus:ring-[#6366f1] focus:outline-none transition-all text-sm"
+                className="w-full p-3 bg-white border-2 border-brand-black rounded-none text-brand-black focus:border-brand-red focus:ring-0 focus:outline-none transition-all text-sm font-bold tracking-widest"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-400 mb-1">
+              <label className="block text-xs font-bold uppercase tracking-widest text-brand-black mb-2">
                 Confirm Password
               </label>
               <input
                 type="password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full p-2.5 bg-[#1f2335] border border-gray-700 rounded-lg text-white focus:border-[#6366f1] focus:ring-1 focus:ring-[#6366f1] focus:outline-none transition-all text-sm"
+                className="w-full p-3 bg-white border-2 border-brand-black rounded-none text-brand-black focus:border-brand-red focus:ring-0 focus:outline-none transition-all text-sm font-bold tracking-widest"
               />
             </div>
           </div>
 
-          { }
-          <button
-            type="submit"
-            className="w-full p-3 text-white bg-[#5a62f1] hover:bg-[#4b52df] font-semibold rounded-lg transition-all shadow-lg shadow-indigo-950/50 mt-4 active:scale-[0.99]"
-          >
-            Sign up
-          </button>
+          <div className="pt-4">
+            <button
+              type="submit"
+              className="w-full p-4 text-white bg-brand-black hover:bg-brand-red font-bold uppercase tracking-widest rounded-none transition-colors shadow-none"
+            >
+              SIGN UP
+            </button>
+          </div>
         </form>
 
-        { }
-        <div className="mt-6 text-center text-sm text-gray-400">
+        <div className="mt-10 text-center text-xs font-bold uppercase tracking-widest text-gray-500">
           Already a member?{" "}
           <Link
             href="/login"
-            className="text-[#6366f1] hover:underline font-medium"
+            className="text-brand-black hover:text-brand-red transition-colors border-b border-brand-black hover:border-brand-red pb-0.5 ml-1"
           >
-            Sign in
+            SIGN IN
           </Link>
         </div>
       </div>
