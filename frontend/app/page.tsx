@@ -252,7 +252,7 @@ export default function Home() {
         
         <div ref={horizontalWrapperRef} className="flex gap-12 sm:gap-24 px-6 lg:px-32 items-center h-full w-max mt-16">
           {solutions.map((solution, i) => (
-            <div key={i} className="w-[85vw] sm:w-[60vw] md:w-[45vw] shrink-0 border border-white/20 p-12 sm:p-16 flex flex-col h-[60vh] justify-between hover:bg-white/5 transition-colors duration-500 group">
+            <div key={i} className="w-[85vw] sm:w-[60vw] md:w-[45vw] shrink-0 border border-white/20 p-12 sm:p-16 flex flex-col min-h-[60vh] justify-between hover:bg-white/5 transition-colors duration-500 group">
               <div>
                 <h3 className="text-4xl sm:text-6xl font-bold tracking-tighter uppercase mb-8">{solution.title}</h3>
                 <p className="text-xl sm:text-2xl text-gray-400 leading-relaxed font-medium group-hover:text-gray-200 transition-colors">{solution.desc}</p>
