@@ -38,8 +38,17 @@ export default function Header() {
 
   const handleLogout = () => {
     localStorage.removeItem('user');
+    localStorage.removeItem('token');
     setUser(null);
   };
+
+  // Role-aware dashboard link (used in the desktop nav when logged in)
+  const dashboardHref =
+    user?.role === 'admin' ? '/admin/dashboard'
+    : user?.role === 'company' ? '/company'
+    : user?.role === 'employee' ? '/employee'
+    : user?.role === 'reviewer' ? '/reviewer_dashboard'
+    : '/login';
 
   return (
     <header className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-white/95 backdrop-blur-md border-b border-gray-200' : 'bg-transparent border-transparent'}`}>
@@ -73,11 +82,14 @@ export default function Header() {
         <div className="hidden lg:flex lg:flex-1 lg:justify-end lg:gap-x-6 lg:items-center">
           {user ? (
             <>
-              <span className="text-sm font-bold uppercase tracking-wider text-brand-black mr-4">
+              <Link href={dashboardHref} className="text-sm font-bold uppercase tracking-widest text-brand-black hover:text-brand-red transition-colors mr-4">
+                DASHBOARD
+              </Link>
+              <span className="hidden xl:inline text-sm font-bold uppercase tracking-wider text-gray-500 mr-4">
                 {user.fullName || user.email}
               </span>
-              <button 
-                type="button" 
+              <button
+                type="button"
                 onClick={handleLogout}
                 className="text-white bg-brand-black hover:bg-brand-red font-bold uppercase tracking-widest text-xs px-6 py-3 transition-colors cursor-pointer"
               >
@@ -137,8 +149,15 @@ export default function Header() {
                     <span className="text-sm font-bold uppercase tracking-wider text-brand-black">
                       {user.fullName || user.email}
                     </span>
-                    <button 
-                      type="button" 
+                    <Link
+                      href={dashboardHref}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="text-white bg-brand-red font-bold uppercase tracking-widest text-xs px-6 py-4 w-full text-center"
+                    >
+                      GO TO DASHBOARD
+                    </Link>
+                    <button
+                      type="button"
                       onClick={() => { handleLogout(); setMobileMenuOpen(false); }}
                       className="text-white bg-brand-black font-bold uppercase tracking-widest text-xs px-6 py-4 w-full text-center"
                     >

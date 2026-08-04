@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import axios from 'axios';
 import Header from '@/app/components/header';
 import Footer from '@/app/components/footer';
 import { gsap } from 'gsap';
@@ -42,7 +43,7 @@ const solutions = [
   }
 ];
 
-const topTalent = [
+const fallbackTalent = [
   { name: 'Alex Rivera', role: 'Frontend Developer', rating: 4.9 },
   { name: 'Sarah Chen', role: 'Data Analyst', rating: 5.0 },
   { name: 'Marcus Johnson', role: 'UI/UX Designer', rating: 4.8 },
@@ -58,6 +59,24 @@ export default function Home() {
   const horizontalRef = useRef(null);
   const horizontalWrapperRef = useRef(null);
   const talentMarqueeRef = useRef(null);
+  const [talentList, setTalentList] = useState<any[]>(fallbackTalent);
+
+  useEffect(() => {
+    axios.get('http://localhost:3000/talent')
+      .then(res => {
+        if (Array.isArray(res.data) && res.data.length > 0) {
+          const mapped = res.data.map((item: any) => ({
+            name: item.user?.fullName || 'Anonymous Talent',
+            role: item.experience ? String(item.experience).slice(0, 30) : 'Verified SkillSeed Talent',
+            rating: item.trustScore ? Number(item.trustScore).toFixed(1) : '5.0'
+          }));
+          setTalentList(mapped);
+        }
+      })
+      .catch(() => {
+        // Fallback already set
+      });
+  }, []);
 
   useEffect(() => {
     // 1. Hero Reveal Animation
@@ -304,7 +323,7 @@ export default function Home() {
         {/* Double width for seamless looping */}
         <div className="flex w-max whitespace-nowrap" ref={talentMarqueeRef}>
           <div className="flex items-center gap-16 sm:gap-32 px-8 sm:px-16 w-max">
-             {topTalent.map((talent, i) => (
+             {talentList.map((talent, i) => (
                 <div key={`a-${i}`} className="flex flex-col gap-2 shrink-0">
                   <div className="text-4xl font-bold tracking-tighter uppercase">{talent.name}</div>
                   <div className="flex items-center gap-4">
@@ -315,7 +334,7 @@ export default function Home() {
              ))}
           </div>
           <div className="flex items-center gap-16 sm:gap-32 px-8 sm:px-16 w-max">
-             {topTalent.map((talent, i) => (
+             {talentList.map((talent, i) => (
                 <div key={`b-${i}`} className="flex flex-col gap-2 shrink-0">
                   <div className="text-4xl font-bold tracking-tighter uppercase">{talent.name}</div>
                   <div className="flex items-center gap-4">

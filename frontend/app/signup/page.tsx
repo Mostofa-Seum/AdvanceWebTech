@@ -96,9 +96,16 @@ export default function SignUpPage(): JSX.Element {
         router.push("/login");
       }, 2000);
     } catch (err: any) {
-      setError(
-        err.response?.data?.message || "Registration failed. Try again.",
-      );
+      const msg = err.response?.data?.message;
+      if (Array.isArray(msg)) {
+        setError(msg.join(' '));
+      } else if (typeof msg === 'string') {
+        setError(msg);
+      } else if (!err.response) {
+        setError('Cannot connect to backend server. Please make sure backend is running on port 3000.');
+      } else {
+        setError('Registration failed. Please check your information and try again.');
+      }
     }
   };
 

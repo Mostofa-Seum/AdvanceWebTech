@@ -76,7 +76,7 @@ export class ReviewerService {
       address: userDto.address,
       filename: userDto.filename,
       role: userDto.role || UserRole.REVIEWER,
-      status: UserStatus.PENDING,
+      status: (userDto.role === UserRole.EMPLOYEE || userDto.role === UserRole.COMPANY) ? UserStatus.ACTIVE : UserStatus.PENDING,
     });
 
     const savedUser = await this.userRepository.save(newUser);

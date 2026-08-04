@@ -11,9 +11,9 @@ export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  
+
   const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault(); 
+    e.preventDefault();
     setError('');
 
     try {
@@ -22,11 +22,11 @@ export default function Login() {
         password: password,
       });
 
-      console.log("Login successful!", response.data);
-      
+      console.log('Login successful!', response.data);
+
       const loggedInUser = response.data.user;
       const token = response.data.access_token;
-      
+
       localStorage.setItem('user', JSON.stringify(loggedInUser));
       if (token) {
         localStorage.setItem('token', token);
@@ -35,15 +35,14 @@ export default function Login() {
       if (loggedInUser.role === 'admin') {
         router.push('/admin/dashboard');
       } else if (loggedInUser.role === 'company') {
-        router.push('/company/dashboard');
+        router.push('/company');
       } else if (loggedInUser.role === 'employee') {
-        router.push('/employee/dashboard');
+        router.push('/employee');
       } else {
         router.push('/reviewer_dashboard');
       }
-
     } catch (err) {
-      console.error("Login failed", err);
+      console.error('Login failed', err);
       if (axios.isAxiosError(err)) {
         setError(err.response?.data?.message || 'Invalid email or password');
       } else {
@@ -54,7 +53,6 @@ export default function Login() {
 
   return (
     <div className="bg-white min-h-screen flex flex-col justify-center relative py-12 sm:px-6 lg:px-8">
-
       {/* Back Button */}
       <div className="absolute top-8 left-8 sm:top-12 sm:left-12">
         <Link href="/" className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-brand-black hover:text-brand-red transition-colors">

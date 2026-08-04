@@ -3,7 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
-import { UserEntity, UserStatus } from '../reviewer/user.entity';
+import { UserEntity, UserStatus, UserRole } from '../reviewer/user.entity';
 
 @Injectable()
 export class AuthService {
@@ -28,8 +28,11 @@ export class AuthService {
       throw new UnauthorizedException('Invalid email or password');
     }
 
-    // Block pending/rejected/suspended accounts
-    if (user.status === UserStatus.PENDING) {
+    // Auto-activate employee/company accounts if previously set to pending
+    if (user.status === UserStatus.PENDING && (user.role === UserRole.EMPLOYEE || user.role === UserRole.COMPANY)) {
+      user.status = UserStatus.ACTIVE;
+      await this.userRepository.save(user);
+    } else if (user.status === UserStatus.PENDING) {
       throw new UnauthorizedException('Your account is pending approval. Please wait.');
     }
     if (user.status === UserStatus.REJECTED) {

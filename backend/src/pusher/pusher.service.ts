@@ -65,4 +65,55 @@ export class PusherService {
       console.error('Pusher Beams notification failed:', err);
     }
   }
+
+  // Trigger a push notification to a Company user (application received, work submitted, etc.)
+  async notifyCompany(title: string, body: string) {
+    try {
+      await this.beamsClient.publishToInterests(['company-notifications'], {
+        web: {
+          notification: {
+            title,
+            body,
+            deep_link: 'http://localhost:3001/company',
+          },
+        },
+      });
+    } catch (err) {
+      console.error('Pusher Beams (company) notification failed:', err);
+    }
+  }
+
+  // Trigger a push notification to an Employee user (application accepted, payment released, etc.)
+  async notifyEmployee(title: string, body: string) {
+    try {
+      await this.beamsClient.publishToInterests(['employee-notifications'], {
+        web: {
+          notification: {
+            title,
+            body,
+            deep_link: 'http://localhost:3001/employee',
+          },
+        },
+      });
+    } catch (err) {
+      console.error('Pusher Beams (employee) notification failed:', err);
+    }
+  }
+
+  // Trigger a push notification to Reviewers about new work to verify
+  async notifyReviewers(title: string, body: string) {
+    try {
+      await this.beamsClient.publishToInterests(['reviewer-notifications'], {
+        web: {
+          notification: {
+            title,
+            body,
+            deep_link: 'http://localhost:5000/reviewer_dashboard/work_verifications',
+          },
+        },
+      });
+    } catch (err) {
+      console.error('Pusher Beams (reviewer) notification failed:', err);
+    }
+  }
 }
