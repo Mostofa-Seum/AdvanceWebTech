@@ -24,7 +24,7 @@ export default function EmployeeEarningsPage() {
   const fetchEarnings = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`http://localhost:3000/employee/payments?employeeId=${employeeId}`);
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/employee/payments?employeeId=${employeeId}`);
       setData(res.data);
     } catch (err) { console.error(err); } finally { setLoading(false); }
   };

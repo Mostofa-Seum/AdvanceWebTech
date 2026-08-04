@@ -34,8 +34,8 @@ export default function CompanyJobDetailPage() {
     setLoading(true);
     try {
       const [jobRes, appsRes] = await Promise.all([
-        axios.get(`http://localhost:3000/company/jobs/${jobId}?companyId=${companyId}`),
-        axios.get(`http://localhost:3000/company/jobs/${jobId}/applications?companyId=${companyId}`),
+        axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/company/jobs/${jobId}?companyId=${companyId}`),
+        axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/company/jobs/${jobId}/applications?companyId=${companyId}`),
       ]);
       setJob(jobRes.data);
       setApps(appsRes.data);
@@ -49,7 +49,7 @@ export default function CompanyJobDetailPage() {
   const accept = async (applicationId: string) => {
     if (!confirm('Accept this application? An escrow payment will be held and all other applicants rejected.')) return;
     try {
-      await axios.patch(`http://localhost:3000/company/applications/${applicationId}/accept?companyId=${companyId}`);
+      await axios.patch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/company/applications/${applicationId}/accept?companyId=${companyId}`);
       fetchAll();
     } catch (err: any) {
       alert(err.response?.data?.message || 'Failed to accept application');
@@ -59,7 +59,7 @@ export default function CompanyJobDetailPage() {
   const reject = async (applicationId: string) => {
     if (!confirm('Reject this application?')) return;
     try {
-      await axios.patch(`http://localhost:3000/company/applications/${applicationId}/reject?companyId=${companyId}`);
+      await axios.patch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/company/applications/${applicationId}/reject?companyId=${companyId}`);
       fetchAll();
     } catch (err: any) {
       alert(err.response?.data?.message || 'Failed to reject application');
@@ -70,7 +70,7 @@ export default function CompanyJobDetailPage() {
     setRatingMsg('');
     if (rating < 1 || rating > 5) { setRatingMsg('Select a rating between 1 and 5'); return; }
     try {
-      await axios.post(`http://localhost:3000/company/jobs/${jobId}/rate?companyId=${companyId}`, { rating, comment: ratingComment });
+      await axios.post(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/company/jobs/${jobId}/rate?companyId=${companyId}`, { rating, comment: ratingComment });
       setRatingMsg('Rating submitted successfully');
       setRating(0); setRatingComment('');
     } catch (err: any) {

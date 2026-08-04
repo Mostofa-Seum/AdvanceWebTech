@@ -22,12 +22,12 @@ export default function EditJobPage() {
     if (stored) {
       try { setCompanyId(JSON.parse(stored)?.company?.companyId || ''); } catch {}
     }
-    axios.get('http://localhost:3000/jobs/categories').then((r) => setCategories(r.data)).catch(() => {});
+    axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/jobs/categories`).then((r) => setCategories(r.data)).catch(() => {});
   }, []);
 
   useEffect(() => {
     if (!companyId || !jobId) return;
-    axios.get(`http://localhost:3000/company/jobs/${jobId}?companyId=${companyId}`).then((r) => {
+    axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/company/jobs/${jobId}?companyId=${companyId}`).then((r) => {
       const j = r.data;
       const d = j.deadline ? new Date(j.deadline) : new Date();
       setForm({
@@ -46,7 +46,7 @@ export default function EditJobPage() {
     setError('');
     setSubmitting(true);
     try {
-      await axios.put(`http://localhost:3000/company/jobs/${jobId}?companyId=${companyId}`, {
+      await axios.put(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/company/jobs/${jobId}?companyId=${companyId}`, {
         title: form.title,
         description: form.description,
         budget: Number(form.budget),

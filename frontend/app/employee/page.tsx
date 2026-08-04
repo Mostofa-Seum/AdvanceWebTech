@@ -35,7 +35,7 @@ export default function EmployeeDashboard() {
 
   const fetchProfile = async (id: string) => {
     try {
-      const res = await axios.get(`http://localhost:3000/employee/profile/${id}`);
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/employee/profile/${id}`);
       setProfile(res.data);
       setFormData({
         fullName: res.data.user?.fullName || '',
@@ -53,7 +53,7 @@ export default function EmployeeDashboard() {
     const id = profile?.employeeId;
     if (!id) return;
     try {
-      await axios.put(`http://localhost:3000/employee/profile/${id}`, formData);
+      await axios.put(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/employee/profile/${id}`, formData);
       // Persist name back into localStorage
       const stored = localStorage.getItem('user');
       if (stored) {
@@ -86,7 +86,7 @@ export default function EmployeeDashboard() {
     const id = profile?.employeeId;
     if (!id) return;
     try {
-      await axios.patch(`http://localhost:3000/employee/profile/${id}/change-password`, {
+      await axios.patch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/employee/profile/${id}/change-password`, {
         oldPassword: pwForm.oldPassword,
         newPassword: pwForm.newPassword,
       });

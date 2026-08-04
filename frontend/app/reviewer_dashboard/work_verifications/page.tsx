@@ -33,7 +33,7 @@ export default function WorkVerificationsModule() {
   const fetchSubmissions = async () => {
     setLoading(true);
     try {
-      const res = await axios.get('http://localhost:3000/reviewer/work/pending');
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/reviewer/work/pending`);
       setSubmissions(res.data);
     } catch (err) {
       console.error(err);
@@ -52,7 +52,7 @@ export default function WorkVerificationsModule() {
     setSubmissions(prev => prev.filter(s => s.submissionId !== submissionId));
     
     try {
-      await axios.post(`http://localhost:3000/reviewer/work/${submissionId}/review`, {
+      await axios.post(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/reviewer/work/${submissionId}/review`, {
         status,
         comments: comments || undefined,
         reviewerId: sessionUser.reviewer.reviewerId

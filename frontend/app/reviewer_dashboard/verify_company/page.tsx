@@ -30,7 +30,7 @@ export default function VerifyCompanyModule() {
   const fetchCompanies = async () => {
     setLoading(true);
     try {
-      const res = await axios.get('http://localhost:3000/reviewer/companies/pending');
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/reviewer/companies/pending`);
       setCompanies(res.data);
     } catch (err) {
       console.error(err);
@@ -49,7 +49,7 @@ export default function VerifyCompanyModule() {
     setCompanies(prev => prev.filter(c => c.companyId !== companyId));
     
     try {
-      await axios.patch(`http://localhost:3000/reviewer/companies/${companyId}/status`, {
+      await axios.patch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/reviewer/companies/${companyId}/status`, {
         status,
         reviewerId: sessionUser.reviewer.reviewerId
       });

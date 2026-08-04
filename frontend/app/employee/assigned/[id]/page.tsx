@@ -39,7 +39,7 @@ export default function EmployeeAssignedDetailPage() {
   const fetchAssignment = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`http://localhost:3000/employee/assigned/${assignedJobId}?employeeId=${employeeId}`);
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/employee/assigned/${assignedJobId}?employeeId=${employeeId}`);
       setAssignment(res.data);
     } catch (err) { console.error(err); } finally { setLoading(false); }
   };
@@ -54,7 +54,7 @@ export default function EmployeeAssignedDetailPage() {
     }
     setSubmitting(true);
     try {
-      await axios.post(`http://localhost:3000/employee/assigned/${assignedJobId}/submit?employeeId=${employeeId}`, form);
+      await axios.post(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/employee/assigned/${assignedJobId}/submit?employeeId=${employeeId}`, form);
       setMsg('Work submitted successfully! A reviewer will verify it.');
       setMsgType('success');
       setForm({ submissionText: '', fileUrl: '', liveLink: '' });
@@ -73,7 +73,7 @@ export default function EmployeeAssignedDetailPage() {
     const jobId = assignment?.job?.jobId;
     if (!jobId) return;
     try {
-      await axios.post(`http://localhost:3000/employee/jobs/${jobId}/rate?employeeId=${employeeId}`, { rating, comment: ratingComment });
+      await axios.post(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/employee/jobs/${jobId}/rate?employeeId=${employeeId}`, { rating, comment: ratingComment });
       setRatingMsg('Rating submitted successfully');
       setRating(0); setRatingComment('');
     } catch (err: any) {

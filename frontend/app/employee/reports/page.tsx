@@ -20,7 +20,7 @@ export default function EmployeeReportsPage() {
         const id = u?.employee?.employeeId;
         setEmployeeId(id || '');
         if (id) {
-          axios.get(`http://localhost:3000/employee/assigned?employeeId=${id}`).then((r) => setAssignments(r.data)).catch(() => {});
+          axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/employee/assigned?employeeId=${id}`).then((r) => setAssignments(r.data)).catch(() => {});
         }
       } catch {}
     }
@@ -36,7 +36,7 @@ export default function EmployeeReportsPage() {
     }
     setSubmitting(true);
     try {
-      await axios.post(`http://localhost:3000/employee/reports?employeeId=${employeeId}`, {
+      await axios.post(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/employee/reports?employeeId=${employeeId}`, {
         againstUserId: form.againstUserId,
         jobId: form.jobId || undefined,
         reason: form.reason,

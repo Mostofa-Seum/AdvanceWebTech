@@ -62,7 +62,7 @@ export default function Home() {
   const [talentList, setTalentList] = useState<any[]>(fallbackTalent);
 
   useEffect(() => {
-    axios.get('http://localhost:3000/talent')
+    axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/talent`)
       .then(res => {
         if (Array.isArray(res.data) && res.data.length > 0) {
           const mapped = res.data.map((item: any) => ({

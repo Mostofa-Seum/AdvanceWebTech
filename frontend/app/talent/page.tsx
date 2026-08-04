@@ -13,7 +13,7 @@ export default function TalentPage() {
 
   useEffect(() => {
     axios
-      .get('http://localhost:3000/talent')
+      .get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/talent`)
       .then((r) => setTalents(r.data))
       .catch(() => {})
       .finally(() => setLoading(false));

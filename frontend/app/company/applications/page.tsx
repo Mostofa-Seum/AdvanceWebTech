@@ -29,13 +29,13 @@ export default function CompanyApplicationsPage() {
   const fetchJobsAndApps = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`http://localhost:3000/company/jobs?companyId=${companyId}`);
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/company/jobs?companyId=${companyId}`);
       const jobs = res.data;
       // For each job load its applications
       const allApps: any[] = [];
       await Promise.all(jobs.map(async (job: any) => {
         try {
-          const a = await axios.get(`http://localhost:3000/company/jobs/${job.jobId}/applications?companyId=${companyId}`);
+          const a = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/company/jobs/${job.jobId}/applications?companyId=${companyId}`);
           a.data.forEach((x: any) => allApps.push({ ...x, jobTitle: job.title, jobId: job.jobId }));
         } catch {}
       }));

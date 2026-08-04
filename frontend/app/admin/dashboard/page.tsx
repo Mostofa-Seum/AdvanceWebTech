@@ -116,7 +116,7 @@ export default function AdminDashboard() {
   const fetchData = async (tab: TabType) => {
     setLoading(true); setError(''); setData([]);
     try {
-      const res = await axios.get(`http://localhost:3000/admin/${tab}`);
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/admin/${tab}`);
       setData(res.data);
     } catch (err: any) {
       setError(`Failed to load ${tab}. ` + (err.response?.data?.message || ''));
@@ -127,7 +127,7 @@ export default function AdminDashboard() {
   const fetchReviewerRequests = async () => {
     setRequestsLoading(true); setRequestsError(''); setReviewerRequests([]);
     try {
-      const res = await axios.get('http://localhost:3000/admin/reviewer-requests');
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/admin/reviewer-requests`);
       setReviewerRequests(res.data);
     } catch (err: any) {
       setRequestsError('Failed to load reviewer requests. ' + (err.response?.data?.message || ''));
@@ -139,7 +139,7 @@ export default function AdminDashboard() {
     if (action === 'reject' && !confirm('Are you sure you want to reject this reviewer request?')) return;
     setActionLoading(userId);
     try {
-      await axios.patch(`http://localhost:3000/admin/reviewer-requests/${userId}`, { action });
+      await axios.patch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/admin/reviewer-requests/${userId}`, { action });
       setReviewerRequests(prev => prev.filter(r => r.userId !== userId));
     } catch (err: any) {
       alert('Error: ' + (err.response?.data?.message || err.message));
@@ -149,27 +149,27 @@ export default function AdminDashboard() {
   //  DELETE — Delete user 
   const deleteUser = async (id: string) => {
     if (!confirm('Are you sure you want to delete this user?')) return;
-    try { await axios.delete(`http://localhost:3000/admin/users/${id}`); fetchData(activeTab); }
+    try { await axios.delete(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/admin/users/${id}`); fetchData(activeTab); }
     catch (err: any) { alert('Error: ' + (err.response?.data?.message || err.message)); }
   };
 
   //  PATCH — Demote reviewer 
   const demoteReviewer = async (id: string) => {
     if (!confirm('Demote this reviewer to employee?')) return;
-    try { await axios.patch(`http://localhost:3000/admin/reviewers/${id}/demote`); fetchData(activeTab); }
+    try { await axios.patch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/admin/reviewers/${id}/demote`); fetchData(activeTab); }
     catch (err: any) { alert('Error: ' + (err.response?.data?.message || err.message)); }
   };
 
   //  PATCH — Promote employee  
   const promoteEmployee = async (id: string) => {
     if (!confirm('Promote this employee to reviewer?')) return;
-    try { await axios.patch(`http://localhost:3000/admin/employees/${id}/promote`); fetchData(activeTab); }
+    try { await axios.patch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/admin/employees/${id}/promote`); fetchData(activeTab); }
     catch (err: any) { alert('Error: ' + (err.response?.data?.message || err.message)); }
   };
 
   //  PATCH — Update status 
   const updateStatus = async (id: string, status: string, endpoint: string) => {
-    try { await axios.patch(`http://localhost:3000/admin/${endpoint}/${id}/status`, { status }); fetchData(activeTab); }
+    try { await axios.patch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/admin/${endpoint}/${id}/status`, { status }); fetchData(activeTab); }
     catch (err: any) { alert('Error: ' + (err.response?.data?.message || err.message)); }
   };
 
@@ -177,7 +177,7 @@ export default function AdminDashboard() {
   const handleProfileUpdate = async () => {
     setProfileMsg('');
     try {
-      await axios.put(`http://localhost:3000/admin/profile/${adminUser.userId}`, profileForm);
+      await axios.put(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/admin/profile/${adminUser.userId}`, profileForm);
       const updated = { ...adminUser, ...profileForm };
       localStorage.setItem('user', JSON.stringify(updated));
       setAdminUser(updated);
@@ -192,7 +192,7 @@ export default function AdminDashboard() {
     if (pwForm.newPassword.length < 6) { setPwErr('New password must be at least 6 characters.'); return; }
     if (pwForm.newPassword !== pwForm.confirmPassword) { setPwErr('Passwords do not match.'); return; }
     try {
-      await axios.patch(`http://localhost:3000/admin/profile/${adminUser.userId}/change-password`, { oldPassword: pwForm.oldPassword, newPassword: pwForm.newPassword });
+      await axios.patch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/admin/profile/${adminUser.userId}/change-password`, { oldPassword: pwForm.oldPassword, newPassword: pwForm.newPassword });
       setPwMsg('Password changed successfully!');
       setPwForm({ oldPassword: '', newPassword: '', confirmPassword: '' });
     } catch (err: any) {
@@ -215,7 +215,7 @@ export default function AdminDashboard() {
       return;
     }
     try {
-      await axios.post('http://localhost:3000/admin/signup', createForm);
+      await axios.post(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/admin/signup`, createForm);
       setCreateMsg('Admin account created successfully!');
       setCreateForm({ fullName: '', email: '', password: '', phone: '', address: '' });
     } catch (err: any) {

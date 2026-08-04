@@ -27,7 +27,7 @@ export default function PaymentsModule() {
   const fetchPayments = async () => {
     setLoading(true);
     try {
-      const res = await axios.get('http://localhost:3000/reviewer/payments/pending');
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/reviewer/payments/pending`);
       setPayments(res.data);
     } catch (err) {
       console.error(err);
@@ -46,7 +46,7 @@ export default function PaymentsModule() {
     setPayments(prev => prev.filter(p => p.paymentId !== paymentId));
     
     try {
-      await axios.patch(`http://localhost:3000/reviewer/payments/${paymentId}/release`);
+      await axios.patch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/reviewer/payments/${paymentId}/release`);
       alert('Payment released successfully!');
     } catch (err) {
       console.error(err);

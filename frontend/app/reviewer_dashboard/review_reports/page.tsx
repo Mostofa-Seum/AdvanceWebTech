@@ -18,7 +18,7 @@ export default function ReviewReportsPage() {
   const fetchReports = async () => {
     setLoading(true);
     try {
-      const res = await axios.get('http://localhost:3000/reviewer/reports/pending');
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/reviewer/reports/pending`);
       setReports(res.data);
     } catch (err) {
       console.error(err);
@@ -32,7 +32,7 @@ export default function ReviewReportsPage() {
     setReports(prev => prev.filter(r => r.reportId !== reportId));
 
     try {
-      await axios.patch(`http://localhost:3000/reviewer/reports/${reportId}/status`, { status });
+      await axios.patch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/reviewer/reports/${reportId}/status`, { status });
     } catch (err) {
       console.error(err);
       alert('Failed to update report status');

@@ -19,7 +19,7 @@ export default function EmployeeBrowsePage() {
     if (stored) {
       try { setEmployeeId(JSON.parse(stored)?.employee?.employeeId || ''); } catch {}
     }
-    axios.get('http://localhost:3000/jobs/categories').then((r) => setCategories(r.data)).catch(() => {});
+    axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/jobs/categories`).then((r) => setCategories(r.data)).catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -33,7 +33,7 @@ export default function EmployeeBrowsePage() {
       const params = new URLSearchParams({ employeeId });
       if (activeCategory !== 'All') params.set('category', activeCategory);
       if (search.trim()) params.set('search', search.trim());
-      const res = await axios.get(`http://localhost:3000/employee/jobs?${params.toString()}`);
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/employee/jobs?${params.toString()}`);
       setJobs(res.data);
     } catch (err) {
       console.error(err);

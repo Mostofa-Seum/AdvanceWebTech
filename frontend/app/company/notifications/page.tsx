@@ -23,21 +23,21 @@ export default function CompanyNotificationsPage() {
   const fetchNotifications = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`http://localhost:3000/company/notifications?companyId=${companyId}`);
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/company/notifications?companyId=${companyId}`);
       setItems(res.data);
     } catch (err) { console.error(err); } finally { setLoading(false); }
   };
 
   const markAll = async () => {
     try {
-      await axios.patch(`http://localhost:3000/company/notifications/read-all?companyId=${companyId}`);
+      await axios.patch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/company/notifications/read-all?companyId=${companyId}`);
       setItems((prev) => prev.map((n) => ({ ...n, isRead: true })));
     } catch {}
   };
 
   const markOne = async (id: string) => {
     try {
-      await axios.patch(`http://localhost:3000/company/notifications/${id}/read?companyId=${companyId}`);
+      await axios.patch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/company/notifications/${id}/read?companyId=${companyId}`);
       setItems((prev) => prev.map((n) => (n.notificationId === id ? { ...n, isRead: true } : n)));
     } catch {}
   };

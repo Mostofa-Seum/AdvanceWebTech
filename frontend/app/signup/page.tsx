@@ -73,7 +73,7 @@ export default function SignUpPage(): JSX.Element {
     }
 
     try {
-      await axios.post('http://localhost:3000/reviewer/signup', {
+      await axios.post(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/reviewer/signup`, {
         fullName,
         email,
         phone,
@@ -102,7 +102,7 @@ export default function SignUpPage(): JSX.Element {
       } else if (typeof msg === 'string') {
         setError(msg);
       } else if (!err.response) {
-        setError('Cannot connect to backend server. Please make sure backend is running on port 3000.');
+        setError('Cannot connect to backend server. Please make sure the backend server is running and accessible.');
       } else {
         setError('Registration failed. Please check your information and try again.');
       }

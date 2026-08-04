@@ -15,7 +15,7 @@ export default function UserDetailPage() {
   useEffect(() => {
     const token = localStorage.getItem('token');
     axios
-      .get(`http://localhost:3000/admin/users/${id}`, {
+      .get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/admin/users/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => setUser(res.data))

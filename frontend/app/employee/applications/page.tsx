@@ -25,7 +25,7 @@ export default function EmployeeApplicationsPage() {
   const fetchApps = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`http://localhost:3000/employee/applications?employeeId=${employeeId}`);
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/employee/applications?employeeId=${employeeId}`);
       setApps(res.data);
     } catch (err) { console.error(err); } finally { setLoading(false); }
   };
@@ -33,7 +33,7 @@ export default function EmployeeApplicationsPage() {
   const withdraw = async (applicationId: string) => {
     if (!confirm('Withdraw this application?')) return;
     try {
-      await axios.delete(`http://localhost:3000/employee/applications/${applicationId}?employeeId=${employeeId}`);
+      await axios.delete(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/employee/applications/${applicationId}?employeeId=${employeeId}`);
       setApps((prev) => prev.filter((a) => a.applicationId !== applicationId));
     } catch (err: any) {
       alert(err.response?.data?.message || 'Failed to withdraw');

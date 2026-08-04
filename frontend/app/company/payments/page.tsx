@@ -25,7 +25,7 @@ export default function CompanyPaymentsPage() {
   const fetchPayments = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`http://localhost:3000/company/payments?companyId=${companyId}`);
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/company/payments?companyId=${companyId}`);
       setPayments(res.data);
     } catch (err) { console.error(err); } finally { setLoading(false); }
   };
@@ -33,7 +33,7 @@ export default function CompanyPaymentsPage() {
   const release = async (paymentId: string) => {
     if (!confirm('Release this escrow payment for final settlement?')) return;
     try {
-      await axios.patch(`http://localhost:3000/company/payments/${paymentId}/release?companyId=${companyId}`);
+      await axios.patch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/company/payments/${paymentId}/release?companyId=${companyId}`);
       fetchPayments();
     } catch (err: any) {
       alert(err.response?.data?.message || 'Failed to release payment');

@@ -21,7 +21,7 @@ export default function UserActions({ userId, currentStatus, currentRole, employ
   const updateStatus = async (newStatus: string) => {
     setLoading(true); setMsg('');
     try {
-      await axios.patch(`http://localhost:3000/admin/users/${userId}/status`, { status: newStatus });
+      await axios.patch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/admin/users/${userId}/status`, { status: newStatus });
       setStatus(newStatus);
       setMsg(`Status updated to ${newStatus}`);
     } catch (err: any) {
@@ -33,7 +33,7 @@ export default function UserActions({ userId, currentStatus, currentRole, employ
     if (!confirm('Are you sure you want to permanently delete this user?')) return;
     setLoading(true);
     try {
-      await axios.delete(`http://localhost:3000/admin/users/${userId}`);
+      await axios.delete(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/admin/users/${userId}`);
       router.push('/admin/dashboard');
     } catch (err: any) {
       setMsg('Error: ' + (err.response?.data?.message || err.message));
@@ -46,7 +46,7 @@ export default function UserActions({ userId, currentStatus, currentRole, employ
     if (!confirm('Promote this employee to reviewer?')) return;
     setLoading(true);
     try {
-      await axios.patch(`http://localhost:3000/admin/employees/${employeeId}/promote`);
+      await axios.patch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/admin/employees/${employeeId}/promote`);
       setMsg('Employee promoted to reviewer!');
       router.refresh();
     } catch (err: any) {
@@ -59,7 +59,7 @@ export default function UserActions({ userId, currentStatus, currentRole, employ
     if (!confirm('Demote this reviewer to employee?')) return;
     setLoading(true);
     try {
-      await axios.patch(`http://localhost:3000/admin/reviewers/${reviewerId}/demote`);
+      await axios.patch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/admin/reviewers/${reviewerId}/demote`);
       setMsg('Reviewer demoted to employee!');
       router.refresh();
     } catch (err: any) {

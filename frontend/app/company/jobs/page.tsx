@@ -28,7 +28,7 @@ export default function CompanyJobsPage() {
   const fetchJobs = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`http://localhost:3000/company/jobs?companyId=${companyId}`);
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/company/jobs?companyId=${companyId}`);
       setJobs(res.data);
     } catch (err) {
       console.error(err);
@@ -40,7 +40,7 @@ export default function CompanyJobsPage() {
   const removeJob = async (jobId: string) => {
     if (!confirm('Remove this job posting? This cannot be undone.')) return;
     try {
-      await axios.delete(`http://localhost:3000/company/jobs/${jobId}?companyId=${companyId}`);
+      await axios.delete(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/company/jobs/${jobId}?companyId=${companyId}`);
       setJobs((prev) => prev.filter((j) => j.jobId !== jobId));
     } catch (err: any) {
       alert(err.response?.data?.message || 'Failed to remove job');

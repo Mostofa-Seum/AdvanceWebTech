@@ -40,7 +40,7 @@ export default function DashboardProfile() {
     }
 
     // Fetch profile
-    axios.get(`http://localhost:3000/reviewer/profile/${sessionUser.reviewer.reviewerId}`)
+    axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/reviewer/profile/${sessionUser.reviewer.reviewerId}`)
       .then(res => {
         setProfile(res.data);
         setFormData({
@@ -58,7 +58,7 @@ export default function DashboardProfile() {
 
   const handleUpdate = async () => {
     try {
-      await axios.put(`http://localhost:3000/reviewer/profile/${sessionUser.reviewer.reviewerId}`, formData);
+      await axios.put(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/reviewer/profile/${sessionUser.reviewer.reviewerId}`, formData);
       setIsEditing(false);
       setProfile((prev: any) => ({
         ...prev,
@@ -114,7 +114,7 @@ export default function DashboardProfile() {
     setPwLoading(true);
     try {
       await axios.patch(
-        `http://localhost:3000/reviewer/profile/${sessionUser.reviewer.reviewerId}/change-password`,
+        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/reviewer/profile/${sessionUser.reviewer.reviewerId}/change-password`,
         { oldPassword: pwData.oldPassword, newPassword: pwData.newPassword }
       );
       setPwSuccess('Password changed successfully!');

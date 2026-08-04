@@ -19,7 +19,7 @@ export default function CompanyReportsPage() {
         const u = JSON.parse(stored);
         const id = u?.company?.companyId;
         setCompanyId(id || '');
-        if (id) axios.get(`http://localhost:3000/company/jobs?companyId=${id}`).then((r) => setJobs(r.data)).catch(() => {});
+        if (id) axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/company/jobs?companyId=${id}`).then((r) => setJobs(r.data)).catch(() => {});
       } catch {}
     }
   }, []);
@@ -34,7 +34,7 @@ export default function CompanyReportsPage() {
     }
     setSubmitting(true);
     try {
-      await axios.post(`http://localhost:3000/company/reports?companyId=${companyId}`, {
+      await axios.post(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/company/reports?companyId=${companyId}`, {
         againstUserId: form.againstUserId,
         jobId: form.jobId || undefined,
         reason: form.reason,

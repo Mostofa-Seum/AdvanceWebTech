@@ -30,7 +30,7 @@ export default function VerifyUserModule() {
   const fetchUsers = async () => {
     setLoading(true);
     try {
-      const res = await axios.get('http://localhost:3000/reviewer/users/pending');
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/reviewer/users/pending`);
       setUsers(res.data);
     } catch (err) {
       console.error(err);
@@ -49,7 +49,7 @@ export default function VerifyUserModule() {
     setUsers(prev => prev.filter(u => u.userId !== userId));
     
     try {
-      await axios.patch(`http://localhost:3000/reviewer/users/${userId}/status`, {
+      await axios.patch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/reviewer/users/${userId}/status`, {
         status,
         isEmailVerified,
         isPhoneVerified,

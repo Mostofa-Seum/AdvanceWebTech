@@ -25,7 +25,7 @@ export default function EmployeeAssignedPage() {
   const fetchAssigned = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`http://localhost:3000/employee/assigned?employeeId=${employeeId}`);
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/employee/assigned?employeeId=${employeeId}`);
       setAssignments(res.data);
     } catch (err) { console.error(err); } finally { setLoading(false); }
   };

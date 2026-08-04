@@ -37,7 +37,7 @@ export default function CompanyDashboard() {
 
   const fetchProfile = async (id: string) => {
     try {
-      const res = await axios.get(`http://localhost:3000/company/profile/${id}`);
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/company/profile/${id}`);
       setProfile(res.data);
       setFormData({
         companyName: res.data.companyName || '',
@@ -56,7 +56,7 @@ export default function CompanyDashboard() {
     const id = profile?.companyId;
     if (!id) return;
     try {
-      await axios.put(`http://localhost:3000/company/profile/${id}`, formData);
+      await axios.put(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/company/profile/${id}`, formData);
       const updated = { ...profile, companyName: formData.companyName };
       setProfile(updated);
       // Persist updated name into localStorage user
@@ -91,7 +91,7 @@ export default function CompanyDashboard() {
     const id = profile?.companyId;
     if (!id) return;
     try {
-      await axios.patch(`http://localhost:3000/company/profile/${id}/change-password`, {
+      await axios.patch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/company/profile/${id}/change-password`, {
         oldPassword: pwForm.oldPassword,
         newPassword: pwForm.newPassword,
       });

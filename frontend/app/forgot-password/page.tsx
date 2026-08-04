@@ -23,7 +23,7 @@ export default function ForgotPassword() {
     setSuccess('');
 
     try {
-      await axios.post('http://localhost:3000/reviewer/forgot-password', { email });
+      await axios.post(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/reviewer/forgot-password`, { email });
       setSuccess('OTP sent successfully to your email. Please check your inbox.');
       setStep(2);
     } catch (err: any) {
@@ -40,7 +40,7 @@ export default function ForgotPassword() {
     setSuccess('');
 
     try {
-      await axios.post('http://localhost:3000/reviewer/reset-password', { 
+      await axios.post(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/reviewer/reset-password`, { 
         email, 
         otp, 
         newPassword 

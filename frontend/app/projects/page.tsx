@@ -30,7 +30,7 @@ export default function ProjectsPage() {
 
   useEffect(() => {
     // Load categories for the filter bar
-    axios.get('http://localhost:3000/jobs/categories')
+    axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/jobs/categories`)
       .then((r) => setCategories(['All', ...r.data.map((c: any) => c.categoryName)]))
       .catch(() => {});
   }, []);
@@ -44,7 +44,7 @@ export default function ProjectsPage() {
     try {
       const params = new URLSearchParams();
       if (activeCategory !== 'All') params.set('category', activeCategory);
-      const res = await axios.get(`http://localhost:3000/jobs?${params.toString()}`);
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/jobs?${params.toString()}`);
       setProjects(res.data);
     } catch (err) {
       console.error(err);

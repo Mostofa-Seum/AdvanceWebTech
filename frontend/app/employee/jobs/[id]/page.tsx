@@ -34,7 +34,7 @@ export default function EmployeeJobDetailPage() {
   const fetchJob = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`http://localhost:3000/employee/jobs/${jobId}?employeeId=${employeeId}`);
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/employee/jobs/${jobId}?employeeId=${employeeId}`);
       setJob(res.data);
     } catch (err) { console.error(err); } finally { setLoading(false); }
   };
@@ -44,7 +44,7 @@ export default function EmployeeJobDetailPage() {
     setMsg('');
     setSubmitting(true);
     try {
-      await axios.post(`http://localhost:3000/employee/jobs/${jobId}/apply?employeeId=${employeeId}`, { coverLetter });
+      await axios.post(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/employee/jobs/${jobId}/apply?employeeId=${employeeId}`, { coverLetter });
       setMsg('Application submitted successfully!');
       setMsgType('success');
       fetchJob();

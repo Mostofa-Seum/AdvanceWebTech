@@ -43,7 +43,7 @@ export default function NotificationsBell({
       const token = localStorage.getItem('token')
       if (!id) return
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
-      axios.get(`http://localhost:3000/${role}/notifications?${role === 'company' ? 'companyId' : 'employeeId'}=${id}`)
+      axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/${role}/notifications?${role === 'company' ? 'companyId' : 'employeeId'}=${id}`)
         .then((res) => setItems(res.data))
         .catch(() => {})
     } catch {}
@@ -57,7 +57,7 @@ export default function NotificationsBell({
     try {
       const user = JSON.parse(stored)
       const id = user?.company?.[idKey] ?? user?.employee?.[idKey]
-      await axios.patch(`http://localhost:3000/${role}/notifications/read-all?${role === 'company' ? 'companyId' : 'employeeId'}=${id}`)
+      await axios.patch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/${role}/notifications/read-all?${role === 'company' ? 'companyId' : 'employeeId'}=${id}`)
       setItems((prev) => prev.map((n) => ({ ...n, isRead: true })))
     } catch {}
   }
