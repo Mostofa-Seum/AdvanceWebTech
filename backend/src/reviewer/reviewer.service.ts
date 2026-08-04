@@ -103,32 +103,34 @@ export class ReviewerService {
       await this.employeeRepository.save(newEmployee);
     }
 
-    // Send a welcome email
-    try {
-      await this.mailerService.sendMail({
-        to: savedUser.email,
-        from: '"Support Team" <support@abc.com>',
-        subject: 'Welcome to our Platform!',
-        text: 'Thanks for signing up! Your account is pending verification.',
-        html: '<b>Thanks for signing up!</b> <p>Your account is pending verification.</p>',
-      });
-    } catch (err) {
+    // Send a welcome email asynchronously
+    this.mailerService.sendMail({
+      to: savedUser.email,
+      from: '"Support Team" <support@abc.com>',
+      subject: 'Welcome to our Platform!',
+      text: 'Thanks for signing up! Your account is pending verification.',
+      html: '<b>Thanks for signing up!</b> <p>Your account is pending verification.</p>',
+    }).catch((err) => {
       console.error('Failed to send welcome email:', err);
-    }
+    });
 
-    // Send real-time Pusher notification if a reviewer signed up
+    // Send real-time Pusher notification asynchronously if a reviewer signed up
     if (savedUser.role === UserRole.REVIEWER) {
-      await this.pusherService.notifyNewReviewerRequest({
+      this.pusherService.notifyNewReviewerRequest({
         fullName: savedUser.fullName,
         email: savedUser.email,
         userId: savedUser.userId,
+      }).catch((err) => {
+        console.error('Failed to send pusher notification:', err);
       });
     } else if (savedUser.role === UserRole.COMPANY || savedUser.role === UserRole.EMPLOYEE) {
       // Send real-time Pusher notification to Reviewers if a Company or Employee signed up
-      await this.pusherService.notifyNewRegistrationToReviewers({
+      this.pusherService.notifyNewRegistrationToReviewers({
         fullName: savedUser.fullName,
         email: savedUser.email,
         role: savedUser.role,
+      }).catch((err) => {
+        console.error('Failed to send pusher notification:', err);
       });
     }
 
