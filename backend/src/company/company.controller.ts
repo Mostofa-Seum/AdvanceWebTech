@@ -33,7 +33,7 @@ import { Request } from 'express';
 @UseGuards(AuthGuard, RolesGuard)
 @Roles(UserRole.COMPANY)
 export class CompanyController {
-  constructor(private readonly companyService: CompanyService) {}
+  constructor(private readonly companyService: CompanyService) { }
 
   // Convenience helper: company endpoints take companyId in the URL, but
   // we resolve the caller from the JWT and look up their company.

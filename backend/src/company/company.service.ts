@@ -61,7 +61,7 @@ export class CompanyService {
     @InjectRepository(ReportEntity)
     private readonly reportRepository: Repository<ReportEntity>,
     private readonly notificationsService: NotificationsService,
-  ) {}
+  ) { }
 
   // ─── PROFILE ──────────────────────────────────────────────────────────
   async getProfile(companyId: string) {
@@ -203,6 +203,7 @@ export class CompanyService {
       relations: ['employee', 'employee.user'],
       order: { appliedAt: 'DESC' },
     });
+
   }
 
   /** Accept application → create assignment, hold payment, reject others. */
