@@ -3,17 +3,28 @@ import PushNotifications from '@pusher/push-notifications-server';
 
 @Injectable()
 export class PusherService {
-  private beamsClient: PushNotifications;
+  private beamsClient: PushNotifications | null = null;
 
   constructor() {
-    this.beamsClient = new PushNotifications({
-      instanceId: process.env.PUSHER_BEAMS_INSTANCE_ID || '',
-      secretKey: process.env.PUSHER_BEAMS_SECRET_KEY || '',
-    });
+    const instanceId = process.env.PUSHER_BEAMS_INSTANCE_ID;
+    const secretKey = process.env.PUSHER_BEAMS_SECRET_KEY;
+    if (instanceId && secretKey) {
+      try {
+        this.beamsClient = new PushNotifications({
+          instanceId,
+          secretKey,
+        });
+      } catch (err) {
+        console.error('Failed to initialize Pusher Beams:', err);
+      }
+    } else {
+      console.log('Pusher Beams credentials not found. Notifications disabled.');
+    }
   }
 
   // Trigger a push notification when a new reviewer signs up
   async notifyNewReviewerRequest(user: { fullName: string; email: string; userId: string }) {
+    if (!this.beamsClient) return;
     try {
       await this.beamsClient.publishToInterests(['admin-notifications'], {
         web: {
@@ -32,6 +43,7 @@ export class PusherService {
 
   // Trigger a push notification when admin accepts/rejects a reviewer
   async notifyReviewerDecision(user: { fullName: string; email: string; userId: string }, action: 'accepted' | 'rejected') {
+    if (!this.beamsClient) return;
     try {
       await this.beamsClient.publishToInterests(['admin-notifications'], {
         web: {
@@ -50,6 +62,7 @@ export class PusherService {
 
   // Trigger a push notification to Reviewers when a new Company or Employee signs up
   async notifyNewRegistrationToReviewers(user: { fullName: string; email: string; role: string }) {
+    if (!this.beamsClient) return;
     try {
       await this.beamsClient.publishToInterests(['reviewer-notifications'], {
         web: {
@@ -68,6 +81,7 @@ export class PusherService {
 
   // Trigger a push notification to a Company user (application received, work submitted, etc.)
   async notifyCompany(title: string, body: string) {
+    if (!this.beamsClient) return;
     try {
       await this.beamsClient.publishToInterests(['company-notifications'], {
         web: {
@@ -85,6 +99,7 @@ export class PusherService {
 
   // Trigger a push notification to an Employee user (application accepted, payment released, etc.)
   async notifyEmployee(title: string, body: string) {
+    if (!this.beamsClient) return;
     try {
       await this.beamsClient.publishToInterests(['employee-notifications'], {
         web: {
@@ -102,6 +117,7 @@ export class PusherService {
 
   // Trigger a push notification to Reviewers about new work to verify
   async notifyReviewers(title: string, body: string) {
+    if (!this.beamsClient) return;
     try {
       await this.beamsClient.publishToInterests(['reviewer-notifications'], {
         web: {
