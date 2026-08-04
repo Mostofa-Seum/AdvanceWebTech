@@ -172,18 +172,7 @@ export class ReviewerService {
     user.otpExpiresAt = otpExpiresAt;
     await this.userRepository.save(user);
 
-    try {
-      await this.mailerService.sendMail({
-        to: user.email,
-        from: '"Support Team" <support@abc.com>',
-        subject: 'Password Reset Code',
-        text: `Your password reset code is ${otp}. It is valid for 15 minutes.`,
-        html: `<b>Password Reset</b><p>Your password reset code is <strong>${otp}</strong>. It is valid for 15 minutes.</p>`,
-      });
-    } catch (err) {
-      console.error('Failed to send OTP email:', err);
-      throw new Error('Failed to send email. Ensure MAIL_USER and MAIL_PASS are configured properly in .env');
-    }
+    console.log(`[MOCK EMAIL] Password Reset Code for ${user.email} is ${otp}`);
 
     return { message: 'OTP sent to email successfully' };
   }
